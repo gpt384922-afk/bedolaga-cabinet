@@ -120,6 +120,8 @@ function MessageMedia({ message, t }: { message: TicketMessage; t: (key: string)
 }
 
 export default function Support() {
+  console.log('[Support] Component loaded - VERSION 2024-01-16-v3')
+
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null)
