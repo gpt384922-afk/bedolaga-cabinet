@@ -334,7 +334,8 @@
       "apps": "برنامه‌ها",
       "wheel": "چرخ",
       "tariffs": "تعرفه‌ها",
-      "servers": "سرورها"
+      "servers": "سرورها",
+      "broadcasts": "پیام‌رسانی"
     },
     "panel": {
       "title": "پنل مدیریت",
@@ -345,7 +346,8 @@
       "appsDesc": "مدیریت برنامه‌های اتصال",
       "wheelDesc": "تنظیم چرخ شانس و جوایز",
       "tariffsDesc": "مدیریت طرح‌های تعرفه",
-      "serversDesc": "تنظیم سرورهای VPN"
+      "serversDesc": "تنظیم سرورهای VPN",
+      "broadcastsDesc": "ارسال پیام گروهی به کاربران"
     },
     "wheel": {
       "title": "تنظیمات چرخ شانس",
@@ -404,6 +406,32 @@
         "times": "بار",
         "topWins": "برترین برنده‌ها"
       }
+    },
+    "broadcasts": {
+      "title": "پیام‌رسانی",
+      "subtitle": "ارسال پیام گروهی به کاربران",
+      "create": "ایجاد پیام",
+      "empty": "هنوز پیامی ارسال نشده",
+      "selectFilter": "انتخاب مخاطبین",
+      "selectFilterPlaceholder": "انتخاب فیلتر...",
+      "recipients": "نفر",
+      "messageText": "متن پیام",
+      "messageTextPlaceholder": "متن پیام را وارد کنید...",
+      "media": "فایل رسانه",
+      "addMedia": "افزودن رسانه",
+      "uploading": "در حال آپلود...",
+      "buttons": "دکمه‌ها",
+      "willBeSent": "ارسال می‌شود به",
+      "users": "کاربر",
+      "send": "ارسال",
+      "stop": "توقف",
+      "progress": "پیشرفت",
+      "total": "کل",
+      "sent": "ارسال شده",
+      "failed": "ناموفق",
+      "filter": "فیلتر",
+      "message": "پیام",
+      "unknownAdmin": "مدیر ناشناس"
     },
     "settings": {
       "title": "تنظیمات سیستم",

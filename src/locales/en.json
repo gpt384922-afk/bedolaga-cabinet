@@ -439,7 +439,8 @@
       "apps": "Apps",
       "wheel": "Wheel",
       "tariffs": "Tariffs",
-      "servers": "Servers"
+      "servers": "Servers",
+      "broadcasts": "Broadcasts"
     },
     "panel": {
       "title": "Admin Panel",
@@ -450,7 +451,8 @@
       "appsDesc": "Manage connection apps",
       "wheelDesc": "Configure fortune wheel and prizes",
       "tariffsDesc": "Manage tariff plans",
-      "serversDesc": "Configure VPN servers"
+      "serversDesc": "Configure VPN servers",
+      "broadcastsDesc": "Mass messaging to users"
     },
     "wheel": {
       "title": "Fortune Wheel Settings",
@@ -509,6 +511,32 @@
         "times": "times",
         "topWins": "Top Wins"
       }
+    },
+    "broadcasts": {
+      "title": "Broadcasts",
+      "subtitle": "Mass messaging to users",
+      "create": "Create Broadcast",
+      "empty": "No broadcasts yet",
+      "selectFilter": "Select audience",
+      "selectFilterPlaceholder": "Select filter...",
+      "recipients": "recip.",
+      "messageText": "Message text",
+      "messageTextPlaceholder": "Enter broadcast message...",
+      "media": "Media file",
+      "addMedia": "Add media",
+      "uploading": "Uploading...",
+      "buttons": "Buttons",
+      "willBeSent": "Will be sent to",
+      "users": "users",
+      "send": "Send",
+      "stop": "Stop",
+      "progress": "Progress",
+      "total": "Total",
+      "sent": "Sent",
+      "failed": "Failed",
+      "filter": "Filter",
+      "message": "Message",
+      "unknownAdmin": "Unknown admin"
     },
     "settings": {
       "title": "System Settings",

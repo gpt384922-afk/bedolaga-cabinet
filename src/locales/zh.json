@@ -334,7 +334,8 @@
       "apps": "应用",
       "wheel": "转盘",
       "tariffs": "套餐",
-      "servers": "服务器"
+      "servers": "服务器",
+      "broadcasts": "群发"
     },
     "panel": {
       "title": "管理面板",
@@ -345,7 +346,8 @@
       "appsDesc": "管理连接应用",
       "wheelDesc": "配置幸运转盘和奖品",
       "tariffsDesc": "管理套餐计划",
-      "serversDesc": "配置VPN服务器"
+      "serversDesc": "配置VPN服务器",
+      "broadcastsDesc": "向用户群发消息"
     },
     "wheel": {
       "title": "幸运转盘设置",
@@ -404,6 +406,32 @@
         "times": "次",
         "topWins": "最高奖品"
       }
+    },
+    "broadcasts": {
+      "title": "群发",
+      "subtitle": "向用户群发消息",
+      "create": "创建群发",
+      "empty": "暂无群发",
+      "selectFilter": "选择受众",
+      "selectFilterPlaceholder": "选择筛选条件...",
+      "recipients": "人",
+      "messageText": "消息内容",
+      "messageTextPlaceholder": "输入群发消息...",
+      "media": "媒体文件",
+      "addMedia": "添加媒体",
+      "uploading": "上传中...",
+      "buttons": "按钮",
+      "willBeSent": "将发送给",
+      "users": "用户",
+      "send": "发送",
+      "stop": "停止",
+      "progress": "进度",
+      "total": "总计",
+      "sent": "已发送",
+      "failed": "失败",
+      "filter": "筛选",
+      "message": "消息",
+      "unknownAdmin": "未知管理员"
     },
     "settings": {
       "title": "系统设置",
