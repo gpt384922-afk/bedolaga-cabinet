@@ -16,7 +16,7 @@ const ClockIcon = () => (
   </svg>
 )
 
-const formatTimeLeft = (expiresAt: string): string => {
+const formatTimeLeft = (expiresAt: string, t: (key: string) => string): string => {
   const now = new Date()
   const expires = new Date(expiresAt)
   const diffMs = expires.getTime() - now.getTime()
@@ -28,12 +28,12 @@ const formatTimeLeft = (expiresAt: string): string => {
 
   if (hours > 24) {
     const days = Math.floor(hours / 24)
-    return `${days}д`
+    return `${days}${t('promo.time.days')}`
   }
   if (hours > 0) {
-    return `${hours}ч ${minutes}м`
+    return `${hours}${t('promo.time.hours')} ${minutes}${t('promo.time.minutes')}`
   }
-  return `${minutes}м`
+  return `${minutes}${t('promo.time.minutes')}`
 }
 
 export default function PromoDiscountBadge() {
@@ -65,7 +65,7 @@ export default function PromoDiscountBadge() {
     return null
   }
 
-  const timeLeft = activeDiscount.expires_at ? formatTimeLeft(activeDiscount.expires_at) : null
+  const timeLeft = activeDiscount.expires_at ? formatTimeLeft(activeDiscount.expires_at, t) : null
 
   const handleClick = () => {
     setIsOpen(!isOpen)
@@ -96,56 +96,57 @@ export default function PromoDiscountBadge() {
         <span className="absolute -top-1 -right-1 w-2 h-2 bg-success-400 rounded-full animate-pulse" />
       </button>
 
-      {/* Dropdown */}
+      {/* Dropdown - mobile: fixed centered, desktop: absolute right */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-dark-800 rounded-xl shadow-xl border border-dark-700/50 z-50 animate-fade-in overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-success-500/20 to-accent-500/20 p-4 border-b border-dark-700/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-success-500/20 flex items-center justify-center text-success-400">
-                <SparklesIcon />
-              </div>
-              <div>
-                <div className="font-semibold text-dark-100">
-                  {t('promo.discountActive', 'Discount active!')}
+        <>
+          {/* Mobile backdrop */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40 sm:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+
+          <div className="fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-72 bg-dark-800 rounded-xl shadow-xl border border-dark-700/50 z-50 animate-fade-in overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-success-500/20 to-accent-500/20 p-4 border-b border-dark-700/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-success-500/20 flex items-center justify-center text-success-400">
+                  <SparklesIcon />
                 </div>
-                <div className="text-2xl font-bold text-success-400">
-                  -{activeDiscount.discount_percent}%
+                <div>
+                  <div className="font-semibold text-dark-100">
+                    {t('promo.discountActive')}
+                  </div>
+                  <div className="text-2xl font-bold text-success-400">
+                    -{activeDiscount.discount_percent}%
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Content */}
+            <div className="p-4 space-y-3">
+              <p className="text-sm text-dark-300">
+                {t('promo.discountDescription')}
+              </p>
+
+              {/* Time remaining */}
+              {timeLeft && (
+                <div className="flex items-center gap-2 text-sm text-dark-400 bg-dark-900/50 px-3 py-2 rounded-lg">
+                  <ClockIcon />
+                  <span>{t('promo.expiresIn')}: <span className="text-warning-400 font-medium">{timeLeft}</span></span>
+                </div>
+              )}
+
+              {/* CTA Button */}
+              <button
+                onClick={handleGoToSubscription}
+                className="w-full btn-primary py-2.5 text-sm font-medium"
+              >
+                {t('promo.useNow')}
+              </button>
+            </div>
           </div>
-
-          {/* Content */}
-          <div className="p-4 space-y-3">
-            <p className="text-sm text-dark-300">
-              {t('promo.discountDescription', 'Your personal discount is applied to subscription purchases')}
-            </p>
-
-            {/* Time remaining */}
-            {timeLeft && (
-              <div className="flex items-center gap-2 text-sm text-dark-400 bg-dark-900/50 px-3 py-2 rounded-lg">
-                <ClockIcon />
-                <span>{t('promo.expiresIn', 'Expires in')}: <span className="text-warning-400 font-medium">{timeLeft}</span></span>
-              </div>
-            )}
-
-            {/* Source info */}
-            {activeDiscount.source && (
-              <div className="text-xs text-dark-500">
-                {t('promo.source', 'Source')}: {activeDiscount.source}
-              </div>
-            )}
-
-            {/* CTA Button */}
-            <button
-              onClick={handleGoToSubscription}
-              className="w-full btn-primary py-2.5 text-sm font-medium"
-            >
-              {t('promo.useNow', 'Use discount now')}
-            </button>
-          </div>
-        </div>
+        </>
       )}
     </div>
   )
