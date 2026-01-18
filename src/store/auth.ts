@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User } from '../types'
 import { authApi } from '../api/auth'
+import { apiClient } from '../api/client'
 import { tokenStorage, isTokenValid, tokenRefreshManager } from '../utils/token'
 
 export interface TelegramWidgetData {
@@ -89,15 +90,9 @@ export const useAuthStore = create<AuthState>()(
             set({ isAdmin: false })
             return
           }
-          const response = await fetch('/api/cabinet/auth/me/is-admin', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          if (response.ok) {
-            const data = await response.json()
-            set({ isAdmin: data.is_admin })
-          }
+          // Используем apiClient для единообразной обработки ошибок
+          const response = await apiClient.get<{ is_admin: boolean }>('/cabinet/auth/me/is-admin')
+          set({ isAdmin: response.data.is_admin })
         } catch (error) {
           console.error('[Auth] Failed to check admin status:', error)
           set({ isAdmin: false })
