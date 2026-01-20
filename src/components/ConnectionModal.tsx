@@ -267,6 +267,19 @@ export default function ConnectionModal({ onClose }: ConnectionModalProps) {
     return available
   }, [appConfig, detectedPlatform])
 
+  // Get all apps for selector (must be before any conditional returns)
+  const allAppsForSelector = useMemo(() => {
+    if (!appConfig?.platforms) return []
+    const result: { platform: string; apps: AppInfo[] }[] = []
+    for (const platform of availablePlatforms) {
+      const apps = appConfig.platforms[platform]
+      if (apps?.length) {
+        result.push({ platform, apps })
+      }
+    }
+    return result
+  }, [appConfig, availablePlatforms])
+
   const copySubscriptionLink = async () => {
     if (!appConfig?.subscriptionUrl) return
     try {
@@ -370,19 +383,6 @@ export default function ConnectionModal({ onClose }: ConnectionModalProps) {
       </ModalWrapper>
     )
   }
-
-  // Get all apps for selector
-  const allAppsForSelector = useMemo(() => {
-    if (!appConfig?.platforms) return []
-    const result: { platform: string; apps: AppInfo[] }[] = []
-    for (const platform of availablePlatforms) {
-      const apps = appConfig.platforms[platform]
-      if (apps?.length) {
-        result.push({ platform, apps })
-      }
-    }
-    return result
-  }, [appConfig, availablePlatforms])
 
   // App selector view
   if (showAppSelector || !selectedApp) {

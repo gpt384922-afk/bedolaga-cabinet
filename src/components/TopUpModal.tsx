@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
 import { balanceApi } from '../api/balance'
@@ -54,6 +54,15 @@ export default function TopUpModal({ method, onClose, initialAmountRubles }: Top
     method.options && method.options.length > 0 ? method.options[0].id : null
   )
   const popupRef = useRef<Window | null>(null)
+
+  // Scroll lock when modal is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [])
 
   const hasOptions = method.options && method.options.length > 0
   const minRubles = method.min_amount_kopeks / 100
@@ -134,15 +143,17 @@ export default function TopUpModal({ method, onClose, initialAmountRubles }: Top
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 z-[60] flex items-start sm:items-center justify-center p-4 overflow-y-auto"
       style={{
-        paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))',
-        paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+        paddingTop: 'calc(2rem + env(safe-area-inset-top, 0px))',
+        paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))',
       }}
+      onClick={onClose}
     >
-      <div className="absolute inset-0" onClick={onClose} />
-
-      <div className="relative w-full max-w-sm bg-dark-900 rounded-2xl border border-dark-700/50 shadow-2xl overflow-hidden animate-scale-in">
+      <div
+        className="relative w-full max-w-sm bg-dark-900 rounded-2xl border border-dark-700/50 shadow-2xl overflow-hidden animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-dark-800/50">
           <span className="font-semibold text-dark-100">{methodName}</span>
