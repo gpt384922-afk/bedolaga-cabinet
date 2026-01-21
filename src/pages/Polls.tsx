@@ -117,7 +117,7 @@ export default function Polls() {
 
       {/* Poll Modal */}
       {selectedPoll && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="card max-w-lg w-full max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">{selectedPoll.title}</h2>

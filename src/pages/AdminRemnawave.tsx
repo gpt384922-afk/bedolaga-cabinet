@@ -1001,7 +1001,7 @@ export default function AdminRemnawave() {
 
       {/* Squad Detail Modal */}
       {selectedSquad && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setSelectedSquad(null)}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4" onClick={() => setSelectedSquad(null)}>
           <div className="bg-dark-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-dark-700 sticky top-0 bg-dark-800">

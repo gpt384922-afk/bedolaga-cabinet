@@ -464,7 +464,7 @@ export default function TopUpModal({ method, onClose, initialAmountRubles }: Top
     </>
   ) : (
     <div
-      className="fixed inset-0 bg-black/60 z-[60] flex items-start justify-center p-4 pt-[10vh]"
+      className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-[10vh]"
       onClick={handleClose}
     >
       <div

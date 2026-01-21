@@ -75,7 +75,7 @@ interface TariffTypeSelectProps {
 
 function TariffTypeSelect({ onSelect, onClose }: TariffTypeSelectProps) {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-md overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
           <h2 className="text-lg font-semibold text-dark-100">Выберите тип тарифа</h2>
@@ -234,7 +234,7 @@ function PeriodTariffModal({ tariff, servers, onSave, onClose, isLoading }: Peri
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
@@ -806,7 +806,7 @@ function DailyTariffModal({ tariff, servers, onSave, onClose, isLoading }: Daily
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
@@ -1405,7 +1405,7 @@ export default function AdminTariffs() {
 
       {/* Delete Confirmation */}
       {deleteConfirm !== null && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-dark-800 rounded-xl p-6 max-w-sm w-full">
             <h3 className="text-lg font-semibold text-dark-100 mb-2">{t('admin.tariffs.confirmDelete')}</h3>
             <p className="text-dark-400 mb-6">{t('admin.tariffs.confirmDeleteText')}</p>

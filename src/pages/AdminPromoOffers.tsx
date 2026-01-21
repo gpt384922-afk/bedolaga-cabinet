@@ -139,7 +139,7 @@ function TemplateEditModal({ template, onSave, onClose, isLoading }: TemplateEdi
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
@@ -314,7 +314,7 @@ function SendOfferModal({ templates, onSend, onClose, isLoading }: SendOfferModa
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
@@ -464,7 +464,7 @@ interface ResultModalProps {
 
 function ResultModal({ title, message, isSuccess, onClose }: ResultModalProps) {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl p-6 max-w-sm w-full text-center">
         <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
           isSuccess ? 'bg-emerald-500/20' : 'bg-error-500/20'

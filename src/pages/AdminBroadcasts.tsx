@@ -266,7 +266,7 @@ function CreateBroadcastModal({ onClose, onSuccess }: CreateModalProps) {
   const recipientsCount = previewMutation.data?.count ?? selectedFilter?.count ?? null
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-dark-800 rounded-xl w-full max-w-2xl my-4">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
@@ -490,7 +490,7 @@ function BroadcastDetailModal({ broadcast, onClose, onStop, isStopping }: Detail
   const isRunning = ['queued', 'in_progress', 'cancelling'].includes(broadcast.status)
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-dark-800 rounded-xl w-full max-w-lg">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-700">
