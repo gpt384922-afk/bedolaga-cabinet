@@ -673,12 +673,11 @@
 
   .bottom-nav {
     @apply fixed z-50 bg-dark-900/95;
-    bottom: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     left: 16px;
     right: 16px;
     border-radius: var(--bento-radius);
     padding: 8px 4px;
-    padding-bottom: calc(8px + var(--safe-area-inset-bottom));
     transform: translateZ(0);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
