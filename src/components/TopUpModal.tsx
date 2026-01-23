@@ -263,10 +263,6 @@ export default function TopUpModal({ method, onClose, initialAmountRubles }: Top
     }
   }
 
-  const handleOpenUrl = () => {
-    if (!paymentUrl) return
-    window.open(paymentUrl, '_blank', 'noopener,noreferrer')
-  }
 
   // Auto-focus input - works on mobile in Telegram WebApp
   useEffect(() => {
@@ -437,15 +433,11 @@ export default function TopUpModal({ method, onClose, initialAmountRubles }: Top
             {t('balance.clickToOpenPayment', 'Нажмите кнопку ниже, чтобы открыть страницу оплаты в новой вкладке')}
           </p>
 
-          {/* Main open button */}
+          {/* Main open button - NO preventDefault, let <a> work natively for iOS Safari */}
           <a
             href={paymentUrl}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault()
-              handleOpenUrl()
-            }}
             className="flex items-center justify-center gap-2 w-full h-12 rounded-xl bg-success-500 text-white font-bold hover:bg-success-400 active:bg-success-600 transition-colors"
           >
             <ExternalLinkIcon />
