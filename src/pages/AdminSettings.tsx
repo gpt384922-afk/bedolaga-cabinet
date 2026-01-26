@@ -10,6 +10,7 @@ import {
   MenuItem,
   formatSettingKey
 } from '../components/admin'
+import { AnalyticsTab } from '../components/admin/AnalyticsTab'
 import { BrandingTab } from '../components/admin/BrandingTab'
 import { ThemeTab } from '../components/admin/ThemeTab'
 import { FavoritesTab } from '../components/admin/FavoritesTab'
@@ -132,6 +133,8 @@ export default function AdminSettings() {
     }
 
     switch (activeSection) {
+      case 'analytics':
+        return <AnalyticsTab />
       case 'branding':
         return <BrandingTab accentColor={themeColors?.accent} />
       case 'theme':
