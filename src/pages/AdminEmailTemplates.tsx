@@ -85,20 +85,20 @@ function TemplateCard({
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-4 bg-dark-800 rounded-xl border border-dark-700 hover:border-accent-500/50 transition-all duration-200 group"
+      className="w-full text-left p-3 sm:p-4 bg-dark-800 rounded-xl border border-dark-700 hover:border-accent-500/50 transition-all duration-200 group"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-dark-100 group-hover:text-accent-400 transition-colors truncate">
             {label}
           </h3>
           <p className="text-xs text-dark-400 mt-1 line-clamp-2">{description}</p>
         </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 mt-0.5">
           {Object.entries(template.languages).map(([lang, status]) => (
             <span
               key={lang}
-              className={`inline-flex items-center justify-center w-7 h-5 rounded text-2xs font-medium ${
+              className={`inline-flex items-center justify-center w-6 sm:w-7 h-5 rounded text-2xs font-medium ${
                 status.has_custom
                   ? 'bg-accent-500/20 text-accent-400 ring-1 ring-accent-500/30'
                   : 'bg-dark-700 text-dark-400'
@@ -270,29 +270,29 @@ function TemplateEditor({
   const label = detail.label[interfaceLang] || detail.label['en'] || detail.notification_type
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-dark-700 transition-colors">
+      <div className="flex items-start sm:items-center justify-between gap-2">
+        <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0">
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-dark-700 transition-colors flex-shrink-0 mt-0.5 sm:mt-0">
             <BackIcon />
           </button>
-          <div>
-            <h2 className="text-lg font-semibold text-dark-100">{label}</h2>
-            <p className="text-xs text-dark-400">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-semibold text-dark-100 truncate">{label}</h2>
+            <p className="text-xs text-dark-400 line-clamp-2">
               {detail.description[interfaceLang] || detail.description['en'] || ''}
             </p>
           </div>
         </div>
         {langData && !langData.is_default && (
-          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/25">
+          <span className="px-2 sm:px-2.5 py-1 rounded-full text-2xs sm:text-xs font-medium bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/25 flex-shrink-0">
             Custom
           </span>
         )}
       </div>
 
       {/* Language tabs */}
-      <div className="flex items-center gap-1 p-1 bg-dark-900 rounded-lg">
+      <div className="flex items-center gap-1 p-1 bg-dark-900 rounded-lg overflow-x-auto">
         {Object.keys(detail.languages).map(lang => {
           const isActive = lang === activeLang
           const langInfo = detail.languages[lang]
@@ -303,13 +303,14 @@ function TemplateEditor({
                 if (isDirty && !window.confirm(t('admin.emailTemplates.unsavedWarning', 'Unsaved changes will be lost. Continue?'))) return
                 setActiveLang(lang)
               }}
-              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1.5 ${
+              className={`flex-1 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                 isActive
                   ? 'bg-dark-700 text-dark-100 shadow-sm'
                   : 'text-dark-400 hover:text-dark-200 hover:bg-dark-800'
               }`}
             >
-              {LANG_FULL_LABELS[lang] || lang}
+              <span className="sm:hidden">{LANG_LABELS[lang] || lang}</span>
+              <span className="hidden sm:inline">{LANG_FULL_LABELS[lang] || lang}</span>
               {!langInfo.is_default && (
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-400 flex-shrink-0" />
               )}
@@ -334,11 +335,11 @@ function TemplateEditor({
 
       {/* Context variables hint */}
       {detail.context_vars.length > 0 && (
-        <div className="p-3 bg-dark-900/60 border border-dark-700 rounded-lg">
+        <div className="p-2.5 sm:p-3 bg-dark-900/60 border border-dark-700 rounded-lg">
           <p className="text-xs font-medium text-dark-300 mb-1.5">
             {t('admin.emailTemplates.variables', 'Available Variables')}
           </p>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {detail.context_vars.map(v => (
               <code
                 key={v}
@@ -365,8 +366,8 @@ function TemplateEditor({
           ref={textareaRef}
           value={editBody}
           onChange={e => handleBodyChange(e.target.value)}
-          rows={16}
-          className="w-full px-3 py-2.5 bg-dark-900 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 transition-colors resize-y"
+          rows={12}
+          className="w-full px-3 py-2.5 bg-dark-900 border border-dark-600 rounded-lg text-xs sm:text-sm text-dark-100 placeholder-dark-500 font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 transition-colors resize-y min-h-[200px] sm:min-h-[300px]"
           placeholder="<h2>Title</h2><p>Content...</p>"
           spellCheck={false}
         />
@@ -376,53 +377,57 @@ function TemplateEditor({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => saveMutation.mutate()}
-          disabled={!isDirty || saveMutation.isPending}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-accent-500 text-white hover:bg-accent-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <SaveIcon />
-          {saveMutation.isPending ? t('common.loading', 'Loading...') : t('common.save', 'Save')}
-        </button>
-
-        <button
-          onClick={() => previewMutation.mutate()}
-          disabled={previewMutation.isPending}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-dark-700 text-dark-200 hover:bg-dark-600 disabled:opacity-40 transition-colors"
-        >
-          <EyeIcon />
-          {t('admin.emailTemplates.preview', 'Preview')}
-        </button>
-
-        <button
-          onClick={() => testMutation.mutate()}
-          disabled={testMutation.isPending}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-dark-700 text-dark-200 hover:bg-dark-600 disabled:opacity-40 transition-colors"
-        >
-          <SendIcon />
-          {testMutation.isPending ? t('common.loading', 'Loading...') : t('admin.emailTemplates.sendTest', 'Send Test')}
-        </button>
-
-        {langData && !langData.is_default && (
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2">
+        <div className="grid grid-cols-2 sm:flex gap-2">
           <button
-            onClick={() => {
-              if (window.confirm(t('admin.emailTemplates.resetConfirm', 'Reset this template to the default version?'))) {
-                resetMutation.mutate()
-              }
-            }}
-            disabled={resetMutation.isPending}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-dark-700 text-warning-400 hover:bg-dark-600 disabled:opacity-40 transition-colors ml-auto"
+            onClick={() => saveMutation.mutate()}
+            disabled={!isDirty || saveMutation.isPending}
+            className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium bg-accent-500 text-white hover:bg-accent-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            <ResetIcon />
-            {t('admin.emailTemplates.resetDefault', 'Reset to Default')}
+            <SaveIcon />
+            {saveMutation.isPending ? t('common.loading', 'Loading...') : t('common.save', 'Save')}
           </button>
-        )}
+
+          <button
+            onClick={() => previewMutation.mutate()}
+            disabled={previewMutation.isPending}
+            className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium bg-dark-700 text-dark-200 hover:bg-dark-600 disabled:opacity-40 transition-colors"
+          >
+            <EyeIcon />
+            {t('admin.emailTemplates.preview', 'Preview')}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:flex gap-2">
+          <button
+            onClick={() => testMutation.mutate()}
+            disabled={testMutation.isPending}
+            className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium bg-dark-700 text-dark-200 hover:bg-dark-600 disabled:opacity-40 transition-colors"
+          >
+            <SendIcon />
+            {testMutation.isPending ? t('common.loading', 'Loading...') : t('admin.emailTemplates.sendTest', 'Send Test')}
+          </button>
+
+          {langData && !langData.is_default && (
+            <button
+              onClick={() => {
+                if (window.confirm(t('admin.emailTemplates.resetConfirm', 'Reset this template to the default version?'))) {
+                  resetMutation.mutate()
+                }
+              }}
+              disabled={resetMutation.isPending}
+              className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium bg-dark-700 text-warning-400 hover:bg-dark-600 disabled:opacity-40 transition-colors sm:ml-auto"
+            >
+              <ResetIcon />
+              <span className="truncate">{t('admin.emailTemplates.resetDefault', 'Reset to Default')}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-lg animate-fade-in ${
+        <div className={`fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-lg animate-fade-in text-center sm:text-left ${
           toast.type === 'success'
             ? 'bg-emerald-500/90 text-white'
             : 'bg-red-500/90 text-white'
@@ -433,9 +438,9 @@ function TemplateEditor({
 
       {/* Preview Modal */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-dark-800 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-dark-600 shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-dark-700">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-dark-800 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-dark-600 shadow-2xl">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-dark-700">
               <h3 className="text-base font-semibold text-dark-100">
                 {t('admin.emailTemplates.preview', 'Preview')}
               </h3>
@@ -449,7 +454,7 @@ function TemplateEditor({
             <div className="flex-1 overflow-hidden p-1">
               <iframe
                 ref={iframeRef}
-                className="w-full h-full min-h-[400px] rounded-lg bg-white"
+                className="w-full h-full min-h-[50vh] sm:min-h-[400px] rounded-lg bg-white"
                 sandbox="allow-same-origin"
                 title="Email Preview"
               />
@@ -482,24 +487,24 @@ export default function AdminEmailTemplates() {
   })
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <Link
           to="/admin"
-          className="p-2 rounded-xl bg-dark-800 hover:bg-dark-700 transition-colors border border-dark-700"
+          className="p-1.5 sm:p-2 rounded-xl bg-dark-800 hover:bg-dark-700 transition-colors border border-dark-700 flex-shrink-0"
         >
           <BackIcon />
         </Link>
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 text-blue-400">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 text-blue-400 flex-shrink-0">
             <MailIcon />
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-dark-100">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold text-dark-100 truncate">
               {t('admin.emailTemplates.title', 'Email Templates')}
             </h1>
-            <p className="text-xs text-dark-400">
+            <p className="text-xs text-dark-400 truncate">
               {t('admin.emailTemplates.description', 'Manage email notification templates')}
             </p>
           </div>
@@ -523,7 +528,7 @@ export default function AdminEmailTemplates() {
               ))}
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
               {typesData?.items.map(template => (
                 <TemplateCard
                   key={template.type}
