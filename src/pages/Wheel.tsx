@@ -299,20 +299,21 @@ export default function Wheel() {
           }
         });
       } else {
-        // openInvoice not available - show error
+        // Fallback: open invoice URL in Telegram (browser or unsupported WebApp version)
         setIsPayingStars(false);
+        window.open(data.invoice_url, '_blank', 'noopener,noreferrer');
         setSpinResult({
-          success: false,
+          success: true,
           prize_id: null,
           prize_type: null,
           prize_value: 0,
           prize_display_name: '',
-          emoji: '😔',
-          color: '#EF4444',
+          emoji: '⭐',
+          color: '#8B5CF6',
           rotation_degrees: 0,
-          message: t('wheel.errors.starsNotAvailable'),
+          message: t('wheel.starsPaymentRedirected'),
           promocode: null,
-          error: 'stars_not_available',
+          error: null,
         });
         setShowResultModal(true);
       }
