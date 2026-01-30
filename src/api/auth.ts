@@ -108,4 +108,20 @@ export const authApi = {
     const response = await apiClient.get<User>('/cabinet/auth/me');
     return response.data;
   },
+
+  // Request email change - sends verification code to new email
+  requestEmailChange: async (newEmail: string): Promise<{ message: string }> => {
+    const response = await apiClient.post('/cabinet/auth/email/change', {
+      new_email: newEmail,
+    });
+    return response.data;
+  },
+
+  // Verify email change with code
+  verifyEmailChange: async (code: string): Promise<{ message: string; email: string }> => {
+    const response = await apiClient.post('/cabinet/auth/email/change/verify', {
+      code,
+    });
+    return response.data;
+  },
 };
