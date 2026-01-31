@@ -6,7 +6,8 @@ export type SuccessNotificationType =
   | 'subscription_activated'
   | 'subscription_renewed'
   | 'subscription_purchased'
-  | 'devices_purchased';
+  | 'devices_purchased'
+  | 'traffic_purchased';
 
 export interface SuccessNotificationData {
   type: SuccessNotificationType;
@@ -26,6 +27,10 @@ export interface SuccessNotificationData {
   devicesAdded?: number;
   /** New total device limit */
   newDeviceLimit?: number;
+  /** Traffic GB added */
+  trafficGbAdded?: number;
+  /** New total traffic limit in GB */
+  newTrafficLimitGb?: number;
 }
 
 interface SuccessNotificationState {
