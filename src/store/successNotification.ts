@@ -5,7 +5,8 @@ export type SuccessNotificationType =
   | 'balance_topup'
   | 'subscription_activated'
   | 'subscription_renewed'
-  | 'subscription_purchased';
+  | 'subscription_purchased'
+  | 'devices_purchased';
 
 export interface SuccessNotificationData {
   type: SuccessNotificationType;
@@ -21,6 +22,10 @@ export interface SuccessNotificationData {
   title?: string;
   /** Custom message override */
   message?: string;
+  /** Number of devices added */
+  devicesAdded?: number;
+  /** New total device limit */
+  newDeviceLimit?: number;
 }
 
 interface SuccessNotificationState {
