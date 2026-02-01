@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
@@ -7,7 +8,6 @@ import {
   CampaignListItem,
   CampaignDetail,
   CampaignStatistics,
-  CampaignCreateRequest,
   CampaignUpdateRequest,
   CampaignBonusType,
   ServerSquadInfo,
@@ -148,12 +148,12 @@ const formatDate = (dateStr: string | null) => {
   });
 };
 
-// Campaign Modal
+// Campaign Edit Modal
 interface CampaignModalProps {
-  campaign?: CampaignDetail | null;
+  campaign: CampaignDetail;
   servers: ServerSquadInfo[];
   tariffs: TariffListItem[];
-  onSave: (data: CampaignCreateRequest | CampaignUpdateRequest) => void;
+  onSave: (data: CampaignUpdateRequest) => void;
   onClose: () => void;
   isLoading?: boolean;
 }
@@ -167,38 +167,37 @@ function CampaignModal({
   isLoading,
 }: CampaignModalProps) {
   const { t } = useTranslation();
-  const isEdit = !!campaign;
 
-  const [name, setName] = useState(campaign?.name || '');
-  const [startParameter, setStartParameter] = useState(campaign?.start_parameter || '');
-  const [bonusType, setBonusType] = useState<CampaignBonusType>(campaign?.bonus_type || 'balance');
-  const [isActive, setIsActive] = useState(campaign?.is_active ?? true);
+  const [name, setName] = useState(campaign.name || '');
+  const [startParameter, setStartParameter] = useState(campaign.start_parameter || '');
+  const [bonusType, setBonusType] = useState<CampaignBonusType>(campaign.bonus_type || 'balance');
+  const [isActive, setIsActive] = useState(campaign.is_active ?? true);
 
   // Balance bonus
   const [balanceBonusRubles, setBalanceBonusRubles] = useState(
-    (campaign?.balance_bonus_kopeks || 0) / 100,
+    (campaign.balance_bonus_kopeks || 0) / 100,
   );
 
   // Subscription bonus
   const [subscriptionDays, setSubscriptionDays] = useState(
-    campaign?.subscription_duration_days || 7,
+    campaign.subscription_duration_days || 7,
   );
   const [subscriptionTraffic, setSubscriptionTraffic] = useState(
-    campaign?.subscription_traffic_gb || 10,
+    campaign.subscription_traffic_gb || 10,
   );
   const [subscriptionDevices, setSubscriptionDevices] = useState(
-    campaign?.subscription_device_limit || 1,
+    campaign.subscription_device_limit || 1,
   );
   const [selectedSquads, setSelectedSquads] = useState<string[]>(
-    campaign?.subscription_squads || [],
+    campaign.subscription_squads || [],
   );
 
   // Tariff bonus
-  const [tariffId, setTariffId] = useState<number | null>(campaign?.tariff_id || null);
-  const [tariffDays, setTariffDays] = useState(campaign?.tariff_duration_days || 30);
+  const [tariffId, setTariffId] = useState<number | null>(campaign.tariff_id || null);
+  const [tariffDays, setTariffDays] = useState(campaign.tariff_duration_days || 30);
 
   const handleSubmit = () => {
-    const data: CampaignCreateRequest | CampaignUpdateRequest = {
+    const data: CampaignUpdateRequest = {
       name,
       start_parameter: startParameter,
       bonus_type: bonusType,
@@ -234,7 +233,7 @@ function CampaignModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-dark-700 p-4">
           <h2 className="text-lg font-semibold text-dark-100">
-            {isEdit ? t('admin.campaigns.modal.editTitle') : t('admin.campaigns.modal.createTitle')}
+            {t('admin.campaigns.modal.editTitle')}
           </h2>
           <button onClick={onClose} className="rounded-lg p-1 transition-colors hover:bg-dark-700">
             <XIcon />
@@ -830,9 +829,9 @@ function UsersModal({ campaignId, campaignName, onClose }: UsersModalProps) {
 // Main Component
 export default function AdminCampaigns() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [showModal, setShowModal] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<CampaignDetail | null>(null);
   const [showStats, setShowStats] = useState<CampaignStatistics | null>(null);
   const [showUsers, setShowUsers] = useState<{ id: number; name: string } | null>(null);
@@ -860,21 +859,11 @@ export default function AdminCampaigns() {
   });
 
   // Mutations
-  const createMutation = useMutation({
-    mutationFn: campaignsApi.createCampaign,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-campaigns-overview'] });
-      setShowModal(false);
-    },
-  });
-
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: CampaignUpdateRequest }) =>
       campaignsApi.updateCampaign(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
-      setShowModal(false);
       setEditingCampaign(null);
     },
   });
@@ -899,7 +888,6 @@ export default function AdminCampaigns() {
     try {
       const detail = await campaignsApi.getCampaign(campaignId);
       setEditingCampaign(detail);
-      setShowModal(true);
     } catch (error) {
       console.error('Failed to load campaign:', error);
     }
@@ -914,16 +902,13 @@ export default function AdminCampaigns() {
     }
   };
 
-  const handleSave = (data: CampaignCreateRequest | CampaignUpdateRequest) => {
+  const handleSave = (data: CampaignUpdateRequest) => {
     if (editingCampaign) {
       updateMutation.mutate({ id: editingCampaign.id, data });
-    } else {
-      createMutation.mutate(data as CampaignCreateRequest);
     }
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
     setEditingCampaign(null);
   };
 
@@ -941,10 +926,7 @@ export default function AdminCampaigns() {
           </div>
         </div>
         <button
-          onClick={() => {
-            setEditingCampaign(null);
-            setShowModal(true);
-          }}
+          onClick={() => navigate('/admin/campaigns/create')}
           className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
         >
           <PlusIcon />
@@ -1085,15 +1067,15 @@ export default function AdminCampaigns() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      {showModal && (
+      {/* Edit Modal */}
+      {editingCampaign && (
         <CampaignModal
           campaign={editingCampaign}
           servers={servers}
           tariffs={tariffs}
           onSave={handleSave}
           onClose={handleCloseModal}
-          isLoading={createMutation.isPending || updateMutation.isPending}
+          isLoading={updateMutation.isPending}
         />
       )}
 

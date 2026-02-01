@@ -41,6 +41,7 @@ const AdminBroadcasts = lazy(() => import('./pages/AdminBroadcasts'));
 const AdminBroadcastCreate = lazy(() => import('./pages/AdminBroadcastCreate'));
 const AdminPromocodes = lazy(() => import('./pages/AdminPromocodes'));
 const AdminCampaigns = lazy(() => import('./pages/AdminCampaigns'));
+const AdminCampaignCreate = lazy(() => import('./pages/AdminCampaignCreate'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminPaymentMethods = lazy(() => import('./pages/AdminPaymentMethods'));
@@ -354,6 +355,16 @@ function App() {
             <AdminRoute>
               <LazyPage>
                 <AdminCampaigns />
+              </LazyPage>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/campaigns/create"
+          element={
+            <AdminRoute>
+              <LazyPage>
+                <AdminCampaignCreate />
               </LazyPage>
             </AdminRoute>
           }
