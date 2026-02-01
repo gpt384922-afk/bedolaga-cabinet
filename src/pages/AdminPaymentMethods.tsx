@@ -8,7 +8,9 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
+import { useTelegramDnd } from '../hooks/useTelegramDnd';
 import {
   arrayMove,
   SortableContext,
@@ -674,18 +676,40 @@ export default function AdminPaymentMethods() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setMethods((prev) => {
-        const oldIndex = prev.findIndex((m) => m.method_id === active.id);
-        const newIndex = prev.findIndex((m) => m.method_id === over.id);
-        if (oldIndex === -1 || newIndex === -1) return prev;
-        return arrayMove(prev, oldIndex, newIndex);
-      });
-      setOrderChanged(true);
-    }
-  }, []);
+  // Telegram swipe behavior for drag-and-drop
+  const {
+    onDragStart: onTelegramDragStart,
+    onDragEnd: onTelegramDragEnd,
+    onDragCancel: onTelegramDragCancel,
+  } = useTelegramDnd();
+
+  const handleDragStart = useCallback(
+    (_event: DragStartEvent) => {
+      onTelegramDragStart();
+    },
+    [onTelegramDragStart],
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      onTelegramDragEnd();
+      const { active, over } = event;
+      if (over && active.id !== over.id) {
+        setMethods((prev) => {
+          const oldIndex = prev.findIndex((m) => m.method_id === active.id);
+          const newIndex = prev.findIndex((m) => m.method_id === over.id);
+          if (oldIndex === -1 || newIndex === -1) return prev;
+          return arrayMove(prev, oldIndex, newIndex);
+        });
+        setOrderChanged(true);
+      }
+    },
+    [onTelegramDragEnd],
+  );
+
+  const handleDragCancel = useCallback(() => {
+    onTelegramDragCancel();
+  }, [onTelegramDragCancel]);
 
   const handleSaveOrder = () => {
     saveOrderMutation.mutate(methods.map((m) => m.method_id));
@@ -737,7 +761,12 @@ export default function AdminPaymentMethods() {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
           </div>
         ) : methods.length > 0 ? (
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
             <SortableContext
               items={methods.map((m) => m.method_id)}
               strategy={verticalListSortingStrategy}

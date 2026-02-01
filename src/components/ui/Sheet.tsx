@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { useBackButton } from '@/platform';
 import { useHaptic } from '@/platform';
+import { useTelegramSDK } from '@/hooks/useTelegramSDK';
 
 export interface SheetProps {
   isOpen: boolean;
@@ -104,9 +105,25 @@ export function Sheet({
   const [isVisible, setIsVisible] = useState(false);
 
   const haptic = useHaptic();
+  const { disableVerticalSwipes, enableVerticalSwipes, isTelegramWebApp } = useTelegramSDK();
 
   // BackButton integration
   useBackButton(isOpen ? onClose : null);
+
+  // Disable Telegram vertical swipes when sheet is open (prevents conflict with drag gestures)
+  useEffect(() => {
+    if (!isTelegramWebApp) return;
+
+    if (isOpen) {
+      disableVerticalSwipes();
+    }
+
+    return () => {
+      if (isOpen) {
+        enableVerticalSwipes();
+      }
+    };
+  }, [isOpen, isTelegramWebApp, disableVerticalSwipes, enableVerticalSwipes]);
 
   // Calculate current height based on snap point
   const currentHeight = `${snapPoints[currentSnapIndex] * 100}vh`;
