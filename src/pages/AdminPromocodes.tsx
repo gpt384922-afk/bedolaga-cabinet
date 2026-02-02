@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-import { promocodesApi, PromoCode, PromoCodeDetail, PromoCodeType } from '../api/promocodes';
+import { promocodesApi, PromoCode, PromoCodeType } from '../api/promocodes';
 import { AdminBackButton } from '../components/admin';
 
 // Icons
@@ -40,12 +40,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-const XIcon = () => (
-  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
 const CopyIcon = () => (
   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path
@@ -62,26 +56,6 @@ const ChartIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
-    />
-  </svg>
-);
-
-const ClockIcon = () => (
-  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
-
-const UserIcon = () => (
-  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
     />
   </svg>
 );
@@ -120,218 +94,11 @@ const formatDate = (date: string | null): string => {
   });
 };
 
-const formatDateTime = (date: string | null): string => {
-  if (!date) return '-';
-  const localeMap: Record<string, string> = { ru: 'ru-RU', en: 'en-US', zh: 'zh-CN', fa: 'fa-IR' };
-  const locale = localeMap[i18n.language] || 'ru-RU';
-  return new Date(date).toLocaleString(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
-// Promocode Stats Modal
-interface PromocodeStatsModalProps {
-  promocode: PromoCodeDetail;
-  onClose: () => void;
-  onEdit: () => void;
-}
-
-function PromocodeStatsModal({ promocode, onClose, onEdit }: PromocodeStatsModalProps) {
-  const { t } = useTranslation();
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-dark-800">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-dark-700 p-4">
-          <div className="flex items-center gap-3">
-            <div
-              className={`rounded-lg px-3 py-1.5 font-mono text-lg font-bold ${getTypeColor(promocode.type)}`}
-            >
-              {promocode.code}
-            </div>
-            <span className={`rounded px-2 py-0.5 text-xs ${getTypeColor(promocode.type)}`}>
-              {getTypeLabel(promocode.type)}
-            </span>
-            {!promocode.is_active && (
-              <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
-                {t('admin.promocodes.stats.inactive')}
-              </span>
-            )}
-          </div>
-          <button onClick={onClose} className="rounded-lg p-1 transition-colors hover:bg-dark-700">
-            <XIcon />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 space-y-6 overflow-y-auto p-4">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-xl bg-dark-700/50 p-4 text-center">
-              <div className="mb-1 text-3xl font-bold text-dark-100">{promocode.total_uses}</div>
-              <div className="text-sm text-dark-400">{t('admin.promocodes.stats.totalUses')}</div>
-            </div>
-            <div className="rounded-xl bg-dark-700/50 p-4 text-center">
-              <div className="mb-1 text-3xl font-bold text-success-400">{promocode.today_uses}</div>
-              <div className="text-sm text-dark-400">{t('admin.promocodes.stats.today')}</div>
-            </div>
-            <div className="rounded-xl bg-dark-700/50 p-4 text-center">
-              <div className="mb-1 text-3xl font-bold text-accent-400">
-                {promocode.max_uses === 0 ? '∞' : promocode.uses_left}
-              </div>
-              <div className="text-sm text-dark-400">{t('admin.promocodes.stats.remaining')}</div>
-            </div>
-          </div>
-
-          {/* Details */}
-          <div className="space-y-3 rounded-xl bg-dark-700/50 p-4">
-            <h4 className="mb-3 font-medium text-dark-200">
-              {t('admin.promocodes.stats.details')}
-            </h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-dark-400">{t('admin.promocodes.stats.type')}:</span>
-                <span className="text-dark-200">{getTypeLabel(promocode.type)}</span>
-              </div>
-              {promocode.type === 'balance' && (
-                <div className="flex justify-between">
-                  <span className="text-dark-400">{t('admin.promocodes.stats.bonus')}:</span>
-                  <span className="text-success-400">
-                    +{promocode.balance_bonus_rubles} {t('admin.promocodes.form.rub')}
-                  </span>
-                </div>
-              )}
-              {(promocode.type === 'subscription_days' ||
-                promocode.type === 'trial_subscription') && (
-                <div className="flex justify-between">
-                  <span className="text-dark-400">{t('admin.promocodes.stats.daysLabel')}:</span>
-                  <span className="text-accent-400">+{promocode.subscription_days}</span>
-                </div>
-              )}
-              {promocode.type === 'discount' && (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-dark-400">
-                      {t('admin.promocodes.stats.discountLabel')}:
-                    </span>
-                    <span className="text-pink-400">-{promocode.balance_bonus_kopeks}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-dark-400">{t('admin.promocodes.stats.validFor')}:</span>
-                    <span className="text-pink-400">
-                      {t('admin.promocodes.stats.hoursValue', {
-                        count: promocode.subscription_days,
-                      })}
-                    </span>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between">
-                <span className="text-dark-400">{t('admin.promocodes.stats.limit')}:</span>
-                <span className="text-dark-200">
-                  {promocode.current_uses}/{promocode.max_uses === 0 ? '∞' : promocode.max_uses}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-dark-400">{t('admin.promocodes.stats.status')}:</span>
-                <span className={promocode.is_valid ? 'text-success-400' : 'text-error-400'}>
-                  {promocode.is_valid
-                    ? t('admin.promocodes.stats.active')
-                    : t('admin.promocodes.stats.inactive')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-dark-400">{t('admin.promocodes.stats.created')}:</span>
-                <span className="text-dark-200">{formatDateTime(promocode.created_at)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-dark-400">{t('admin.promocodes.stats.validUntil')}:</span>
-                <span className="text-dark-200">
-                  {promocode.valid_until
-                    ? formatDate(promocode.valid_until)
-                    : t('admin.promocodes.stats.unlimited')}
-                </span>
-              </div>
-              {promocode.first_purchase_only && (
-                <div className="col-span-2 flex justify-between">
-                  <span className="text-dark-400">{t('admin.promocodes.stats.restriction')}:</span>
-                  <span className="text-warning-400">
-                    {t('admin.promocodes.stats.firstPurchaseOnly')}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Usage History */}
-          <div className="rounded-xl bg-dark-700/50 p-4">
-            <h4 className="mb-3 flex items-center gap-2 font-medium text-dark-200">
-              <ClockIcon />
-              {t('admin.promocodes.stats.usageHistory')}
-            </h4>
-            {promocode.recent_uses.length === 0 ? (
-              <p className="py-4 text-center text-sm text-dark-500">
-                {t('admin.promocodes.stats.noUsages')}
-              </p>
-            ) : (
-              <div className="max-h-64 space-y-2 overflow-y-auto">
-                {promocode.recent_uses.map((use) => (
-                  <div
-                    key={use.id}
-                    className="flex items-center justify-between rounded-lg bg-dark-600/50 p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-500">
-                        <UserIcon />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-dark-200">
-                          {use.user_full_name || use.user_username || `User #${use.user_id}`}
-                        </div>
-                        {use.user_username && (
-                          <div className="text-xs text-dark-500">@{use.user_username}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="text-xs text-dark-400">{formatDateTime(use.used_at)}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex justify-end gap-3 border-t border-dark-700 p-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-          >
-            {t('admin.promocodes.modal.close')}
-          </button>
-          <button
-            onClick={onEdit}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-          >
-            <EditIcon />
-            {t('admin.promocodes.modal.edit')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminPromocodes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [viewingPromocode, setViewingPromocode] = useState<PromoCodeDetail | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -349,15 +116,6 @@ export default function AdminPromocodes() {
       setDeleteConfirm(null);
     },
   });
-
-  const handleViewStats = async (id: number) => {
-    try {
-      const detail = await promocodesApi.getPromocode(id);
-      setViewingPromocode(detail);
-    } catch (error) {
-      console.error('Failed to load promocode stats:', error);
-    }
-  };
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -435,9 +193,11 @@ export default function AdminPromocodes() {
                 promo.is_active ? 'border-dark-700' : 'border-dark-700/50 opacity-60'
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
+              {/* Mobile: stacked layout, Desktop: row layout */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2">
+                  {/* Code with copy button */}
+                  <div className="mb-2 flex items-center gap-2">
                     <button
                       onClick={() => handleCopyCode(promo.code)}
                       className="flex items-center gap-1.5 font-mono font-medium text-dark-100 transition-colors hover:text-accent-400"
@@ -445,6 +205,9 @@ export default function AdminPromocodes() {
                       {promo.code}
                       {copiedCode === promo.code ? <CheckIcon /> : <CopyIcon />}
                     </button>
+                  </div>
+                  {/* Badges - wrap on mobile */}
+                  <div className="mb-2 flex flex-wrap gap-1.5">
                     <span className={`rounded px-2 py-0.5 text-xs ${getTypeColor(promo.type)}`}>
                       {getTypeLabel(promo.type)}
                     </span>
@@ -459,6 +222,7 @@ export default function AdminPromocodes() {
                       </span>
                     )}
                   </div>
+                  {/* Info line */}
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-dark-400">
                     {promo.type === 'balance' && (
                       <span className="text-success-400">
@@ -491,24 +255,25 @@ export default function AdminPromocodes() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* Action buttons - full width on mobile */}
+                <div className="flex items-center gap-2 border-t border-dark-700 pt-3 sm:border-0 sm:pt-0">
                   <button
-                    onClick={() => handleViewStats(promo.id)}
-                    className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-accent-500/20 hover:text-accent-400"
+                    onClick={() => navigate(`/admin/promocodes/${promo.id}/stats`)}
+                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-accent-500/20 hover:text-accent-400 sm:flex-none"
                     title={t('admin.promocodes.actions.stats')}
                   >
                     <ChartIcon />
                   </button>
                   <button
                     onClick={() => navigate(`/admin/promocodes/${promo.id}/edit`)}
-                    className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
+                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100 sm:flex-none"
                     title={t('admin.promocodes.actions.edit')}
                   >
                     <EditIcon />
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(promo.id)}
-                    className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-error-500/20 hover:text-error-400"
+                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-error-500/20 hover:text-error-400 sm:flex-none"
                     title={t('admin.promocodes.actions.delete')}
                   >
                     <TrashIcon />
@@ -518,17 +283,6 @@ export default function AdminPromocodes() {
             </div>
           ))}
         </div>
-      )}
-
-      {/* Promocode Stats Modal */}
-      {viewingPromocode && (
-        <PromocodeStatsModal
-          promocode={viewingPromocode}
-          onClose={() => setViewingPromocode(null)}
-          onEdit={() => {
-            navigate(`/admin/promocodes/${viewingPromocode.id}/edit`);
-          }}
-        />
       )}
 
       {/* Delete Confirmation */}

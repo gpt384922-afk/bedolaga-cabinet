@@ -1540,6 +1540,8 @@
         "save": "Save"
       },
       "stats": {
+        "title": "Promo code statistics",
+        "notFound": "Promo code not found",
         "totalUses": "Total uses",
         "today": "Today",
         "remaining": "Remaining",

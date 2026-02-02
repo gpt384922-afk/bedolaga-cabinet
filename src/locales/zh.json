@@ -1332,6 +1332,8 @@
         "save": "保存"
       },
       "stats": {
+        "title": "促销码统计",
+        "notFound": "未找到促销码",
         "totalUses": "总使用次数",
         "today": "今天",
         "remaining": "剩余",

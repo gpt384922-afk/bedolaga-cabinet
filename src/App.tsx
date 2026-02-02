@@ -42,6 +42,7 @@ const AdminBroadcasts = lazy(() => import('./pages/AdminBroadcasts'));
 const AdminBroadcastCreate = lazy(() => import('./pages/AdminBroadcastCreate'));
 const AdminPromocodes = lazy(() => import('./pages/AdminPromocodes'));
 const AdminPromocodeCreate = lazy(() => import('./pages/AdminPromocodeCreate'));
+const AdminPromocodeStats = lazy(() => import('./pages/AdminPromocodeStats'));
 const AdminPromoGroups = lazy(() => import('./pages/AdminPromoGroups'));
 const AdminPromoGroupCreate = lazy(() => import('./pages/AdminPromoGroupCreate'));
 const AdminCampaigns = lazy(() => import('./pages/AdminCampaigns'));
@@ -389,6 +390,16 @@ function App() {
             <AdminRoute>
               <LazyPage>
                 <AdminPromocodeCreate />
+              </LazyPage>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/promocodes/:id/stats"
+          element={
+            <AdminRoute>
+              <LazyPage>
+                <AdminPromocodeStats />
               </LazyPage>
             </AdminRoute>
           }
