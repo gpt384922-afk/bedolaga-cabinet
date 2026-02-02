@@ -158,7 +158,7 @@ export default function AdminRemnawaveSquadDetail() {
       {/* Stats */}
       <div className="card">
         <h3 className="mb-4 text-lg font-semibold text-dark-100">
-          {t('admin.remnawave.squads.stats', 'Statistics')}
+          {t('admin.remnawave.squads.statsTitle', 'Statistics')}
         </h3>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div className="rounded-lg bg-dark-700/50 p-4">

@@ -863,6 +863,11 @@
         "memory": "Memory",
         "uptime": "Uptime",
         "traffic": "Traffic Statistics",
+        "traffic2days": "2 days",
+        "traffic7days": "7 days",
+        "traffic30days": "30 days",
+        "trafficMonth": "Month",
+        "trafficYear": "Year",
         "usersByStatus": "Users by Status"
       },
       "nodes": {
@@ -874,29 +879,62 @@
         "enable": "Enable",
         "disable": "Disable",
         "restartAll": "Restart All",
-        "confirmRestartAll": "Are you sure you want to restart all nodes?"
+        "confirmRestartAll": "Are you sure you want to restart all nodes?",
+        "usersOnline": "online",
+        "trafficUsed": "used",
+        "uptimeLabel": "Uptime",
+        "stats": {
+          "total": "Total",
+          "online": "Online",
+          "offline": "Offline",
+          "disabled": "Disabled",
+          "users": "Users"
+        }
       },
       "squads": {
         "synced": "Synced",
         "notSynced": "Not synced",
         "noSquads": "No squads found",
-        "syncServers": "Sync Servers"
+        "syncServers": "Sync Servers",
+        "members": "members",
+        "inbounds": "inbounds",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "stats": {
+          "total": "Total",
+          "synced": "Synced",
+          "available": "Available",
+          "members": "Members"
+        },
+        "detail": "Squad Details",
+        "loadError": "Failed to load squad",
+        "info": "Information",
+        "originalName": "Original Name",
+        "countryCode": "Country",
+        "statsTitle": "Statistics",
+        "inboundsList": "Inbounds",
+        "localSettings": "Local Settings",
+        "trialEligible": "Trial Eligible",
+        "price": "Price",
+        "users": "Users"
       },
       "sync": {
         "autoSync": "Auto Sync",
-        "runNow": "Run Now",
-        "manual": "Manual Sync",
-        "fromPanel": "Sync from Panel",
-        "fromPanelDesc": "Import users from RemnaWave panel to bot database",
-        "toPanel": "Sync to Panel",
-        "toPanelDesc": "Export users from bot database to RemnaWave panel",
-        "subscriptions": "Subscriptions",
-        "validate": "Validate",
-        "validateDesc": "Check and fix subscription inconsistencies",
-        "cleanup": "Cleanup",
-        "cleanupDesc": "Remove orphaned subscriptions without users",
-        "statuses": "Sync Statuses",
-        "statusesDesc": "Synchronize subscription statuses with panel"
+        "runNow": "Run",
+        "run": "Run",
+        "running": "Running...",
+        "schedule": "Schedule",
+        "status": "Status",
+        "lastRun": "Last Run",
+        "nextRun": "Next Run",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "success": "Success",
+        "runAutoSyncNow": "Run Auto Sync Now",
+        "fromPanel": "From Panel",
+        "fromPanelDesc": "Import users from RemnaWave to bot",
+        "toPanel": "To Panel",
+        "toPanelDesc": "Export users from bot to RemnaWave"
       }
     },
     "wheel": {

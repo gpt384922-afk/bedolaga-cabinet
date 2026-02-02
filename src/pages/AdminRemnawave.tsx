@@ -157,12 +157,19 @@ function NodeCard({ node, onAction, isLoading }: NodeCardProps) {
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-dark-400">
             <span className="flex items-center gap-1">
               <UsersIcon className="h-3.5 w-3.5" />
-              {node.users_online ?? 0} online
+              {node.users_online ?? 0} {t('admin.remnawave.nodes.usersOnline', 'online')}
             </span>
             {node.traffic_used_bytes !== undefined && (
-              <span>{formatBytes(node.traffic_used_bytes)} used</span>
+              <span>
+                {formatBytes(node.traffic_used_bytes)}{' '}
+                {t('admin.remnawave.nodes.trafficUsed', 'used')}
+              </span>
             )}
-            {node.xray_uptime && <span>Uptime: {node.xray_uptime}</span>}
+            {node.xray_uptime && (
+              <span>
+                {t('admin.remnawave.nodes.uptimeLabel', 'Uptime')}: {node.xray_uptime}
+              </span>
+            )}
           </div>
         </div>
 
@@ -232,17 +239,21 @@ function SquadCard({ squad, onClick }: SquadCardProps) {
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-dark-400">
             <span className="flex items-center gap-1">
               <UsersIcon className="h-3.5 w-3.5" />
-              {squad.members_count} members
+              {squad.members_count} {t('admin.remnawave.squads.members', 'members')}
             </span>
             {squad.current_users !== undefined && (
               <span>
                 {squad.current_users} / {squad.max_users ?? '∞'}
               </span>
             )}
-            <span>{squad.inbounds_count} inbounds</span>
+            <span>
+              {squad.inbounds_count} {t('admin.remnawave.squads.inbounds', 'inbounds')}
+            </span>
             {squad.is_available !== undefined && (
               <span className={squad.is_available ? 'text-success-400' : 'text-error-400'}>
-                {squad.is_available ? '✓ Available' : '✗ Unavailable'}
+                {squad.is_available
+                  ? `✓ ${t('admin.remnawave.squads.available', 'Available')}`
+                  : `✗ ${t('admin.remnawave.squads.unavailable', 'Unavailable')}`}
               </span>
             )}
           </div>
@@ -271,6 +282,8 @@ interface SyncCardProps {
 }
 
 function SyncCard({ title, description, onAction, isLoading, lastResult }: SyncCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
       <div className="flex items-start justify-between gap-3">
@@ -291,7 +304,9 @@ function SyncCard({ title, description, onAction, isLoading, lastResult }: SyncC
           className="flex shrink-0 items-center gap-2 rounded-lg bg-accent-500/20 px-3 py-1.5 text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
         >
           <RefreshIcon spinning={isLoading} />
-          {isLoading ? 'Running...' : 'Run'}
+          {isLoading
+            ? t('admin.remnawave.sync.running', 'Running...')
+            : t('admin.remnawave.sync.run', 'Run')}
         </button>
       </div>
     </div>
@@ -431,31 +446,31 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
         </h3>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatCard
-            label="2 days"
+            label={t('admin.remnawave.overview.traffic2days', '2 days')}
             value={formatBytes(stats.traffic_periods.last_2_days.current)}
             icon={<span className="text-xs">📊</span>}
             color="accent"
           />
           <StatCard
-            label="7 days"
+            label={t('admin.remnawave.overview.traffic7days', '7 days')}
             value={formatBytes(stats.traffic_periods.last_7_days.current)}
             icon={<span className="text-xs">📊</span>}
             color="blue"
           />
           <StatCard
-            label="30 days"
+            label={t('admin.remnawave.overview.traffic30days', '30 days')}
             value={formatBytes(stats.traffic_periods.last_30_days.current)}
             icon={<span className="text-xs">📊</span>}
             color="green"
           />
           <StatCard
-            label="Month"
+            label={t('admin.remnawave.overview.trafficMonth', 'Month')}
             value={formatBytes(stats.traffic_periods.current_month.current)}
             icon={<span className="text-xs">📊</span>}
             color="purple"
           />
           <StatCard
-            label="Year"
+            label={t('admin.remnawave.overview.trafficYear', 'Year')}
             value={formatBytes(stats.traffic_periods.current_year.current)}
             icon={<span className="text-xs">📊</span>}
             color="orange"
@@ -526,11 +541,36 @@ function NodesTab({
     <div className="space-y-4">
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <StatCard label="Total" value={stats.total} icon={<GlobeIcon />} color="accent" />
-        <StatCard label="Online" value={stats.online} icon={<GlobeIcon />} color="green" />
-        <StatCard label="Offline" value={stats.offline} icon={<GlobeIcon />} color="red" />
-        <StatCard label="Disabled" value={stats.disabled} icon={<GlobeIcon />} color="accent" />
-        <StatCard label="Users" value={stats.totalUsers} icon={<UsersIcon />} color="blue" />
+        <StatCard
+          label={t('admin.remnawave.nodes.stats.total', 'Total')}
+          value={stats.total}
+          icon={<GlobeIcon />}
+          color="accent"
+        />
+        <StatCard
+          label={t('admin.remnawave.nodes.stats.online', 'Online')}
+          value={stats.online}
+          icon={<GlobeIcon />}
+          color="green"
+        />
+        <StatCard
+          label={t('admin.remnawave.nodes.stats.offline', 'Offline')}
+          value={stats.offline}
+          icon={<GlobeIcon />}
+          color="red"
+        />
+        <StatCard
+          label={t('admin.remnawave.nodes.stats.disabled', 'Disabled')}
+          value={stats.disabled}
+          icon={<GlobeIcon />}
+          color="accent"
+        />
+        <StatCard
+          label={t('admin.remnawave.nodes.stats.users', 'Users')}
+          value={stats.totalUsers}
+          icon={<UsersIcon />}
+          color="blue"
+        />
       </div>
 
       {/* Actions */}
@@ -608,19 +648,29 @@ function SquadsTab({
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          label="Total"
+          label={t('admin.remnawave.squads.stats.total', 'Total')}
           value={stats.total}
           icon={<ServerIcon className="h-5 w-5" />}
           color="accent"
         />
-        <StatCard label="Synced" value={stats.synced} icon={<SyncIcon />} color="green" />
         <StatCard
-          label="Available"
+          label={t('admin.remnawave.squads.stats.synced', 'Synced')}
+          value={stats.synced}
+          icon={<SyncIcon />}
+          color="green"
+        />
+        <StatCard
+          label={t('admin.remnawave.squads.stats.available', 'Available')}
           value={stats.available}
           icon={<ServerIcon className="h-5 w-5" />}
           color="blue"
         />
-        <StatCard label="Members" value={stats.totalMembers} icon={<UsersIcon />} color="purple" />
+        <StatCard
+          label={t('admin.remnawave.squads.stats.members', 'Members')}
+          value={stats.totalMembers}
+          icon={<UsersIcon />}
+          color="purple"
+        />
       </div>
 
       {/* Actions */}
@@ -692,57 +742,31 @@ function SyncTab({
       {/* Auto Sync Status */}
       {autoSyncStatus && (
         <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center gap-2 font-medium text-dark-100">
               <SyncIcon />
               {t('admin.remnawave.sync.autoSync', 'Auto Sync')}
             </h3>
-            <div className="flex items-center gap-2">
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs ${
-                  autoSyncStatus.enabled
-                    ? 'bg-success-500/20 text-success-400'
-                    : 'bg-dark-600 text-dark-400'
-                }`}
-              >
-                {autoSyncStatus.enabled ? 'Enabled' : 'Disabled'}
-              </span>
-              <button
-                onClick={onRunAutoSync}
-                disabled={loadingStates.autoSync || autoSyncStatus.is_running}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-500/20 px-3 py-1.5 text-sm text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
-              >
-                <RefreshIcon spinning={loadingStates.autoSync || autoSyncStatus.is_running} />
-                {t('admin.remnawave.sync.runNow', 'Run Now')}
-              </button>
-            </div>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                autoSyncStatus.enabled
+                  ? 'bg-success-500/20 text-success-400'
+                  : 'bg-dark-600 text-dark-400'
+              }`}
+            >
+              {autoSyncStatus.enabled
+                ? t('admin.remnawave.sync.enabled', 'Enabled')
+                : t('admin.remnawave.sync.disabled', 'Disabled')}
+            </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-sm lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-lg bg-dark-700/50 p-3">
               <p className="text-xs text-dark-500">
                 {t('admin.remnawave.sync.schedule', 'Schedule')}
               </p>
               <p className="mt-1 text-dark-200">
                 {autoSyncStatus.times.length > 0 ? autoSyncStatus.times.join(', ') : '—'}
-              </p>
-            </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">
-                {t('admin.remnawave.sync.nextRun', 'Next Run')}
-              </p>
-              <p className="mt-1 text-dark-200">
-                {autoSyncStatus.next_run ? new Date(autoSyncStatus.next_run).toLocaleString() : '—'}
-              </p>
-            </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">
-                {t('admin.remnawave.sync.lastRun', 'Last Run')}
-              </p>
-              <p className="mt-1 text-dark-200">
-                {autoSyncStatus.last_run_finished_at
-                  ? new Date(autoSyncStatus.last_run_finished_at).toLocaleString()
-                  : '—'}
               </p>
             </div>
             <div className="rounded-lg bg-dark-700/50 p-3">
@@ -763,7 +787,36 @@ function SyncTab({
                     : autoSyncStatus.last_run_error || '—'}
               </p>
             </div>
+            <div className="rounded-lg bg-dark-700/50 p-3">
+              <p className="text-xs text-dark-500">
+                {t('admin.remnawave.sync.lastRun', 'Last Run')}
+              </p>
+              <p className="mt-1 text-dark-200">
+                {autoSyncStatus.last_run_finished_at
+                  ? new Date(autoSyncStatus.last_run_finished_at).toLocaleString()
+                  : '—'}
+              </p>
+            </div>
+            <div className="rounded-lg bg-dark-700/50 p-3">
+              <p className="text-xs text-dark-500">
+                {t('admin.remnawave.sync.nextRun', 'Next Run')}
+              </p>
+              <p className="mt-1 text-dark-200">
+                {autoSyncStatus.next_run ? new Date(autoSyncStatus.next_run).toLocaleString() : '—'}
+              </p>
+            </div>
           </div>
+
+          <button
+            onClick={onRunAutoSync}
+            disabled={loadingStates.autoSync || autoSyncStatus.is_running}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500/20 px-4 py-2.5 text-sm font-medium text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
+          >
+            <RefreshIcon spinning={loadingStates.autoSync || autoSyncStatus.is_running} />
+            {autoSyncStatus.is_running
+              ? t('admin.remnawave.sync.running', 'Running...')
+              : t('admin.remnawave.sync.runAutoSyncNow', 'Run Auto Sync Now')}
+          </button>
         </div>
       )}
 

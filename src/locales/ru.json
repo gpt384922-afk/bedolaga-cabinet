@@ -879,6 +879,11 @@
         "memory": "Память",
         "uptime": "Аптайм",
         "traffic": "Статистика трафика",
+        "traffic2days": "2 дня",
+        "traffic7days": "7 дней",
+        "traffic30days": "30 дней",
+        "trafficMonth": "Месяц",
+        "trafficYear": "Год",
         "usersByStatus": "Пользователи по статусу"
       },
       "nodes": {
@@ -890,29 +895,62 @@
         "enable": "Включить",
         "disable": "Отключить",
         "restartAll": "Перезапустить все",
-        "confirmRestartAll": "Вы уверены, что хотите перезапустить все ноды?"
+        "confirmRestartAll": "Вы уверены, что хотите перезапустить все ноды?",
+        "usersOnline": "онлайн",
+        "trafficUsed": "использовано",
+        "uptimeLabel": "Аптайм",
+        "stats": {
+          "total": "Всего",
+          "online": "Онлайн",
+          "offline": "Офлайн",
+          "disabled": "Отключены",
+          "users": "Пользователей"
+        }
       },
       "squads": {
         "synced": "Синхронизирован",
         "notSynced": "Не синхронизирован",
         "noSquads": "Сквады не найдены",
-        "syncServers": "Синхронизировать серверы"
+        "syncServers": "Синхронизировать серверы",
+        "members": "участников",
+        "inbounds": "inbounds",
+        "available": "Доступен",
+        "unavailable": "Недоступен",
+        "stats": {
+          "total": "Всего",
+          "synced": "Синхр.",
+          "available": "Доступно",
+          "members": "Участников"
+        },
+        "detail": "Детали сквада",
+        "loadError": "Не удалось загрузить сквад",
+        "info": "Информация",
+        "originalName": "Оригинальное имя",
+        "countryCode": "Страна",
+        "statsTitle": "Статистика",
+        "inboundsList": "Inbounds",
+        "localSettings": "Локальные настройки",
+        "trialEligible": "Доступен триал",
+        "price": "Цена",
+        "users": "Пользователей"
       },
       "sync": {
         "autoSync": "Автосинхронизация",
-        "runNow": "Запустить сейчас",
-        "manual": "Ручная синхронизация",
-        "fromPanel": "Синхронизация из панели",
-        "fromPanelDesc": "Импорт пользователей из RemnaWave панели в базу бота",
-        "toPanel": "Синхронизация в панель",
-        "toPanelDesc": "Экспорт пользователей из базы бота в RemnaWave панель",
-        "subscriptions": "Подписки",
-        "validate": "Валидация",
-        "validateDesc": "Проверка и исправление несоответствий подписок",
-        "cleanup": "Очистка",
-        "cleanupDesc": "Удаление orphaned подписок без пользователей",
-        "statuses": "Синхронизация статусов",
-        "statusesDesc": "Синхронизация статусов подписок с панелью"
+        "runNow": "Запустить",
+        "run": "Запустить",
+        "running": "Выполняется...",
+        "schedule": "Расписание",
+        "status": "Статус",
+        "lastRun": "Посл. запуск",
+        "nextRun": "След. запуск",
+        "enabled": "Включено",
+        "disabled": "Выключено",
+        "success": "Успешно",
+        "runAutoSyncNow": "Запустить автосинхронизацию",
+        "fromPanel": "Из панели",
+        "fromPanelDesc": "Импорт пользователей из RemnaWave в бота",
+        "toPanel": "В панель",
+        "toPanelDesc": "Экспорт пользователей из бота в RemnaWave"
       }
     },
     "wheel": {
