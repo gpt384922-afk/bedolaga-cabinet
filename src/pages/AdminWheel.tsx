@@ -277,6 +277,8 @@ export default function AdminWheel() {
   const [activeTab, setActiveTab] = useState<Tab>('settings');
   const [expandedPrizeId, setExpandedPrizeId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [localPrizeOrder, setLocalPrizeOrder] = useState<number[] | null>(null);
+  const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<{
@@ -372,6 +374,9 @@ export default function AdminWheel() {
     mutationFn: adminWheelApi.reorderPrizes,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-wheel-config'] });
+      // Reset local state after successful save
+      setLocalPrizeOrder(null);
+      setHasUnsavedOrder(false);
     },
   });
 
@@ -426,12 +431,37 @@ export default function AdminWheel() {
         const newIndex = config.prizes.findIndex((p) => p.id === over.id);
         if (oldIndex !== -1 && newIndex !== -1) {
           const newOrder = arrayMove(config.prizes, oldIndex, newIndex);
-          reorderPrizesMutation.mutate(newOrder.map((p) => p.id));
+          // Save order locally, don't trigger mutation immediately
+          setLocalPrizeOrder(newOrder.map((p) => p.id));
+          setHasUnsavedOrder(true);
         }
       }
     },
-    [config, onTelegramDragEnd, reorderPrizesMutation],
+    [config, onTelegramDragEnd],
   );
+
+  // Save prize order
+  const handleSavePrizeOrder = useCallback(() => {
+    if (localPrizeOrder) {
+      reorderPrizesMutation.mutate(localPrizeOrder);
+      setHasUnsavedOrder(false);
+    }
+  }, [localPrizeOrder, reorderPrizesMutation]);
+
+  // Discard order changes
+  const handleDiscardOrderChanges = useCallback(() => {
+    setLocalPrizeOrder(null);
+    setHasUnsavedOrder(false);
+  }, []);
+
+  // Get prizes in display order (use local order if available)
+  const displayedPrizes = config?.prizes
+    ? localPrizeOrder
+      ? localPrizeOrder
+          .map((id) => config.prizes.find((p) => p.id === id))
+          .filter((p): p is WheelPrizeAdmin => p !== undefined)
+      : config.prizes
+    : [];
 
   if (isLoading) {
     return (
@@ -764,6 +794,38 @@ export default function AdminWheel() {
               </button>
             </div>
 
+            {/* Unsaved order changes banner */}
+            {hasUnsavedOrder && (
+              <div className="flex items-center gap-3 rounded-xl border border-warning-500/30 bg-warning-500/10 p-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-warning-400">
+                    {t('admin.wheel.prizes.unsavedOrder') || 'Есть несохраненные изменения порядка'}
+                  </p>
+                  <p className="text-xs text-warning-400/70">
+                    {t('admin.wheel.prizes.unsavedOrderHint') ||
+                      'Сохраните изменения или отмените их'}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDiscardOrderChanges}
+                    className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-sm text-dark-200 transition-colors hover:bg-dark-600"
+                  >
+                    {t('common.cancel') || 'Отменить'}
+                  </button>
+                  <button
+                    onClick={handleSavePrizeOrder}
+                    disabled={reorderPrizesMutation.isPending}
+                    className="rounded-lg bg-warning-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-warning-600 disabled:opacity-50"
+                  >
+                    {reorderPrizesMutation.isPending
+                      ? t('common.saving') || 'Сохранение...'
+                      : t('common.save') || 'Сохранить'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Create new prize inline form */}
             {isCreating && (
               <InlinePrizeForm
@@ -785,11 +847,11 @@ export default function AdminWheel() {
               onDragCancel={onTelegramDragCancel}
             >
               <SortableContext
-                items={config.prizes.map((p) => p.id)}
+                items={displayedPrizes.map((p) => p.id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
-                  {config.prizes.map((prize) => (
+                  {displayedPrizes.map((prize) => (
                     <SortablePrizeCard
                       key={prize.id}
                       prize={prize}
