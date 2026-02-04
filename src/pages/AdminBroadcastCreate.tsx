@@ -119,7 +119,7 @@ export default function AdminBroadcastCreate() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useBackButton(() => navigate('/admin/broadcasts', { replace: true }));
+  useBackButton(() => navigate('/admin/broadcasts'));
 
   // Channel selection
   const [channel, setChannel] = useState<BroadcastChannel>('telegram');

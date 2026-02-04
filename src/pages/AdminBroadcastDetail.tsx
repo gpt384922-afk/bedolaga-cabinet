@@ -159,7 +159,7 @@ export default function AdminBroadcastDetail() {
 
   const broadcastId = id ? parseInt(id, 10) : null;
 
-  useBackButton(() => navigate('/admin/broadcasts', { replace: true }));
+  useBackButton(() => navigate('/admin/broadcasts'));
 
   // Fetch broadcast details
   const {

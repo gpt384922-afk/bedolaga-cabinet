@@ -51,7 +51,7 @@ export default function AdminSettings() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin', { replace: true }));
+  useBackButton(() => navigate('/admin'));
 
   // State
   const [activeSection, setActiveSection] = useState('branding');

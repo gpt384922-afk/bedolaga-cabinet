@@ -124,7 +124,7 @@ export default function AdminTickets() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin', { replace: true }));
+  useBackButton(() => navigate('/admin'));
 
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('');

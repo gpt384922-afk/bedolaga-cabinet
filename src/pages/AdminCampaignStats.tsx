@@ -98,7 +98,7 @@ export default function AdminCampaignStats() {
   const [copied, setCopied] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
 
-  useBackButton(() => navigate('/admin/campaigns', { replace: true }));
+  useBackButton(() => navigate('/admin/campaigns'));
 
   // Fetch stats
   const {

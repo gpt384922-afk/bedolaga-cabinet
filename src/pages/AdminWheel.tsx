@@ -292,7 +292,7 @@ export default function AdminWheel() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin', { replace: true }));
+  useBackButton(() => navigate('/admin'));
 
   const [activeTab, setActiveTab] = useState<Tab>('settings');
   const [expandedPrizeId, setExpandedPrizeId] = useState<number | null>(null);

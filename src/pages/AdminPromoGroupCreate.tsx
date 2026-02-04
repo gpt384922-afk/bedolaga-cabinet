@@ -56,7 +56,7 @@ export default function AdminPromoGroupCreate() {
   const queryClient = useQueryClient();
   const isEdit = !!id;
 
-  useBackButton(() => navigate('/admin/promo-groups', { replace: true }));
+  useBackButton(() => navigate('/admin/promo-groups'));
 
   // Form state
   const [name, setName] = useState('');

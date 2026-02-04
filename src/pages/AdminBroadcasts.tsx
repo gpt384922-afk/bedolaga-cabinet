@@ -132,7 +132,7 @@ export default function AdminBroadcasts() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin', { replace: true }));
+  useBackButton(() => navigate('/admin'));
 
   const [page, setPage] = useState(0);
   const limit = 20;

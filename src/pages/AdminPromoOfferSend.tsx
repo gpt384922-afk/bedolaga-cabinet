@@ -76,7 +76,7 @@ export default function AdminPromoOfferSend() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  useBackButton(() => navigate('/admin/promo-offers', { replace: true }));
+  useBackButton(() => navigate('/admin/promo-offers'));
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [sendMode, setSendMode] = useState<'segment' | 'user'>('segment');

@@ -73,7 +73,7 @@ export default function AdminPaymentMethodEdit() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin/payment-methods', { replace: true }));
+  useBackButton(() => navigate('/admin/payment-methods'));
 
   // Fetch payment methods
   const { data: methods, isLoading } = useQuery({

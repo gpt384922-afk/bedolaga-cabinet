@@ -29,7 +29,7 @@ export default function AdminPayments() {
   const { capabilities } = usePlatform();
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin', { replace: true }));
+  useBackButton(() => navigate('/admin'));
 
   const [page, setPage] = useState(1);
   const [methodFilter, setMethodFilter] = useState<string>('');

@@ -82,7 +82,7 @@ export default function AdminUserDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  useBackButton(() => navigate('/admin/users', { replace: true }));
+  useBackButton(() => navigate('/admin/users'));
 
   const localeMap: Record<string, string> = { ru: 'ru-RU', en: 'en-US', zh: 'zh-CN', fa: 'fa-IR' };
   const locale = localeMap[i18n.language] || 'ru-RU';

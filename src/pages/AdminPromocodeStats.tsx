@@ -89,7 +89,7 @@ export default function AdminPromocodeStats() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  useBackButton(() => navigate('/admin/promocodes', { replace: true }));
+  useBackButton(() => navigate('/admin/promocodes'));
 
   const {
     data: promocode,

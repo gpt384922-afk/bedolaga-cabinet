@@ -22,7 +22,7 @@ export default function AdminTicketSettings() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  useBackButton(() => navigate('/admin/tickets', { replace: true }));
+  useBackButton(() => navigate('/admin/tickets'));
 
   const {
     data: settings,

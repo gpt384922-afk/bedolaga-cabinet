@@ -51,7 +51,7 @@ export default function AdminPromocodeCreate() {
   const isEdit = !!id;
 
   // Use native Telegram back button in Mini App
-  useBackButton(() => navigate('/admin/promocodes', { replace: true }));
+  useBackButton(() => navigate('/admin/promocodes'));
 
   // Form state
   const [code, setCode] = useState('');

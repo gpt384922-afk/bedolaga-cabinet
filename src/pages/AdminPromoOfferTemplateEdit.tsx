@@ -22,7 +22,7 @@ export default function AdminPromoOfferTemplateEdit() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
-  useBackButton(() => navigate('/admin/promo-offers', { replace: true }));
+  useBackButton(() => navigate('/admin/promo-offers'));
 
   // Form state
   const [name, setName] = useState('');
