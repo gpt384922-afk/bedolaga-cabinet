@@ -6,10 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useAuthStore } from '../store/auth';
 import { balanceApi } from '../api/balance';
-import TopUpModal from '../components/TopUpModal';
 import { useCurrency } from '../hooks/useCurrency';
 import { useToast } from '../components/Toast';
-import type { PaymentMethod, PaginatedResponse, Transaction } from '../types';
+import type { PaginatedResponse, Transaction } from '../types';
 
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
@@ -92,7 +91,6 @@ export default function Balance() {
     }
   }, [searchParams, navigate, refetchBalance, refreshUser, queryClient, showToast, t]);
 
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [promocode, setPromocode] = useState('');
   const [promocodeLoading, setPromocodeLoading] = useState(false);
   const [promocodeError, setPromocodeError] = useState<string | null>(null);
@@ -285,7 +283,7 @@ export default function Balance() {
                     key={method.id}
                     interactive={method.is_available}
                     className={!method.is_available ? 'cursor-not-allowed opacity-50' : ''}
-                    onClick={() => method.is_available && setSelectedMethod(method)}
+                    onClick={() => method.is_available && navigate(`/balance/top-up/${method.id}`)}
                   >
                     <div className="font-semibold text-dark-100">
                       {translatedName || method.name}
@@ -423,11 +421,6 @@ export default function Balance() {
           </AnimatePresence>
         </Card>
       </motion.div>
-
-      {/* TopUp Modal */}
-      {selectedMethod && (
-        <TopUpModal method={selectedMethod} onClose={() => setSelectedMethod(null)} />
-      )}
     </motion.div>
   );
 }

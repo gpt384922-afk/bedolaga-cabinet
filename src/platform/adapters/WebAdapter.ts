@@ -2,12 +2,10 @@ import type {
   PlatformContext,
   PlatformCapabilities,
   BackButtonController,
-  MainButtonController,
   HapticController,
   DialogController,
   ThemeController,
   CloudStorageController,
-  MainButtonConfig,
   PopupOptions,
   InvoiceStatus,
   HapticImpactStyle,
@@ -20,7 +18,7 @@ const STORAGE_PREFIX = 'bedolaga_';
 function createCapabilities(): PlatformCapabilities {
   return {
     hasBackButton: false, // No native back button in web
-    hasMainButton: false, // No native main button in web
+
     hasHapticFeedback: 'vibrate' in navigator, // Web Vibration API
     hasNativeDialogs: false, // Use custom dialogs
     hasThemeSync: false, // No header/bottom bar sync in web
@@ -42,34 +40,6 @@ function createBackButtonController(): BackButtonController {
     },
 
     hide() {
-      // No-op in web
-    },
-  };
-}
-
-function createMainButtonController(): MainButtonController {
-  // Web doesn't have a native main button - this is a no-op
-  // The UI will render its own submit buttons
-  return {
-    isVisible: false,
-
-    show(_config: MainButtonConfig) {
-      // No-op in web - handled by UI components
-    },
-
-    hide() {
-      // No-op in web
-    },
-
-    showProgress(_show: boolean) {
-      // No-op in web
-    },
-
-    setText(_text: string) {
-      // No-op in web
-    },
-
-    setActive(_active: boolean) {
       // No-op in web
     },
   };
@@ -219,7 +189,7 @@ export function createWebAdapter(): PlatformContext {
     platform: 'web',
     capabilities: createCapabilities(),
     backButton: createBackButtonController(),
-    mainButton: createMainButtonController(),
+
     haptic: createHapticController(),
     dialog: createDialogController(),
     theme: createThemeController(),

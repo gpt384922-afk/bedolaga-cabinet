@@ -10,14 +10,12 @@ export type {
   PlatformType,
   PlatformContext as PlatformContextType,
   PlatformCapabilities,
-  MainButtonConfig,
   PopupOptions,
   PopupButton,
   InvoiceStatus,
   HapticImpactStyle,
   HapticNotificationType,
   BackButtonController,
-  MainButtonController,
   HapticController,
   DialogController,
   ThemeController,
@@ -28,7 +26,6 @@ export type {
 // Hooks
 export { usePlatform, useIsTelegram, useCapability } from './hooks/usePlatform';
 export { useBackButton, useConditionalBackButton } from './hooks/useBackButton';
-export { useMainButton, useSimpleMainButton } from './hooks/useMainButton';
 export { useHaptic, useHapticClick, useHapticFeedback } from './hooks/useHaptic';
 export { useNativeDialog, useDestructiveConfirm, PopupButtons } from './hooks/useNativeDialog';
 export { useNotify } from './hooks/useNotify';

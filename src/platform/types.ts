@@ -7,15 +7,6 @@ export type HapticNotificationType = 'success' | 'warning' | 'error';
 
 export type InvoiceStatus = 'paid' | 'cancelled' | 'failed' | 'pending';
 
-export interface MainButtonConfig {
-  text: string;
-  onClick: () => void;
-  isLoading?: boolean;
-  isActive?: boolean;
-  color?: string;
-  textColor?: string;
-}
-
 export interface PopupButton {
   id: string;
   type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
@@ -30,7 +21,7 @@ export interface PopupOptions {
 
 export interface PlatformCapabilities {
   hasBackButton: boolean;
-  hasMainButton: boolean;
+
   hasHapticFeedback: boolean;
   hasNativeDialogs: boolean;
   hasThemeSync: boolean;
@@ -43,15 +34,6 @@ export interface PlatformCapabilities {
 export interface BackButtonController {
   show: (onClick: () => void) => void;
   hide: () => void;
-  isVisible: boolean;
-}
-
-export interface MainButtonController {
-  show: (config: MainButtonConfig) => void;
-  hide: () => void;
-  showProgress: (show: boolean) => void;
-  setText: (text: string) => void;
-  setActive: (active: boolean) => void;
   isVisible: boolean;
 }
 
@@ -103,9 +85,6 @@ export interface PlatformContext {
 
   // Navigation
   backButton: BackButtonController;
-
-  // Main action button
-  mainButton: MainButtonController;
 
   // Haptic feedback
   haptic: HapticController;

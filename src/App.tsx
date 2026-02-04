@@ -26,6 +26,8 @@ const Contests = lazy(() => import('./pages/Contests'));
 const Polls = lazy(() => import('./pages/Polls'));
 const Info = lazy(() => import('./pages/Info'));
 const Wheel = lazy(() => import('./pages/Wheel'));
+const TopUpMethodSelect = lazy(() => import('./pages/TopUpMethodSelect'));
+const TopUpAmount = lazy(() => import('./pages/TopUpAmount'));
 
 // Admin pages - lazy load (only for admins)
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
@@ -166,6 +168,26 @@ function App() {
             <ProtectedRoute>
               <LazyPage>
                 <Balance />
+              </LazyPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/balance/top-up"
+          element={
+            <ProtectedRoute>
+              <LazyPage>
+                <TopUpMethodSelect />
+              </LazyPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/balance/top-up/:methodId"
+          element={
+            <ProtectedRoute>
+              <LazyPage>
+                <TopUpAmount />
               </LazyPage>
             </ProtectedRoute>
           }

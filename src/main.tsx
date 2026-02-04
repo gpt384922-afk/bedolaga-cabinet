@@ -14,7 +14,6 @@ import {
   mountClosingBehavior,
   disableClosingConfirmation,
   mountBackButton,
-  mountMainButton,
   bindThemeParamsCssVars,
   bindViewportCssVars,
   requestFullscreen,
@@ -66,12 +65,6 @@ if (!alreadyInitialized) {
     } catch {
       /* already mounted */
     }
-    try {
-      mountMainButton();
-    } catch {
-      /* already mounted */
-    }
-
     // Viewport — async, fullscreen зависит от смонтированного viewport
     mountViewport()
       .then(() => {

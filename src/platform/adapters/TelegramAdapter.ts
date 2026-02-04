@@ -5,9 +5,6 @@ import {
   onBackButtonClick,
   offBackButtonClick,
   isBackButtonVisible,
-  setMainButtonParams,
-  onMainButtonClick,
-  offMainButtonClick,
   hapticFeedbackImpactOccurred,
   hapticFeedbackNotificationOccurred,
   hapticFeedbackSelectionChanged,
@@ -30,12 +27,10 @@ import type {
   PlatformContext,
   PlatformCapabilities,
   BackButtonController,
-  MainButtonController,
   HapticController,
   DialogController,
   ThemeController,
   CloudStorageController,
-  MainButtonConfig,
   PopupOptions,
   InvoiceStatus,
   HapticImpactStyle,
@@ -47,7 +42,7 @@ function createCapabilities(): PlatformCapabilities {
 
   return {
     hasBackButton: inTelegram,
-    hasMainButton: inTelegram,
+
     hasHapticFeedback: inTelegram,
     hasNativeDialogs: inTelegram,
     hasThemeSync: inTelegram,
@@ -107,91 +102,6 @@ function createBackButtonController(): BackButtonController {
         hideBackButton();
       } catch {
         // Back button not mounted
-      }
-    },
-  };
-}
-
-function createMainButtonController(): MainButtonController {
-  const inTelegram = isInTelegramWebApp();
-  let currentCallback: (() => void) | null = null;
-
-  return {
-    get isVisible() {
-      return false; // SDK v3 doesn't expose this as a simple getter
-    },
-
-    show(config: MainButtonConfig) {
-      if (!inTelegram) return;
-
-      if (currentCallback) {
-        try {
-          offMainButtonClick(currentCallback);
-        } catch {
-          // ignore
-        }
-      }
-
-      currentCallback = config.onClick;
-
-      try {
-        setMainButtonParams({
-          text: config.text,
-          isVisible: true,
-          isEnabled: config.isActive !== false,
-          isLoaderVisible: config.isLoading ?? false,
-          backgroundColor: config.color as `#${string}` | undefined,
-          textColor: config.textColor as `#${string}` | undefined,
-        });
-        onMainButtonClick(config.onClick);
-      } catch {
-        // Main button not mounted
-      }
-    },
-
-    hide() {
-      if (!inTelegram) return;
-
-      if (currentCallback) {
-        try {
-          offMainButtonClick(currentCallback);
-        } catch {
-          // ignore
-        }
-        currentCallback = null;
-      }
-
-      try {
-        setMainButtonParams({ isVisible: false, isLoaderVisible: false });
-      } catch {
-        // Main button not mounted
-      }
-    },
-
-    showProgress(show: boolean) {
-      if (!inTelegram) return;
-      try {
-        setMainButtonParams({ isLoaderVisible: show });
-      } catch {
-        // Main button not mounted
-      }
-    },
-
-    setText(text: string) {
-      if (!inTelegram) return;
-      try {
-        setMainButtonParams({ text });
-      } catch {
-        // Main button not mounted
-      }
-    },
-
-    setActive(active: boolean) {
-      if (!inTelegram) return;
-      try {
-        setMainButtonParams({ isEnabled: active });
-      } catch {
-        // Main button not mounted
       }
     },
   };
@@ -382,7 +292,7 @@ export function createTelegramAdapter(): PlatformContext {
     platform: 'telegram',
     capabilities: createCapabilities(),
     backButton: createBackButtonController(),
-    mainButton: createMainButtonController(),
+
     haptic: createHapticController(),
     dialog: createDialogController(),
     theme: createThemeController(),

@@ -145,7 +145,10 @@ export function AppHeader({
     };
   }, [mobileMenuOpen]);
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
   const isAdminActive = () => location.pathname.startsWith('/admin');
 
   const navItems = [
