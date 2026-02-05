@@ -335,21 +335,27 @@ export default function Connection() {
       }
 
       const isMobilePlatform = detectedPlatform === 'ios' || detectedPlatform === 'android';
-      if (isMobilePlatform) {
-        window.location.href = resolved;
-        return;
+
+      // Desktop: deep links need redirect page (browser can't handle custom schemes directly)
+      // Mobile: system browser handles custom schemes natively
+      const finalUrl = isMobilePlatform
+        ? resolved
+        : `${window.location.origin}/miniapp/redirect.html?url=${encodeURIComponent(resolved)}&lang=${i18n.language || 'en'}`;
+
+      // In Telegram Mini App — sdkOpenLink opens URL in system browser,
+      // where custom URL schemes work (WebView itself can't handle them)
+      if (isTelegramWebApp) {
+        try {
+          sdkOpenLink(finalUrl, { tryInstantView: false });
+          return;
+        } catch {
+          // SDK not available, fallback
+        }
       }
 
-      const redirectUrl = `${window.location.origin}/miniapp/redirect.html?url=${encodeURIComponent(resolved)}&lang=${i18n.language || 'en'}`;
-      try {
-        sdkOpenLink(redirectUrl, { tryInstantView: false });
-        return;
-      } catch {
-        // SDK not available, fallback
-      }
-      window.location.href = redirectUrl;
+      window.location.href = finalUrl;
     },
-    [detectedPlatform, i18n.language, resolveUrl],
+    [detectedPlatform, isTelegramWebApp, i18n.language, resolveUrl],
   );
 
   const handleConnect = (app: AppInfo) => {
@@ -442,12 +448,12 @@ export default function Connection() {
     // Main RemnaWave view — inline app chips + blocks
     return (
       <div className="space-y-6">
-        {/* Header: title + platform dropdown */}
+        {/* Header */}
         <div className="flex items-center gap-3">
           {!isTelegramWebApp && (
             <button
               onClick={handleGoBack}
-              className="-ml-2 rounded-xl p-2 text-dark-300 hover:bg-dark-800"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
             >
               <BackIcon />
             </button>
@@ -455,30 +461,46 @@ export default function Connection() {
           <h2 className="flex-1 text-lg font-bold text-dark-100">
             {t('subscription.connection.title')}
           </h2>
-          {/* Platform dropdown */}
-          {availablePlatforms.length > 1 && (
-            <select
-              value={currentPlatformKey || ''}
-              onChange={(e) => {
-                const newPlatform = e.target.value;
-                setActivePlatformKey(newPlatform);
-                const platformData = appConfig.platforms[newPlatform];
-                if (platformData) {
-                  const apps = getRemnawaveApps(platformData);
-                  const app = apps.find((a) => a.featured) || apps[0];
-                  if (app) setSelectedRemnawaveApp(app);
-                }
-              }}
-              className="rounded-lg border border-dark-600 bg-dark-800 px-3 py-1.5 text-sm text-dark-200 outline-none"
-            >
-              {availablePlatforms.map((p) => (
-                <option key={p} value={p}>
-                  {getPlatformDisplayName(p)}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
+
+        {/* Platform tabs */}
+        {availablePlatforms.length > 1 && (
+          <div className="-mt-3 flex gap-2 overflow-x-auto pb-1">
+            {availablePlatforms.map((p) => {
+              const isActive = p === currentPlatformKey;
+              const pData = appConfig.platforms[p];
+              const svgIconKey = pData && isRemnawavePlatform(pData) ? pData.svgIconKey : undefined;
+              const platformSvg = getSvgHtml(svgIconKey);
+              return (
+                <button
+                  key={p}
+                  onClick={() => {
+                    setActivePlatformKey(p);
+                    const platformData = appConfig.platforms[p];
+                    if (platformData) {
+                      const apps = getRemnawaveApps(platformData);
+                      const app = apps.find((a) => a.featured) || apps[0];
+                      if (app) setSelectedRemnawaveApp(app);
+                    }
+                  }}
+                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/40'
+                      : 'border border-dark-700/50 bg-dark-800/80 text-dark-200 hover:border-dark-600/50 hover:bg-dark-700/80'
+                  }`}
+                >
+                  {platformSvg && (
+                    <div
+                      className="h-4 w-4 flex-shrink-0 [&>svg]:h-full [&>svg]:w-full"
+                      dangerouslySetInnerHTML={{ __html: platformSvg }}
+                    />
+                  )}
+                  {getPlatformDisplayName(p)}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* App cards row */}
         {currentPlatformApps.length > 0 && (
@@ -493,7 +515,7 @@ export default function Connection() {
                   className={`relative flex items-center gap-2 overflow-hidden rounded-xl px-3 py-2.5 text-sm font-medium transition-all active:scale-[0.97] ${
                     isSelected
                       ? 'bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/40'
-                      : 'bg-dark-800/60 text-dark-300 hover:bg-dark-800'
+                      : 'border border-dark-700/50 bg-dark-800/80 text-dark-200 hover:border-dark-600/50 hover:bg-dark-700/80'
                   }`}
                 >
                   {app.featured && <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />}
@@ -516,7 +538,7 @@ export default function Connection() {
             href={appConfig.baseSettings.tutorialUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 rounded-xl border border-dark-600 px-4 py-2.5 text-sm font-medium text-dark-200 transition-all hover:bg-dark-800"
+            className="btn-secondary w-full justify-center"
           >
             <svg
               className="h-5 w-5"
@@ -575,7 +597,8 @@ export default function Connection() {
               return (
                 <div
                   key={blockIdx}
-                  className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4"
+                  className="card border-l-2"
+                  style={{ borderLeftColor: iconColor }}
                 >
                   <div className="flex items-start gap-4">
                     {/* SVG icon */}
@@ -615,7 +638,7 @@ export default function Connection() {
                                 <button
                                   key={btnIdx}
                                   onClick={() => openDeepLink(deepLink)}
-                                  className="btn-primary flex items-center gap-2 px-4 py-2 text-sm font-semibold"
+                                  className="flex items-center gap-2 rounded-xl border border-accent-500/40 px-4 py-2 text-sm font-medium text-accent-400 transition-all hover:bg-accent-500/10"
                                 >
                                   {subBtnSvg ? (
                                     <div
@@ -639,7 +662,7 @@ export default function Connection() {
                                   className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
                                     copied
                                       ? 'border-success-500 bg-success-500/10 text-success-400'
-                                      : 'border-dark-600 text-dark-300 hover:bg-dark-800'
+                                      : 'border-accent-500/40 text-accent-400 hover:bg-accent-500/10'
                                   }`}
                                 >
                                   {copied ? <CheckIcon /> : <CopyIcon />}
@@ -666,7 +689,7 @@ export default function Connection() {
                                 href={href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-dark-800 px-3 py-1.5 text-sm text-dark-200 hover:bg-dark-700"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-accent-500/40 px-4 py-2 text-sm font-medium text-accent-400 transition-all hover:bg-accent-500/10"
                               >
                                 {btnSvgHtml ? (
                                   <div
@@ -753,7 +776,7 @@ export default function Connection() {
             {!isTelegramWebApp && (
               <button
                 onClick={handleBack}
-                className="-ml-2 rounded-xl p-2 text-dark-300 hover:bg-dark-800"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
               >
                 <BackIcon />
               </button>
@@ -830,7 +853,7 @@ export default function Connection() {
           {!isTelegramWebApp && (
             <button
               onClick={handleBack}
-              className="-ml-2 rounded-xl p-2 text-dark-300 hover:bg-dark-800"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
             >
               <BackIcon />
             </button>
@@ -916,7 +939,7 @@ export default function Connection() {
           {!isTelegramWebApp && (
             <button
               onClick={handleGoBack}
-              className="-mr-2 rounded-xl p-2 text-dark-400 hover:bg-dark-800"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
             >
               <BackIcon />
             </button>

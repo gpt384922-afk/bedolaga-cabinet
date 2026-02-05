@@ -440,19 +440,23 @@ export default function AdminApps() {
 
       {/* Platform Tabs */}
       <div className="flex flex-wrap gap-2">
-        {PLATFORMS.map((platform) => (
-          <button
-            key={platform}
-            onClick={() => setSelectedPlatform(platform)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              selectedPlatform === platform
-                ? 'bg-accent-500 text-white'
-                : 'bg-dark-800 text-dark-300 hover:bg-dark-700'
-            }`}
-          >
-            {PLATFORM_LABELS[platform]}
-          </button>
-        ))}
+        {PLATFORMS.map((platform) => {
+          const platformSvgKey = remnaWaveConfig?.platforms?.[platform]?.svgIconKey;
+          return (
+            <button
+              key={platform}
+              onClick={() => setSelectedPlatform(platform)}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                selectedPlatform === platform
+                  ? 'bg-accent-500 text-white'
+                  : 'bg-dark-800 text-dark-300 hover:bg-dark-700'
+              }`}
+            >
+              {renderSvgIcon(svgLibrary, platformSvgKey)}
+              {PLATFORM_LABELS[platform]}
+            </button>
+          );
+        })}
       </div>
 
       {/* Apps List */}

@@ -118,6 +118,7 @@ export interface RemnawaveApp {
 }
 
 export interface RemnawavePlatform {
+  svgIconKey?: string;
   apps: RemnawaveApp[];
 }
 
