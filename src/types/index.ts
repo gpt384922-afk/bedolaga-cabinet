@@ -122,6 +122,10 @@ export interface TariffSwitchPreview {
   missing_amount_kopeks: number;
   missing_amount_label: string;
   is_upgrade: boolean;
+  // Discount fields (from promo group)
+  base_upgrade_cost_kopeks?: number;
+  discount_percent?: number;
+  discount_kopeks?: number;
 }
 
 export interface RenewalOption {
@@ -137,6 +141,10 @@ export interface TrafficPackage {
   price_kopeks: number;
   price_rubles: number;
   is_unlimited: boolean;
+  // Discount fields (from promo group)
+  base_price_kopeks?: number;
+  discount_percent?: number;
+  discount_kopeks?: number;
 }
 
 export interface TrialInfo {

@@ -1215,13 +1215,47 @@ export default function Subscription() {
                   {devicePriceData?.available && devicePriceData.price_per_device_label && (
                     <div className="text-center">
                       <div className="mb-2 text-sm text-dark-400">
-                        {devicePriceData.price_per_device_label}/
-                        {t('subscription.perDevice').replace('/ ', '')} (
+                        {/* Show original price with strikethrough if discount */}
+                        {devicePriceData.discount_percent &&
+                        devicePriceData.discount_percent > 0 ? (
+                          <span>
+                            <span className="text-dark-500 line-through">
+                              {formatPrice(devicePriceData.original_price_per_device_kopeks || 0)}
+                            </span>
+                            <span className="mx-1">{devicePriceData.price_per_device_label}</span>
+                          </span>
+                        ) : (
+                          devicePriceData.price_per_device_label
+                        )}
+                        /{t('subscription.perDevice').replace('/ ', '')} (
                         {t('subscription.days', { count: devicePriceData.days_left })})
                       </div>
-                      <div className="text-2xl font-bold text-accent-400">
-                        {devicePriceData.total_price_label}
-                      </div>
+                      {/* Discount badge */}
+                      {devicePriceData.discount_percent && devicePriceData.discount_percent > 0 && (
+                        <div className="mb-2">
+                          <span className="inline-block rounded-full bg-green-500/20 px-2.5 py-0.5 text-sm font-medium text-green-400">
+                            -{devicePriceData.discount_percent}%
+                          </span>
+                        </div>
+                      )}
+                      {/* Total price - show as free if 100% discount or 0 */}
+                      {devicePriceData.total_price_kopeks === 0 ? (
+                        <div className="text-2xl font-bold text-green-400">
+                          {t('subscription.switchTariff.free')}
+                        </div>
+                      ) : (
+                        <div className="text-2xl font-bold text-accent-400">
+                          {/* Show original total with strikethrough if discount */}
+                          {devicePriceData.discount_percent &&
+                            devicePriceData.discount_percent > 0 &&
+                            devicePriceData.base_total_price_kopeks && (
+                              <span className="mr-2 text-lg text-dark-500 line-through">
+                                {formatPrice(devicePriceData.base_total_price_kopeks)}
+                              </span>
+                            )}
+                          {devicePriceData.total_price_label}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1514,8 +1548,28 @@ export default function Subscription() {
                                 ? '♾️ ' + t('subscription.additionalOptions.unlimited')
                                 : `${pkg.gb} ${t('common.units.gb')}`}
                             </div>
+                            {/* Discount badge */}
+                            {pkg.discount_percent && pkg.discount_percent > 0 && (
+                              <div className="mb-1">
+                                <span className="inline-block rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400">
+                                  -{pkg.discount_percent}%
+                                </span>
+                              </div>
+                            )}
+                            {/* Price with original strikethrough if discount */}
                             <div className="font-medium text-accent-400">
-                              {formatPrice(pkg.price_kopeks)}
+                              {pkg.discount_percent &&
+                              pkg.discount_percent > 0 &&
+                              pkg.base_price_kopeks ? (
+                                <>
+                                  <span className="mr-1 text-sm text-dark-500 line-through">
+                                    {formatPrice(pkg.base_price_kopeks)}
+                                  </span>
+                                  {formatPrice(pkg.price_kopeks)}
+                                </>
+                              ) : (
+                                formatPrice(pkg.price_kopeks)
+                              )}
                             </div>
                           </button>
                         ))}
@@ -2102,14 +2156,35 @@ export default function Subscription() {
                       )}
 
                       <div className="flex items-center justify-between border-t border-dark-700/50 pt-3">
-                        <span className="font-medium text-dark-100">
-                          {t('subscription.switchTariff.upgradeCost')}
-                        </span>
-                        <span className="text-lg font-bold text-accent-400">
-                          {switchPreview.upgrade_cost_kopeks > 0
-                            ? switchPreview.upgrade_cost_label
-                            : t('subscription.switchTariff.free')}
-                        </span>
+                        <div>
+                          <span className="font-medium text-dark-100">
+                            {t('subscription.switchTariff.upgradeCost')}
+                          </span>
+                          {/* Discount badge */}
+                          {switchPreview.discount_percent && switchPreview.discount_percent > 0 && (
+                            <span className="ml-2 inline-block rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400">
+                              -{switchPreview.discount_percent}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {/* Show original price with strikethrough if discount */}
+                          {switchPreview.discount_percent &&
+                            switchPreview.discount_percent > 0 &&
+                            switchPreview.base_upgrade_cost_kopeks &&
+                            switchPreview.base_upgrade_cost_kopeks > 0 && (
+                              <span className="mr-2 text-sm text-dark-500 line-through">
+                                {formatPrice(switchPreview.base_upgrade_cost_kopeks)}
+                              </span>
+                            )}
+                          <span
+                            className={`text-lg font-bold ${switchPreview.upgrade_cost_kopeks === 0 ? 'text-green-400' : 'text-accent-400'}`}
+                          >
+                            {switchPreview.upgrade_cost_kopeks > 0
+                              ? switchPreview.upgrade_cost_label
+                              : t('subscription.switchTariff.free')}
+                          </span>
+                        </div>
                       </div>
 
                       {!switchPreview.has_enough_balance &&
