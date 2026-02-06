@@ -231,6 +231,11 @@ export const tariffsApi = {
     return response.data;
   },
 
+  // Update tariff display order
+  updateOrder: async (tariffIds: number[]): Promise<void> => {
+    await apiClient.put('/cabinet/admin/tariffs/order', { tariff_ids: tariffIds });
+  },
+
   // Get available servers for selection
   getAvailableServers: async (): Promise<ServerInfo[]> => {
     const response = await apiClient.get('/cabinet/admin/tariffs/available-servers');
