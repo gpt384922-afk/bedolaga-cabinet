@@ -152,6 +152,25 @@ export const tokenStorage = {
   },
 };
 
+export function clearStaleSessionIfNeeded(freshInitData: string | null): void {
+  if (!freshInitData) return;
+
+  try {
+    const stored = sessionStorage.getItem(TOKEN_KEYS.TELEGRAM_INIT);
+
+    if (stored && stored !== freshInitData) {
+      sessionStorage.removeItem(TOKEN_KEYS.ACCESS);
+      sessionStorage.removeItem(TOKEN_KEYS.REFRESH);
+      sessionStorage.removeItem(TOKEN_KEYS.USER);
+    }
+
+    sessionStorage.setItem(TOKEN_KEYS.TELEGRAM_INIT, freshInitData);
+    localStorage.removeItem(TOKEN_KEYS.TELEGRAM_INIT);
+  } catch {
+    // Storage недоступен
+  }
+}
+
 /**
  * Централизованный менеджер обновления токенов
  * Предотвращает множественные параллельные refresh запросы

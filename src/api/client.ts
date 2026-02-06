@@ -64,26 +64,47 @@ export const apiClient = axios.create({
   },
 });
 
+// Auth endpoints that don't need Bearer token or token refresh
+const AUTH_ENDPOINTS = [
+  '/cabinet/auth/telegram',
+  '/cabinet/auth/telegram/widget',
+  '/cabinet/auth/email/login',
+  '/cabinet/auth/email/register',
+  '/cabinet/auth/email/verify',
+  '/cabinet/auth/refresh',
+  '/cabinet/auth/password/forgot',
+  '/cabinet/auth/password/reset',
+];
+
+function isAuthEndpoint(url: string | undefined): boolean {
+  if (!url) return false;
+  return AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
 // Request interceptor - add auth token with expiration check
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  let token = tokenStorage.getAccessToken();
+  // Skip token refresh and Bearer header for auth endpoints
+  // These endpoints authenticate via init_data/credentials, not Bearer tokens
+  if (!isAuthEndpoint(config.url)) {
+    let token = tokenStorage.getAccessToken();
 
-  // Проверяем срок действия токена перед запросом
-  if (token && isTokenExpired(token)) {
-    // Используем централизованный менеджер для refresh
-    const newToken = await tokenRefreshManager.refreshAccessToken();
-    if (newToken) {
-      token = newToken;
-    } else {
-      // Refresh не удался - редирект на логин
-      tokenStorage.clearTokens();
-      safeRedirectToLogin();
-      return config;
+    // Проверяем срок действия токена перед запросом
+    if (token && isTokenExpired(token)) {
+      // Используем централизованный менеджер для refresh
+      const newToken = await tokenRefreshManager.refreshAccessToken();
+      if (newToken) {
+        token = newToken;
+      } else {
+        // Refresh не удался - редирект на логин
+        tokenStorage.clearTokens();
+        safeRedirectToLogin();
+        return config;
+      }
     }
-  }
 
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   const telegramInitData = getTelegramInitData();

@@ -24,7 +24,13 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, loginWithTelegram, loginWithEmail, registerWithEmail } = useAuthStore();
+  const {
+    isAuthenticated,
+    isLoading: isAuthInitializing,
+    loginWithTelegram,
+    loginWithEmail,
+    registerWithEmail,
+  } = useAuthStore();
 
   // Extract referral code from URL
   const referralCode = searchParams.get('ref') || '';
@@ -111,7 +117,12 @@ export default function Login() {
   }, [isAuthenticated, navigate, getReturnUrl]);
 
   // Try Telegram WebApp authentication on mount (with auto-retry on 401)
+  // Wait for auth store initialization to complete to avoid race conditions
+  // with stale tokens triggering interceptor refresh/redirect loops
   useEffect(() => {
+    // Don't attempt Telegram auth until store initialization is done
+    if (isAuthInitializing) return;
+
     const tryTelegramAuth = async () => {
       const initData = getTelegramInitData();
       if (!isInTelegramWebApp() || !initData) return;
@@ -126,15 +137,18 @@ export default function Login() {
           navigate(getReturnUrl(), { replace: true });
           return;
         } catch (err) {
-          const status = (err as { response?: { status?: number } })?.response?.status;
-          console.warn(`Telegram auth attempt ${attempt + 1} failed with status:`, status);
+          const error = err as { response?: { status?: number; data?: { detail?: string } } };
+          const status = error.response?.status;
+          const detail = error.response?.data?.detail;
+          console.warn(`Telegram auth attempt ${attempt + 1} failed:`, status, detail);
 
           if (status === 401 && attempt < MAX_RETRIES) {
             await new Promise((r) => setTimeout(r, 1500));
             continue;
           }
 
-          setError(t('auth.telegramRequired'));
+          // Show backend error detail if available, otherwise generic message
+          setError(detail || t('auth.telegramRequired'));
         }
       }
 
@@ -142,7 +156,7 @@ export default function Login() {
     };
 
     tryTelegramAuth();
-  }, [loginWithTelegram, navigate, t, getReturnUrl]);
+  }, [isAuthInitializing, loginWithTelegram, navigate, t, getReturnUrl]);
 
   // Manual retry for Telegram Mini App auth
   const handleRetryTelegramAuth = async () => {
@@ -158,9 +172,14 @@ export default function Login() {
       await loginWithTelegram(initData);
       navigate(getReturnUrl(), { replace: true });
     } catch (err) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
-      console.warn('Telegram auth retry failed with status:', status);
-      setError(t('auth.telegramRetryFailed', 'Authorization failed. Close the app and try again.'));
+      const error = err as { response?: { status?: number; data?: { detail?: string } } };
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+      console.warn('Telegram auth retry failed:', status, detail);
+      setError(
+        detail ||
+          t('auth.telegramRetryFailed', 'Authorization failed. Close the app and try again.'),
+      );
     } finally {
       setIsLoading(false);
     }

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   init,
   restoreInitData,
+  retrieveRawInitData,
   mountMiniApp,
   miniAppReady,
   mountThemeParams,
@@ -19,6 +20,7 @@ import {
   requestFullscreen,
   isFullscreen,
 } from '@telegram-apps/sdk-react';
+import { clearStaleSessionIfNeeded } from './utils/token';
 import { AppWithNavigator } from './AppWithNavigator';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { initLogoPreload } from './api/branding';
@@ -36,6 +38,9 @@ if (!alreadyInitialized) {
   try {
     init();
     restoreInitData();
+
+    // Сбрасываем старые токены если init data изменился (новая сессия Telegram)
+    clearStaleSessionIfNeeded(retrieveRawInitData() || null);
 
     // Mount components — each in its own try/catch so one failure doesn't block others
     try {
