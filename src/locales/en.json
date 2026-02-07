@@ -804,18 +804,7 @@
       "loading": "Loading traffic data...",
       "noTariff": "\u2014",
       "search": "Search by name or username",
-      "allTariffs": "All tariffs",
-      "nodes": "Nodes",
-      "allNodes": "All nodes",
-      "status": "Status",
-      "allStatuses": "All",
-      "statusActive": "Active",
-      "statusTrial": "Trial",
-      "statusExpired": "Expired",
-      "statusDisabled": "Disabled",
-      "customDates": "Dates",
-      "dateFrom": "From",
-      "dateTo": "To"
+      "allTariffs": "All tariffs"
     },
     "emailTemplates": {
       "title": "Email Templates",

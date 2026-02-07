@@ -15,7 +15,6 @@ export interface UserTrafficItem {
   subscription_status: string | null;
   traffic_limit_gb: number;
   device_limit: number;
-  connected_devices: number;
   node_traffic: Record<string, number>;
   total_bytes: number;
 }
@@ -28,7 +27,6 @@ export interface TrafficUsageResponse {
   limit: number;
   period_days: number;
   available_tariffs: string[];
-  available_statuses: string[];
 }
 
 export interface ExportCsvResponse {
@@ -44,10 +42,6 @@ export type TrafficParams = {
   sort_by?: string;
   sort_desc?: boolean;
   tariffs?: string;
-  nodes?: string;
-  statuses?: string;
-  start_date?: string;
-  end_date?: string;
 };
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -63,10 +57,6 @@ function buildCacheKey(params: TrafficParams): string {
     sb: params.sort_by ?? 'total_bytes',
     sd: params.sort_desc ?? true,
     t: params.tariffs ?? '',
-    n: params.nodes ?? '',
-    st: params.statuses ?? '',
-    sd2: params.start_date ?? '',
-    ed: params.end_date ?? '',
   });
 }
 
@@ -105,15 +95,7 @@ export const adminTrafficApi = {
     trafficCache.clear();
   },
 
-  exportCsv: async (data: {
-    period: number;
-    start_date?: string;
-    end_date?: string;
-    tariffs?: string;
-    nodes?: string;
-    statuses?: string;
-    search?: string;
-  }): Promise<ExportCsvResponse> => {
+  exportCsv: async (data: { period: number }): Promise<ExportCsvResponse> => {
     const response = await apiClient.post('/cabinet/admin/traffic/export-csv', data);
     return response.data;
   },
