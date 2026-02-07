@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.10.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.9.0...v1.10.0) (2026-02-07)
+
+
+### Features
+
+* add admin traffic usage page ([8c8fa40](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8c8fa407f5dde627159a8c368c9ea75eb74ac774))
+* add admin traffic usage page with TanStack Table ([a034a60](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a034a6068ccea07c6581427d3e80af754b175820))
+* add country filter and risk columns to traffic CSV export ([471e2c8](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/471e2c8c43212c03b72d8f270182b731738836bd))
+* add node/status filters and custom date range to traffic page ([90b38e3](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/90b38e3ef2815300ee4b50a4d3da0b1422d21092))
+* add node/status filters, custom date range, connected devices to traffic page ([0301fd8](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/0301fd856639a0d70cb2a7201cfe80b3936dbc8d))
+* add node/status filters, date range, devices to traffic page ([e824945](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/e824945b733e3321bb2a785da52580508f00b64e))
+* add promo group and promo offer management to AdminUserDetail ([8bd3c00](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8bd3c007bcceae947fc6f269694dc70a93c69db9))
+* add tariff checkbox filter, column resizing to traffic page ([cfb7ce7](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/cfb7ce72f2fde01dc548b9c4b263f8b3b0a37074))
+* add traffic abuse risk assessment with color gradation ([a6507b2](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a6507b2cfe73d3f9dafec9e87fd17e287c91067d))
+* node/status filters + custom date range for traffic page ([8b113a5](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8b113a54e39e9dc43d230fa970adccedd4f98a8c))
+* promo group & offer management in AdminUserDetail ([280f4ae](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/280f4aef0d23c74f0afc038bd4d7af33f55e4aff))
+* tariff checkbox filter + column resizing for traffic ([c383c78](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/c383c782133a2ba4226e928723102dfddf7b7cd4))
+* traffic abuse risk assessment with color gradation ([88f8e8b](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/88f8e8be7d41759af3376f0b8a6df512b3b0fce3))
+* traffic page filters, risk assessment, country filter & CSV export ([84cce93](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/84cce93aec928680e3c8380bf99739d4b2e81e47))
+
+
+### Bug Fixes
+
+* add client-side caching and smooth loading for traffic page ([471c37b](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/471c37b7b3f64c08f2d749f4089009eb53ae7cac))
+* allow user column to shrink smaller on mobile ([6aa8951](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/6aa8951ce251eacddb897f8d8abf566b22a8e9c3))
+* allow user column to shrink smaller on mobile ([12663a5](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/12663a59a7aaec87933e9437d329d452f09ee2fe))
+* client-side caching and smooth loading for traffic page ([81fcf54](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/81fcf54b1571970bf14175773bcdeb3aa706acfd))
+* column shrinking on mobile + country dropdown overflow ([1aa0e7f](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/1aa0e7f943ef392a06778914edbb78c8bbbab8ce))
+* enforce column maxWidth for proper shrinking on mobile + country dropdown positioning ([060c9be](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/060c9bef54c031503b72a819852f58f855591e33))
+* improve risk assessment display with GB/d values ([4fe96bc](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/4fe96bc00c8a8f4fcad088bac6ee9516445f9a89))
+* improve risk calculation display with actual GB/d values ([e60b846](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/e60b846eca6dfb0d31a191c990ddccb5c8089d07))
+* widen column resize touch target for mobile ([c54cc9e](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/c54cc9e57733ab2a0e4476ced2967d2a7feeadcd))
+* widen column resize touch target for mobile devices ([da273d6](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/da273d6776adc7212057f5857884d58144b89134))
+
 ## [1.9.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.8.0...v1.9.0) (2026-02-07)
 
 
