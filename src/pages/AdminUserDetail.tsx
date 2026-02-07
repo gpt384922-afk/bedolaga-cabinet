@@ -8,6 +8,9 @@ import {
   adminUsersApi,
   type UserDetailResponse,
   type UserAvailableTariff,
+  type UserListItem,
+  type UserPanelInfo,
+  type UserNodeUsageResponse,
   type PanelSyncStatusResponse,
   type UpdateSubscriptionRequest,
 } from '../api/adminUsers';
@@ -98,6 +101,16 @@ export default function AdminUserDetail() {
   const [tariffs, setTariffs] = useState<UserAvailableTariff[]>([]);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Referrals
+  const [referrals, setReferrals] = useState<UserListItem[]>([]);
+  const [referralsLoading, setReferralsLoading] = useState(false);
+
+  // Panel info & node usage
+  const [panelInfo, setPanelInfo] = useState<UserPanelInfo | null>(null);
+  const [panelInfoLoading, setPanelInfoLoading] = useState(false);
+  const [nodeUsage, setNodeUsage] = useState<UserNodeUsageResponse | null>(null);
+  const [nodeUsageDays, setNodeUsageDays] = useState(7);
+
   // Inline confirm state
   const [confirmingAction, setConfirmingAction] = useState<string | null>(null);
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -184,6 +197,45 @@ export default function AdminUserDetail() {
     }
   }, []);
 
+  const loadReferrals = useCallback(async () => {
+    if (!userId) return;
+    try {
+      setReferralsLoading(true);
+      const data = await adminUsersApi.getReferrals(userId, 0, 50);
+      setReferrals(data.users);
+    } catch {
+      // ignore
+    } finally {
+      setReferralsLoading(false);
+    }
+  }, [userId]);
+
+  const loadPanelInfo = useCallback(async () => {
+    if (!userId) return;
+    try {
+      setPanelInfoLoading(true);
+      const data = await adminUsersApi.getPanelInfo(userId);
+      setPanelInfo(data);
+    } catch {
+      // ignore
+    } finally {
+      setPanelInfoLoading(false);
+    }
+  }, [userId]);
+
+  const loadNodeUsage = useCallback(
+    async (days = 7) => {
+      if (!userId) return;
+      try {
+        const data = await adminUsersApi.getNodeUsage(userId, days);
+        setNodeUsage(data);
+      } catch {
+        // ignore
+      }
+    },
+    [userId],
+  );
+
   const handleTicketReply = async () => {
     if (!selectedTicketId || !replyText.trim()) return;
     setReplySending(true);
@@ -234,10 +286,20 @@ export default function AdminUserDetail() {
   }, [userId, loadUser, navigate]);
 
   useEffect(() => {
+    if (activeTab === 'info') loadReferrals();
     if (activeTab === 'sync') loadSyncStatus();
-    if (activeTab === 'subscription') loadTariffs();
+    if (activeTab === 'subscription') {
+      loadTariffs();
+      loadPanelInfo();
+    }
     if (activeTab === 'tickets') loadTickets();
-  }, [activeTab, loadSyncStatus, loadTariffs, loadTickets]);
+  }, [activeTab, loadSyncStatus, loadTariffs, loadTickets, loadReferrals, loadPanelInfo]);
+
+  useEffect(() => {
+    if (activeTab === 'subscription') {
+      loadNodeUsage(nodeUsageDays);
+    }
+  }, [activeTab, loadNodeUsage, nodeUsageDays]);
 
   const handleUpdateBalance = async (isAdd: boolean) => {
     if (balanceAmount === '' || !userId) return;
@@ -440,6 +502,23 @@ export default function AdminUserDetail() {
     });
   };
 
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      notify.success(t('admin.users.detail.copied'));
+    } catch {
+      // ignore
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -577,6 +656,14 @@ export default function AdminUserDetail() {
               </div>
             </div>
 
+            {/* Campaign */}
+            {user.campaign_name && (
+              <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-3">
+                <div className="mb-1 text-xs text-dark-500">{t('admin.users.detail.campaign')}</div>
+                <div className="text-sm font-medium text-accent-400">{user.campaign_name}</div>
+              </div>
+            )}
+
             {/* Referral */}
             <div className="rounded-xl bg-dark-800/50 p-3">
               <div className="mb-2 text-sm font-medium text-dark-200">
@@ -609,6 +696,49 @@ export default function AdminUserDetail() {
                 </div>
               </div>
             </div>
+
+            {/* Referrals list */}
+            {user.referral.referrals_count > 0 && (
+              <div className="rounded-xl bg-dark-800/50 p-3">
+                <div className="mb-2 text-sm font-medium text-dark-200">
+                  {t('admin.users.detail.referralsList')}
+                </div>
+                {referralsLoading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  </div>
+                ) : referrals.length === 0 ? (
+                  <div className="py-2 text-center text-xs text-dark-500">
+                    {t('admin.users.detail.noReferrals')}
+                  </div>
+                ) : (
+                  <div className="max-h-48 space-y-2 overflow-y-auto">
+                    {referrals.map((ref) => (
+                      <button
+                        key={ref.id}
+                        onClick={() => navigate(`/admin/users/${ref.id}`)}
+                        className="flex w-full items-center justify-between rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-dark-600 text-xs font-bold text-dark-300">
+                            {ref.first_name?.[0] || ref.username?.[0] || '?'}
+                          </div>
+                          <div>
+                            <div className="text-sm text-dark-100">{ref.full_name}</div>
+                            <div className="text-xs text-dark-500">
+                              {formatDate(ref.created_at)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-dark-400">
+                          {formatWithCurrency(ref.total_spent_kopeks / 100)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Restrictions */}
             {(user.restriction_topup || user.restriction_subscription) && (
@@ -854,6 +984,218 @@ export default function AdminUserDetail() {
                 </div>
               </div>
             )}
+
+            {/* Panel Info */}
+            {panelInfoLoading ? (
+              <div className="flex justify-center rounded-xl bg-dark-800/50 py-8">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              </div>
+            ) : panelInfo && !panelInfo.found ? (
+              <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4 text-center text-sm text-dark-400">
+                {t('admin.users.detail.panelNotFound')}
+              </div>
+            ) : panelInfo && panelInfo.found ? (
+              <>
+                {/* Links */}
+                {(panelInfo.subscription_url || panelInfo.happ_link) && (
+                  <div className="rounded-xl bg-dark-800/50 p-4">
+                    <div className="mb-3 text-sm font-medium text-dark-200">
+                      {t('admin.users.detail.subscriptionUrl')} / {t('admin.users.detail.happLink')}
+                    </div>
+                    <div className="space-y-2">
+                      {panelInfo.subscription_url && (
+                        <button
+                          onClick={() => copyToClipboard(panelInfo.subscription_url!)}
+                          className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="mb-0.5 text-xs text-dark-500">
+                            {t('admin.users.detail.subscriptionUrl')}
+                          </div>
+                          <div className="truncate font-mono text-xs text-dark-200">
+                            {panelInfo.subscription_url}
+                          </div>
+                        </button>
+                      )}
+                      {panelInfo.happ_link && (
+                        <button
+                          onClick={() => copyToClipboard(panelInfo.happ_link!)}
+                          className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="mb-0.5 text-xs text-dark-500">
+                            {t('admin.users.detail.happLink')}
+                          </div>
+                          <div className="truncate font-mono text-xs text-dark-200">
+                            {panelInfo.happ_link}
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Config */}
+                {(panelInfo.trojan_password || panelInfo.vless_uuid || panelInfo.ss_password) && (
+                  <div className="rounded-xl bg-dark-800/50 p-4">
+                    <div className="mb-3 text-sm font-medium text-dark-200">
+                      {t('admin.users.detail.panelConfig')}
+                    </div>
+                    <div className="space-y-2">
+                      {panelInfo.trojan_password && (
+                        <button
+                          onClick={() => copyToClipboard(panelInfo.trojan_password!)}
+                          className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="mb-0.5 text-xs text-dark-500">
+                            {t('admin.users.detail.trojanPassword')}
+                          </div>
+                          <div className="truncate font-mono text-xs text-dark-200">
+                            {panelInfo.trojan_password}
+                          </div>
+                        </button>
+                      )}
+                      {panelInfo.vless_uuid && (
+                        <button
+                          onClick={() => copyToClipboard(panelInfo.vless_uuid!)}
+                          className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="mb-0.5 text-xs text-dark-500">
+                            {t('admin.users.detail.vlessUuid')}
+                          </div>
+                          <div className="truncate font-mono text-xs text-dark-200">
+                            {panelInfo.vless_uuid}
+                          </div>
+                        </button>
+                      )}
+                      {panelInfo.ss_password && (
+                        <button
+                          onClick={() => copyToClipboard(panelInfo.ss_password!)}
+                          className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="mb-0.5 text-xs text-dark-500">
+                            {t('admin.users.detail.ssPassword')}
+                          </div>
+                          <div className="truncate font-mono text-xs text-dark-200">
+                            {panelInfo.ss_password}
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Connection info */}
+                <div className="rounded-xl bg-dark-800/50 p-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-xs text-dark-500">
+                        {t('admin.users.detail.firstConnected')}
+                      </div>
+                      <div className="text-sm text-dark-100">
+                        {formatDate(panelInfo.first_connected_at)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-dark-500">
+                        {t('admin.users.detail.lastOnline')}
+                      </div>
+                      <div className="text-sm text-dark-100">{formatDate(panelInfo.online_at)}</div>
+                    </div>
+                    {panelInfo.last_connected_node_name && (
+                      <div className="col-span-2">
+                        <div className="text-xs text-dark-500">
+                          {t('admin.users.detail.lastNode')}
+                        </div>
+                        <div className="text-sm text-dark-100">
+                          {panelInfo.last_connected_node_name}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Live traffic */}
+                <div className="rounded-xl bg-dark-800/50 p-4">
+                  <div className="mb-3 text-sm font-medium text-dark-200">
+                    {t('admin.users.detail.liveTraffic')}
+                  </div>
+                  <div className="mb-2">
+                    <div className="mb-1 flex justify-between text-xs">
+                      <span className="text-dark-400">
+                        {formatBytes(panelInfo.used_traffic_bytes)}
+                      </span>
+                      <span className="text-dark-500">
+                        {panelInfo.traffic_limit_bytes > 0
+                          ? formatBytes(panelInfo.traffic_limit_bytes)
+                          : '∞'}
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+                      <div
+                        className="h-full rounded-full bg-accent-500 transition-all"
+                        style={{
+                          width:
+                            panelInfo.traffic_limit_bytes > 0
+                              ? `${Math.min(100, (panelInfo.used_traffic_bytes / panelInfo.traffic_limit_bytes) * 100)}%`
+                              : '0%',
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-xs text-dark-500">
+                    {t('admin.users.detail.lifetime')}:{' '}
+                    {formatBytes(panelInfo.lifetime_used_traffic_bytes)}
+                  </div>
+                </div>
+
+                {/* Node usage */}
+                <div className="rounded-xl bg-dark-800/50 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-sm font-medium text-dark-200">
+                      {t('admin.users.detail.nodeUsage')}
+                    </span>
+                    <div className="flex gap-1">
+                      {[7, 14, 30].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => setNodeUsageDays(d)}
+                          className={`rounded-lg px-2 py-1 text-xs transition-colors ${
+                            nodeUsageDays === d
+                              ? 'bg-accent-500/20 text-accent-400'
+                              : 'text-dark-500 hover:text-dark-300'
+                          }`}
+                        >
+                          {d}d
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {nodeUsage && nodeUsage.items.length > 0 ? (
+                    <div className="space-y-2">
+                      {nodeUsage.items.map((item) => {
+                        const maxBytes = nodeUsage.items[0].total_bytes;
+                        const pct = maxBytes > 0 ? (item.total_bytes / maxBytes) * 100 : 0;
+                        return (
+                          <div key={item.node_uuid}>
+                            <div className="mb-1 flex justify-between text-xs">
+                              <span className="text-dark-300">{item.node_name}</span>
+                              <span className="text-dark-400">{formatBytes(item.total_bytes)}</span>
+                            </div>
+                            <div className="h-1.5 overflow-hidden rounded-full bg-dark-700">
+                              <div
+                                className="h-full rounded-full bg-accent-500/60"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="py-2 text-center text-xs text-dark-500">-</div>
+                  )}
+                </div>
+              </>
+            ) : null}
           </div>
         )}
 

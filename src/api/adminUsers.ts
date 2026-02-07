@@ -101,6 +101,8 @@ export interface UserDetailResponse {
   used_promocodes: number;
   has_had_paid_subscription: boolean;
   lifetime_used_traffic_bytes: number;
+  campaign_name: string | null;
+  campaign_id: number | null;
   restriction_topup: boolean;
   restriction_subscription: boolean;
   restriction_reason: string | null;
@@ -109,6 +111,33 @@ export interface UserDetailResponse {
   promo_offer_discount_expires_at: string | null;
   recent_transactions: UserTransactionItem[];
   remnawave_uuid: string | null;
+}
+
+export interface UserPanelInfo {
+  found: boolean;
+  trojan_password: string | null;
+  vless_uuid: string | null;
+  ss_password: string | null;
+  subscription_url: string | null;
+  happ_link: string | null;
+  used_traffic_bytes: number;
+  lifetime_used_traffic_bytes: number;
+  traffic_limit_bytes: number;
+  first_connected_at: string | null;
+  online_at: string | null;
+  last_connected_node_uuid: string | null;
+  last_connected_node_name: string | null;
+}
+
+export interface UserNodeUsageItem {
+  node_uuid: string;
+  node_name: string;
+  total_bytes: number;
+}
+
+export interface UserNodeUsageResponse {
+  items: UserNodeUsageItem[];
+  period_days: number;
 }
 
 export interface UsersStatsResponse {
@@ -506,6 +535,20 @@ export const adminUsersApi = {
   // Disable user
   disableUser: async (userId: number): Promise<{ success: boolean; message: string }> => {
     const response = await apiClient.post(`/cabinet/admin/users/${userId}/disable`);
+    return response.data;
+  },
+
+  // Get panel info
+  getPanelInfo: async (userId: number): Promise<UserPanelInfo> => {
+    const response = await apiClient.get(`/cabinet/admin/users/${userId}/panel-info`);
+    return response.data;
+  },
+
+  // Get node usage
+  getNodeUsage: async (userId: number, days = 7): Promise<UserNodeUsageResponse> => {
+    const response = await apiClient.get(`/cabinet/admin/users/${userId}/node-usage`, {
+      params: { days },
+    });
     return response.data;
   },
 };
