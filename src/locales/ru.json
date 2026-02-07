@@ -1124,7 +1124,12 @@
       "emailContent": "Содержимое письма",
       "emailContentHint": "Поддерживается HTML",
       "emailContentPlaceholder": "<p>Здравствуйте, {{user_name}}!</p>\n<p>Текст вашего письма...</p>",
-      "emailVariables": "Доступные переменные"
+      "emailVariables": "Доступные переменные",
+      "enableTelegram": "Telegram",
+      "enableEmail": "Email",
+      "sendingBoth": "Будет создано 2 рассылки",
+      "bothCreated": "Рассылки созданы",
+      "atLeastOneChannel": "Выберите хотя бы один канал"
     },
     "settings": {
       "title": "Настройки системы",

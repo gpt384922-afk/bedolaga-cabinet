@@ -855,7 +855,12 @@
         "activity": "按活动",
         "source": "按来源",
         "tariff": "按套餐"
-      }
+      },
+      "enableTelegram": "Telegram",
+      "enableEmail": "Email",
+      "sendingBoth": "将创建2个群发",
+      "bothCreated": "群发已创建",
+      "atLeastOneChannel": "请至少选择一个渠道"
     },
     "settings": {
       "title": "系统设置",

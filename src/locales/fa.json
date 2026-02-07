@@ -803,7 +803,12 @@
         "activity": "بر اساس فعالیت",
         "source": "بر اساس منبع",
         "tariff": "بر اساس تعرفه"
-      }
+      },
+      "enableTelegram": "Telegram",
+      "enableEmail": "Email",
+      "sendingBoth": "۲ پیام‌رسانی ایجاد خواهد شد",
+      "bothCreated": "پیام‌رسانی‌ها ایجاد شدند",
+      "atLeastOneChannel": "حداقل یک کانال را انتخاب کنید"
     },
     "payments": {
       "title": "تأیید پرداخت",

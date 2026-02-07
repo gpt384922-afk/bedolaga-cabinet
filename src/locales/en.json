@@ -1099,7 +1099,12 @@
       "emailContent": "Email content",
       "emailContentHint": "HTML supported",
       "emailContentPlaceholder": "<p>Hello, {{user_name}}!</p>\n<p>Your message here...</p>",
-      "emailVariables": "Available variables"
+      "emailVariables": "Available variables",
+      "enableTelegram": "Telegram",
+      "enableEmail": "Email",
+      "sendingBoth": "2 broadcasts will be created",
+      "bothCreated": "Broadcasts created",
+      "atLeastOneChannel": "Select at least one channel"
     },
     "settings": {
       "title": "System Settings",
