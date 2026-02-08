@@ -643,7 +643,8 @@
       "promoGroups": "折扣组",
       "remnawave": "RemnaWave",
       "users": "用户",
-      "trafficUsage": "流量使用"
+      "trafficUsage": "流量使用",
+      "updates": "更新"
     },
     "panel": {
       "title": "管理面板",
@@ -666,7 +667,8 @@
       "promoGroupsDesc": "用户折扣组",
       "remnawaveDesc": "面板管理和统计",
       "usersDesc": "管理机器人用户",
-      "trafficUsageDesc": "按节点统计用户流量"
+      "trafficUsageDesc": "按节点统计用户流量",
+      "updatesDesc": "机器人和面板版本"
     },
     "trafficUsage": {
       "title": "流量使用",
@@ -1926,6 +1928,19 @@
         "toPanelDesc": "从机器人导出用户到RemnaWave"
       }
     }
+  },
+  "adminUpdates": {
+    "title": "更新",
+    "subtitle": "机器人和面板发布历史",
+    "bot": "机器人",
+    "cabinet": "面板",
+    "currentVersion": "当前版本",
+    "upToDate": "已是最新",
+    "updateAvailable": "有可用更新",
+    "published": "发布于",
+    "prerelease": "预发布",
+    "refresh": "检查更新",
+    "noReleases": "没有发布数据"
   },
   "adminDashboard": {
     "title": "统计面板",

@@ -643,7 +643,8 @@
       "promoGroups": "گروه‌های تخفیف",
       "remnawave": "RemnaWave",
       "users": "کاربران",
-      "trafficUsage": "مصرف ترافیک"
+      "trafficUsage": "مصرف ترافیک",
+      "updates": "به‌روزرسانی‌ها"
     },
     "panel": {
       "title": "پنل مدیریت",
@@ -666,7 +667,8 @@
       "promoGroupsDesc": "گروه‌های تخفیف برای کاربران",
       "remnawaveDesc": "مدیریت پنل و آمار",
       "usersDesc": "مدیریت کاربران ربات",
-      "trafficUsageDesc": "ترافیک هر کاربر بر اساس نود"
+      "trafficUsageDesc": "ترافیک هر کاربر بر اساس نود",
+      "updatesDesc": "نسخه‌های ربات و کابینت"
     },
     "trafficUsage": {
       "title": "مصرف ترافیک",
@@ -1927,6 +1929,19 @@
       "quickPresets": "پیش‌تنظیم‌های سریع",
       "saturation": "اشباع"
     }
+  },
+  "adminUpdates": {
+    "title": "به‌روزرسانی‌ها",
+    "subtitle": "تاریخچه انتشار ربات و کابینت",
+    "bot": "ربات",
+    "cabinet": "کابینت",
+    "currentVersion": "نسخه فعلی",
+    "upToDate": "به‌روز است",
+    "updateAvailable": "به‌روزرسانی موجود",
+    "published": "منتشر شده",
+    "prerelease": "پیش‌انتشار",
+    "refresh": "بررسی به‌روزرسانی",
+    "noReleases": "داده‌ای موجود نیست"
   },
   "adminDashboard": {
     "title": "پنل آمار",

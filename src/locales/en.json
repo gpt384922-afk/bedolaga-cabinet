@@ -762,7 +762,8 @@
       "promoOffers": "Promo Offers",
       "promocodes": "Promo Codes",
       "promoGroups": "Discount Groups",
-      "trafficUsage": "Traffic Usage"
+      "trafficUsage": "Traffic Usage",
+      "updates": "Updates"
     },
     "panel": {
       "title": "Admin Panel",
@@ -785,7 +786,8 @@
       "promoOffersDesc": "Personal discounts",
       "promocodesDesc": "Manage promo codes",
       "promoGroupsDesc": "Discount groups for users",
-      "trafficUsageDesc": "Per-user traffic by nodes"
+      "trafficUsageDesc": "Per-user traffic by nodes",
+      "updatesDesc": "Bot & cabinet versions"
     },
     "trafficUsage": {
       "title": "Traffic Usage",
@@ -2112,6 +2114,19 @@
         "purchaseDiscountDesc": "Discount for new users"
       }
     }
+  },
+  "adminUpdates": {
+    "title": "Updates",
+    "subtitle": "Bot and cabinet release history",
+    "bot": "Bot",
+    "cabinet": "Cabinet",
+    "currentVersion": "Current version",
+    "upToDate": "Up to date",
+    "updateAvailable": "Update available",
+    "published": "Published",
+    "prerelease": "Pre-release",
+    "refresh": "Check for updates",
+    "noReleases": "No release data"
   },
   "adminDashboard": {
     "title": "Statistics Dashboard",

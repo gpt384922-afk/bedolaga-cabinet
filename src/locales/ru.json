@@ -783,7 +783,8 @@
       "promoOffers": "Промопредложения",
       "promocodes": "Промокоды",
       "promoGroups": "Группы скидок",
-      "trafficUsage": "Расход трафика"
+      "trafficUsage": "Расход трафика",
+      "updates": "Обновления"
     },
     "panel": {
       "title": "Панель администратора",
@@ -806,7 +807,8 @@
       "promoOffersDesc": "Персональные скидки",
       "promocodesDesc": "Управление промокодами",
       "promoGroupsDesc": "Группы скидок для пользователей",
-      "trafficUsageDesc": "Трафик пользователей по нодам"
+      "trafficUsageDesc": "Трафик пользователей по нодам",
+      "updatesDesc": "Версии бота и кабинета"
     },
     "trafficUsage": {
       "title": "Расход трафика",
@@ -2658,6 +2660,19 @@
       "quickPresets": "Быстрые пресеты",
       "saturation": "Насыщенность"
     }
+  },
+  "adminUpdates": {
+    "title": "Обновления",
+    "subtitle": "История релизов бота и кабинета",
+    "bot": "Бот",
+    "cabinet": "Кабинет",
+    "currentVersion": "Текущая версия",
+    "upToDate": "Актуальная версия",
+    "updateAvailable": "Доступно обновление",
+    "published": "Опубликовано",
+    "prerelease": "Предрелиз",
+    "refresh": "Проверить обновления",
+    "noReleases": "Нет данных о релизах"
   },
   "adminDashboard": {
     "title": "Панель статистики",
