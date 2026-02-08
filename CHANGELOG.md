@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.11.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.10.0...v1.11.0) (2026-02-08)
+
+
+### Features
+
+* admin traffic usage, session persistence, and UI improvements ([2193df7](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/2193df799d839976cc19127ff4242c35c350e0b9))
+
+
+### Bug Fixes
+
+* persist refresh token across Telegram Mini App reopens ([a449dd6](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a449dd69813417c3064510ea300090f34dfcd8cf))
+* persist refresh token across Telegram Mini App reopens ([20ea200](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/20ea2006ff703a76208c8ecfb8e2d9c2d789ccc4))
+
 ## [1.10.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.9.0...v1.10.0) (2026-02-07)
 
 
