@@ -48,7 +48,7 @@ export default defineConfig({
           if (id.includes('@tanstack/react-table')) return 'vendor-table';
           if (id.includes('i18next') || id.includes('react-i18next')) return 'vendor-i18n';
           if (id.includes('framer-motion')) return 'vendor-motion';
-          if (id.includes('@radix-ui/') || id.includes('@floating-ui/')) return 'vendor-radix';
+          if (id.includes('@radix-ui/')) return 'vendor-radix';
           if (id.includes('@dnd-kit/')) return 'vendor-dnd';
           if (id.includes('@telegram-apps/') || id.includes('/@tma.js/')) return 'vendor-telegram';
           if (id.includes('/ogl/')) return 'vendor-webgl';
