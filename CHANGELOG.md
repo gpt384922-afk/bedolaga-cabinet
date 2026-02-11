@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.14.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.13.0...v1.14.0) (2026-02-11)
+
+
+### Features
+
+* compact login page with collapsible email, icon OAuth row, safe areas ([45cbfb5](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/45cbfb5ecb194eb9cdcee5a9cf8b4f79c20c1444))
+
+
+### Bug Fixes
+
+* guard oauthProviders with Array.isArray to prevent TypeError on Login page ([f74e316](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/f74e316161c3bea18bc9493e683556314db6172b))
+* harden OAuth login flow — open redirect, path traversal, info leak ([a744b41](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a744b41910743e9604de669535f56a614fa269f1))
+* remove colored background from logo on login page ([6bf0af4](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/6bf0af4ff33adcd74d7ac291f4e6e4734e1e72f1))
+* remove redundant subtitle and register hint from login page ([d596b05](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/d596b05048b4b14fac68acd606842d717bbc9dd1))
+* restore package-lock.json for CI (npm ci requires it) ([069090a](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/069090a63412fdb99debe6e6058218b1e4105953))
+* use openTelegramLink for CryptoBot payment to open invoice in Telegram ([fc0dd39](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/fc0dd3955092235c5b52c4da066954b6e3beaa19))
+
 ## [1.13.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.12.0...v1.13.0) (2026-02-09)
 
 
