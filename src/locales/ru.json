@@ -1807,6 +1807,10 @@
       "emojiId": "Custom Emoji ID",
       "emojiPlaceholder": "ID кастомного эмодзи (необязательно)",
       "resetAll": "Сбросить все стили",
+      "hidden": "Скрыта",
+      "customLabels": "Названия кнопки",
+      "labelPlaceholder": "Свой текст кнопки",
+      "labelsHint": "Пустое поле = название по умолчанию",
       "sections": {
         "home": "Главная",
         "subscription": "Подписка",

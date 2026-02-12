@@ -1292,6 +1292,10 @@
       "emojiId": "Custom Emoji ID",
       "emojiPlaceholder": "Custom emoji ID (optional)",
       "resetAll": "Reset all styles",
+      "hidden": "Hidden",
+      "customLabels": "Button labels",
+      "labelPlaceholder": "Custom button text",
+      "labelsHint": "Empty = default label",
       "sections": {
         "home": "Home",
         "subscription": "Subscription",

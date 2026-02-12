@@ -1001,6 +1001,10 @@
       "emojiId": "شناسه ایموجی سفارشی",
       "emojiPlaceholder": "شناسه ایموجی سفارشی (اختیاری)",
       "resetAll": "بازنشانی همه سبک‌ها",
+      "hidden": "پنهان",
+      "customLabels": "نام‌های دکمه",
+      "labelPlaceholder": "متن سفارشی دکمه",
+      "labelsHint": "خالی = نام پیش‌فرض",
       "sections": {
         "home": "صفحه اصلی",
         "subscription": "اشتراک",

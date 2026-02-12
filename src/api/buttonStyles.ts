@@ -3,6 +3,8 @@ import apiClient from './client';
 export interface ButtonSectionConfig {
   style: 'primary' | 'success' | 'danger' | 'default';
   icon_custom_emoji_id: string;
+  enabled: boolean;
+  labels: Record<string, string>;
 }
 
 export interface ButtonStylesConfig {
@@ -31,21 +33,40 @@ export const BUTTON_SECTIONS = [
 
 export type ButtonSection = (typeof BUTTON_SECTIONS)[number];
 
+export const BOT_LOCALES = ['ru', 'en', 'ua', 'zh', 'fa'] as const;
+
+export type BotLocale = (typeof BOT_LOCALES)[number];
+
+const DEFAULT_SECTION: ButtonSectionConfig = {
+  style: 'primary',
+  icon_custom_emoji_id: '',
+  enabled: true,
+  labels: {},
+};
+
 export const DEFAULT_BUTTON_STYLES: ButtonStylesConfig = {
-  home: { style: 'primary', icon_custom_emoji_id: '' },
-  subscription: { style: 'success', icon_custom_emoji_id: '' },
-  balance: { style: 'primary', icon_custom_emoji_id: '' },
-  referral: { style: 'success', icon_custom_emoji_id: '' },
-  support: { style: 'primary', icon_custom_emoji_id: '' },
-  info: { style: 'primary', icon_custom_emoji_id: '' },
-  admin: { style: 'danger', icon_custom_emoji_id: '' },
+  home: { ...DEFAULT_SECTION, style: 'primary' },
+  subscription: { ...DEFAULT_SECTION, style: 'success' },
+  balance: { ...DEFAULT_SECTION, style: 'primary' },
+  referral: { ...DEFAULT_SECTION, style: 'success' },
+  support: { ...DEFAULT_SECTION, style: 'primary' },
+  info: { ...DEFAULT_SECTION, style: 'primary' },
+  admin: { ...DEFAULT_SECTION, style: 'danger' },
 };
 
 export const buttonStylesApi = {
   getStyles: async (): Promise<ButtonStylesConfig> => {
     try {
       const response = await apiClient.get<ButtonStylesConfig>('/cabinet/admin/button-styles');
-      return response.data;
+      const data = response.data;
+      for (const section of BUTTON_SECTIONS) {
+        data[section] = {
+          ...DEFAULT_SECTION,
+          ...data[section],
+          labels: { ...(data[section]?.labels || {}) },
+        };
+      }
+      return data;
     } catch {
       return DEFAULT_BUTTON_STYLES;
     }
