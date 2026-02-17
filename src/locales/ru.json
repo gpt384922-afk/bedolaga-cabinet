@@ -2390,9 +2390,11 @@
       "referrals": "{{count}} рефералов",
       "actions": {
         "approve": "Одобрить",
-        "reject": "Отклонить"
+        "reject": "Отклонить",
+        "review": "Рассмотреть"
       },
       "applicationFields": {
+        "companyName": "Компания",
         "website": "Сайт",
         "channel": "Канал",
         "description": "Описание",
@@ -2440,7 +2442,16 @@
         "title": "Привязанные кампании",
         "noCampaigns": "Нет привязанных кампаний",
         "active": "Активна",
-        "inactive": "Неактивна"
+        "inactive": "Неактивна",
+        "assign": "Привязать",
+        "unassign": "Отвязать",
+        "createNew": "Создать",
+        "assignTitle": "Привязать кампанию",
+        "noAvailable": "Нет доступных кампаний для привязки",
+        "createTitle": "Создать кампанию",
+        "createSubtitle": "Кампания будет автоматически привязана к партнёру",
+        "autoAssignNote": "Кампания будет автоматически привязана к партнёру {{name}}",
+        "createAndAssign": "Создать и привязать"
       },
       "dangerZone": {
         "title": "Опасная зона",

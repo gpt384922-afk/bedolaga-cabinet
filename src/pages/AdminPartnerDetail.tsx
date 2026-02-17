@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -37,10 +36,12 @@ export default function AdminPartnerDetail() {
   const queryClient = useQueryClient();
   const { formatWithCurrency } = useCurrency();
 
-  // Dialog states
-  const [showCommissionDialog, setShowCommissionDialog] = useState(false);
-  const [commissionValue, setCommissionValue] = useState('');
-  const [showRevokeDialog, setShowRevokeDialog] = useState(false);
+  const unassignMutation = useMutation({
+    mutationFn: (campaignId: number) => partnerApi.unassignCampaign(Number(userId), campaignId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-partner-detail', userId] });
+    },
+  });
 
   // Fetch partner detail
   const {
@@ -51,27 +52,6 @@ export default function AdminPartnerDetail() {
     queryKey: ['admin-partner-detail', userId],
     queryFn: () => partnerApi.getPartnerDetail(Number(userId)),
     enabled: !!userId,
-  });
-
-  // Mutations
-  const updateCommissionMutation = useMutation({
-    mutationFn: (commission: number) => partnerApi.updateCommission(Number(userId), commission),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-detail', userId] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partners'] });
-      setShowCommissionDialog(false);
-      setCommissionValue('');
-    },
-  });
-
-  const revokeMutation = useMutation({
-    mutationFn: () => partnerApi.revokePartner(Number(userId)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-detail', userId] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partners'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-stats'] });
-      setShowRevokeDialog(false);
-    },
   });
 
   if (isLoading) {
@@ -204,10 +184,11 @@ export default function AdminPartnerDetail() {
               </div>
             </div>
             <button
-              onClick={() => {
-                setCommissionValue(String(partner.commission_percent ?? 0));
-                setShowCommissionDialog(true);
-              }}
+              onClick={() =>
+                navigate(`/admin/partners/${userId}/commission`, {
+                  state: { currentCommission: partner.commission_percent ?? 0 },
+                })
+              }
               className="rounded-lg bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
             >
               {t('admin.partnerDetail.commission.update')}
@@ -217,9 +198,25 @@ export default function AdminPartnerDetail() {
 
         {/* Campaigns */}
         <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-          <h3 className="mb-4 font-medium text-dark-200">
-            {t('admin.partnerDetail.campaigns.title')}
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-medium text-dark-200">
+              {t('admin.partnerDetail.campaigns.title')}
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/admin/partners/${userId}/campaigns/assign`)}
+                className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
+              >
+                {t('admin.partnerDetail.campaigns.assign')}
+              </button>
+              <button
+                onClick={() => navigate(`/admin/partners/${userId}/campaigns/create`)}
+                className="rounded-lg bg-accent-500/20 px-3 py-1.5 text-xs font-medium text-accent-400 transition-colors hover:bg-accent-500/30"
+              >
+                {t('admin.partnerDetail.campaigns.createNew')}
+              </button>
+            </div>
+          </div>
           {partner.campaigns.length === 0 ? (
             <div className="py-4 text-center text-sm text-dark-500">
               {t('admin.partnerDetail.campaigns.noCampaigns')}
@@ -233,21 +230,43 @@ export default function AdminPartnerDetail() {
                     !campaign.is_active ? 'opacity-60' : ''
                   }`}
                 >
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="font-medium text-dark-100">{campaign.name}</div>
                     <div className="font-mono text-xs text-dark-500">
                       ?start={campaign.start_parameter}
                     </div>
                   </div>
-                  {campaign.is_active ? (
-                    <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
-                      {t('admin.partnerDetail.campaigns.active')}
-                    </span>
-                  ) : (
-                    <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
-                      {t('admin.partnerDetail.campaigns.inactive')}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {campaign.is_active ? (
+                      <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+                        {t('admin.partnerDetail.campaigns.active')}
+                      </span>
+                    ) : (
+                      <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                        {t('admin.partnerDetail.campaigns.inactive')}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => unassignMutation.mutate(campaign.id)}
+                      disabled={unassignMutation.isPending}
+                      className="rounded p-1 text-dark-500 transition-colors hover:bg-error-500/10 hover:text-error-400"
+                      title={t('admin.partnerDetail.campaigns.unassign')}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -260,95 +279,13 @@ export default function AdminPartnerDetail() {
             {t('admin.partnerDetail.dangerZone.title')}
           </h3>
           <button
-            onClick={() => setShowRevokeDialog(true)}
+            onClick={() => navigate(`/admin/partners/${userId}/revoke`)}
             className="w-full rounded-lg bg-error-500/20 px-4 py-3 text-sm font-medium text-error-400 transition-colors hover:bg-error-500/30"
           >
             {t('admin.partnerDetail.dangerZone.revokeButton')}
           </button>
         </div>
       </div>
-
-      {/* Commission Update Dialog */}
-      {showCommissionDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowCommissionDialog(false)}
-          />
-          <div className="relative w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.partnerDetail.commissionDialog.title')}
-            </h3>
-            <p className="mb-4 text-sm text-dark-400">
-              {t('admin.partnerDetail.commissionDialog.description')}
-            </p>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
-              {t('admin.partnerDetail.commissionDialog.label')}
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="100"
-              value={commissionValue}
-              onChange={(e) => setCommissionValue(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setShowCommissionDialog(false);
-                  setCommissionValue('');
-                }}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() => updateCommissionMutation.mutate(Number(commissionValue))}
-                disabled={updateCommissionMutation.isPending || !commissionValue}
-                className="rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-              >
-                {updateCommissionMutation.isPending ? t('common.saving') : t('common.save')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Revoke Confirmation Dialog */}
-      {showRevokeDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowRevokeDialog(false)}
-          />
-          <div className="relative w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.partnerDetail.revokeDialog.title')}
-            </h3>
-            <p className="mb-6 text-dark-400">
-              {t('admin.partnerDetail.revokeDialog.description')}
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowRevokeDialog(false)}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() => revokeMutation.mutate()}
-                disabled={revokeMutation.isPending}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
-              >
-                {revokeMutation.isPending
-                  ? t('common.saving')
-                  : t('admin.partnerDetail.dangerZone.revokeButton')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

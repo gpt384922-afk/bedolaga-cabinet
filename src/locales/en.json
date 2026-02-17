@@ -1868,9 +1868,11 @@
       "referrals": "{{count}} referrals",
       "actions": {
         "approve": "Approve",
-        "reject": "Reject"
+        "reject": "Reject",
+        "review": "Review"
       },
       "applicationFields": {
+        "companyName": "Company",
         "website": "Website",
         "channel": "Channel",
         "description": "Description",
@@ -1918,7 +1920,16 @@
         "title": "Assigned Campaigns",
         "noCampaigns": "No campaigns assigned",
         "active": "Active",
-        "inactive": "Inactive"
+        "inactive": "Inactive",
+        "assign": "Assign",
+        "unassign": "Unassign",
+        "createNew": "Create",
+        "assignTitle": "Assign Campaign",
+        "noAvailable": "No available campaigns to assign",
+        "createTitle": "Create Campaign",
+        "createSubtitle": "Campaign will be auto-assigned to the partner",
+        "autoAssignNote": "Campaign will be automatically assigned to partner {{name}}",
+        "createAndAssign": "Create & Assign"
       },
       "dangerZone": {
         "title": "Danger Zone",

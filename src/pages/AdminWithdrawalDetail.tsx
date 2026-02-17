@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -93,9 +92,6 @@ export default function AdminWithdrawalDetail() {
   const queryClient = useQueryClient();
   const { formatWithCurrency } = useCurrency();
 
-  const [rejectComment, setRejectComment] = useState('');
-  const [showRejectDialog, setShowRejectDialog] = useState(false);
-
   // Fetch detail
   const {
     data: detail,
@@ -111,16 +107,6 @@ export default function AdminWithdrawalDetail() {
   const approveMutation = useMutation({
     mutationFn: () => withdrawalApi.approve(Number(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-withdrawal-detail', id] });
-      queryClient.invalidateQueries({ queryKey: ['admin-withdrawals'] });
-    },
-  });
-
-  const rejectMutation = useMutation({
-    mutationFn: (comment: string) => withdrawalApi.reject(Number(id), comment || undefined),
-    onSuccess: () => {
-      setShowRejectDialog(false);
-      setRejectComment('');
       queryClient.invalidateQueries({ queryKey: ['admin-withdrawal-detail', id] });
       queryClient.invalidateQueries({ queryKey: ['admin-withdrawals'] });
     },
@@ -424,7 +410,15 @@ export default function AdminWithdrawalDetail() {
                 : t('admin.withdrawals.detail.approve')}
             </button>
             <button
-              onClick={() => setShowRejectDialog(true)}
+              onClick={() =>
+                navigate(`/admin/withdrawals/${id}/reject`, {
+                  state: {
+                    amountKopeks: detail.amount_kopeks,
+                    username: detail.username,
+                    firstName: detail.first_name,
+                  },
+                })
+              }
               className="flex-1 rounded-lg bg-error-500 px-4 py-3 font-medium text-white transition-colors hover:bg-error-600"
             >
               {t('admin.withdrawals.detail.reject')}
@@ -446,48 +440,6 @@ export default function AdminWithdrawalDetail() {
           </div>
         )}
       </div>
-
-      {/* Reject Dialog */}
-      {showRejectDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/60" onClick={() => setShowRejectDialog(false)} />
-          <div className="relative w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.withdrawals.detail.rejectTitle')}
-            </h3>
-            <p className="mb-4 text-sm text-dark-400">
-              {t('admin.withdrawals.detail.rejectDescription')}
-            </p>
-            <textarea
-              value={rejectComment}
-              onChange={(e) => setRejectComment(e.target.value)}
-              placeholder={t('admin.withdrawals.detail.commentPlaceholder')}
-              className="mb-4 w-full rounded-lg border border-dark-600 bg-dark-700 p-3 text-sm text-dark-200 placeholder:text-dark-500 focus:border-accent-500 focus:outline-none"
-              rows={3}
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setShowRejectDialog(false);
-                  setRejectComment('');
-                }}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() => rejectMutation.mutate(rejectComment)}
-                disabled={rejectMutation.isPending}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
-              >
-                {rejectMutation.isPending
-                  ? t('admin.withdrawals.detail.rejecting')
-                  : t('admin.withdrawals.detail.confirmReject')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

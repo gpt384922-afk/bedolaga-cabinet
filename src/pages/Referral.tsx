@@ -1,20 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { referralApi } from '../api/referral';
 import { brandingApi } from '../api/branding';
-import { partnerApi, type PartnerApplicationRequest } from '../api/partners';
+import { partnerApi } from '../api/partners';
 import { withdrawalApi } from '../api/withdrawals';
 import { useCurrency } from '../hooks/useCurrency';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '../components/primitives/Dialog/Dialog';
 
 const CopyIcon = () => (
   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -87,27 +79,10 @@ function getWithdrawalStatusBadge(status: string): string {
 
 export default function Referral() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { formatAmount, currencySymbol, formatPositive, formatWithCurrency } = useCurrency();
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
-  const [showApplyDialog, setShowApplyDialog] = useState(false);
-  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
-  const [showReapply, setShowReapply] = useState(false);
-
-  // Partner application form state
-  const [applyForm, setApplyForm] = useState<PartnerApplicationRequest>({
-    company_name: '',
-    website_url: '',
-    telegram_channel: '',
-    description: '',
-    expected_monthly_referrals: undefined,
-  });
-
-  // Withdrawal form state
-  const [withdrawForm, setWithdrawForm] = useState({
-    amount_kopeks: 0,
-    payment_details: '',
-  });
 
   const { data: info, isLoading } = useQuery({
     queryKey: ['referral-info'],
@@ -161,33 +136,6 @@ export default function Referral() {
     enabled: isPartner,
   });
 
-  // Partner apply mutation
-  const applyMutation = useMutation({
-    mutationFn: partnerApi.apply,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['partner-status'] });
-      setShowApplyDialog(false);
-      setApplyForm({
-        company_name: '',
-        website_url: '',
-        telegram_channel: '',
-        description: '',
-        expected_monthly_referrals: undefined,
-      });
-    },
-  });
-
-  // Withdrawal create mutation
-  const withdrawMutation = useMutation({
-    mutationFn: withdrawalApi.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['withdrawal-balance'] });
-      queryClient.invalidateQueries({ queryKey: ['withdrawal-history'] });
-      setShowWithdrawDialog(false);
-      setWithdrawForm({ amount_kopeks: 0, payment_details: '' });
-    },
-  });
-
   // Withdrawal cancel mutation
   const cancelWithdrawalMutation = useMutation({
     mutationFn: withdrawalApi.cancel,
@@ -231,29 +179,6 @@ export default function Referral() {
     window.open(telegramUrl, '_blank', 'noopener,noreferrer');
   };
 
-  const handleApplySubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const payload: PartnerApplicationRequest = {};
-    if (applyForm.company_name) payload.company_name = applyForm.company_name;
-    if (applyForm.website_url) payload.website_url = applyForm.website_url;
-    if (applyForm.telegram_channel) payload.telegram_channel = applyForm.telegram_channel;
-    if (applyForm.description) payload.description = applyForm.description;
-    if (applyForm.expected_monthly_referrals) {
-      payload.expected_monthly_referrals = applyForm.expected_monthly_referrals;
-    }
-    applyMutation.mutate(payload);
-  };
-
-  const handleWithdrawSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (withdrawForm.payment_details.length < 5) return;
-    if (withdrawForm.amount_kopeks <= 0) return;
-    withdrawMutation.mutate({
-      amount_kopeks: withdrawForm.amount_kopeks,
-      payment_details: withdrawForm.payment_details,
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-64 items-center justify-center">
@@ -290,10 +215,10 @@ export default function Referral() {
   }
 
   const partnerStatusValue = partnerStatus?.partner_status ?? 'none';
-  const showApplySection = partnerStatusValue === 'none' || showReapply;
-  const showPendingSection = partnerStatusValue === 'pending' && !showReapply;
+  const showApplySection = partnerStatusValue === 'none';
+  const showPendingSection = partnerStatusValue === 'pending';
   const showApprovedSection = partnerStatusValue === 'approved';
-  const showRejectedSection = partnerStatusValue === 'rejected' && !showReapply;
+  const showRejectedSection = partnerStatusValue === 'rejected';
 
   return (
     <div className="space-y-6">
@@ -480,7 +405,10 @@ export default function Referral() {
               <p className="mt-1 text-sm text-dark-400">
                 {t('referral.partner.becomePartnerDesc')}
               </p>
-              <button onClick={() => setShowApplyDialog(true)} className="btn-primary mt-4 px-6">
+              <button
+                onClick={() => navigate('/referral/partner/apply')}
+                className="btn-primary mt-4 px-6"
+              >
                 {t('referral.partner.applyButton')}
               </button>
             </div>
@@ -569,7 +497,10 @@ export default function Referral() {
                   {partnerStatus.latest_application.admin_comment}
                 </p>
               )}
-              <button onClick={() => setShowReapply(true)} className="btn-primary mt-4 px-6">
+              <button
+                onClick={() => navigate('/referral/partner/apply')}
+                className="btn-primary mt-4 px-6"
+              >
                 {t('referral.partner.reapplyButton')}
               </button>
             </div>
@@ -630,7 +561,7 @@ export default function Referral() {
 
               <div className="mt-4">
                 <button
-                  onClick={() => setShowWithdrawDialog(true)}
+                  onClick={() => navigate('/referral/withdrawal/request')}
                   disabled={!withdrawalBalance.can_request}
                   className={`btn-primary w-full px-6 sm:w-auto ${
                     !withdrawalBalance.can_request ? 'cursor-not-allowed opacity-50' : ''
@@ -710,195 +641,6 @@ export default function Referral() {
           </div>
         </div>
       )}
-
-      {/* ==================== Partner Application Dialog ==================== */}
-      <Dialog open={showApplyDialog} onOpenChange={setShowApplyDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('referral.partner.applyTitle')}</DialogTitle>
-            <DialogDescription>{t('referral.partner.applyDesc')}</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleApplySubmit} className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.partner.fields.companyName')}
-              </label>
-              <input
-                type="text"
-                className="input w-full"
-                value={applyForm.company_name ?? ''}
-                onChange={(e) => setApplyForm({ ...applyForm, company_name: e.target.value })}
-                placeholder={t('referral.partner.fields.companyNamePlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.partner.fields.telegramChannel')}
-              </label>
-              <input
-                type="text"
-                className="input w-full"
-                value={applyForm.telegram_channel ?? ''}
-                onChange={(e) => setApplyForm({ ...applyForm, telegram_channel: e.target.value })}
-                placeholder={t('referral.partner.fields.telegramChannelPlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.partner.fields.websiteUrl')}
-              </label>
-              <input
-                type="url"
-                className="input w-full"
-                value={applyForm.website_url ?? ''}
-                onChange={(e) => setApplyForm({ ...applyForm, website_url: e.target.value })}
-                placeholder={t('referral.partner.fields.websiteUrlPlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.partner.fields.description')}
-              </label>
-              <textarea
-                className="input min-h-[80px] w-full"
-                value={applyForm.description ?? ''}
-                onChange={(e) => setApplyForm({ ...applyForm, description: e.target.value })}
-                placeholder={t('referral.partner.fields.descriptionPlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.partner.fields.expectedReferrals')}
-              </label>
-              <input
-                type="number"
-                min={0}
-                className="input w-full"
-                value={applyForm.expected_monthly_referrals ?? ''}
-                onChange={(e) =>
-                  setApplyForm({
-                    ...applyForm,
-                    expected_monthly_referrals: e.target.value ? Number(e.target.value) : undefined,
-                  })
-                }
-                placeholder={t('referral.partner.fields.expectedReferralsPlaceholder')}
-              />
-            </div>
-
-            {applyMutation.isError && (
-              <div className="rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
-                {t('referral.partner.applyError')}
-              </div>
-            )}
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <button type="button" className="btn-secondary px-5">
-                  {t('common.cancel')}
-                </button>
-              </DialogClose>
-              <button
-                type="submit"
-                disabled={applyMutation.isPending}
-                className={`btn-primary px-5 ${applyMutation.isPending ? 'opacity-50' : ''}`}
-              >
-                {applyMutation.isPending
-                  ? t('referral.partner.applying')
-                  : t('referral.partner.submitApplication')}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* ==================== Withdrawal Request Dialog ==================== */}
-      <Dialog open={showWithdrawDialog} onOpenChange={setShowWithdrawDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('referral.withdrawal.requestTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('referral.withdrawal.requestDesc', {
-                available: withdrawalBalance
-                  ? formatWithCurrency(withdrawalBalance.available_total / 100)
-                  : '',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleWithdrawSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.withdrawal.fields.amount')}
-              </label>
-              <input
-                type="number"
-                min={withdrawalBalance?.min_amount_kopeks ?? 0}
-                max={withdrawalBalance?.available_total ?? 0}
-                step={100}
-                className="input w-full"
-                value={withdrawForm.amount_kopeks || ''}
-                onChange={(e) =>
-                  setWithdrawForm({
-                    ...withdrawForm,
-                    amount_kopeks: e.target.value ? Number(e.target.value) : 0,
-                  })
-                }
-                placeholder={t('referral.withdrawal.fields.amountPlaceholder')}
-              />
-              <p className="mt-1 text-xs text-dark-500">
-                {t('referral.withdrawal.fields.amountHint', { currency: currencySymbol })}
-              </p>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('referral.withdrawal.fields.paymentDetails')}
-              </label>
-              <textarea
-                className="input min-h-[80px] w-full"
-                value={withdrawForm.payment_details}
-                onChange={(e) =>
-                  setWithdrawForm({ ...withdrawForm, payment_details: e.target.value })
-                }
-                placeholder={t('referral.withdrawal.fields.paymentDetailsPlaceholder')}
-                required
-                minLength={5}
-              />
-            </div>
-
-            {withdrawMutation.isError && (
-              <div className="rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
-                {t('referral.withdrawal.requestError')}
-              </div>
-            )}
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <button type="button" className="btn-secondary px-5">
-                  {t('common.cancel')}
-                </button>
-              </DialogClose>
-              <button
-                type="submit"
-                disabled={
-                  withdrawMutation.isPending ||
-                  withdrawForm.payment_details.length < 5 ||
-                  withdrawForm.amount_kopeks <= 0
-                }
-                className={`btn-primary px-5 ${
-                  withdrawMutation.isPending ||
-                  withdrawForm.payment_details.length < 5 ||
-                  withdrawForm.amount_kopeks <= 0
-                    ? 'opacity-50'
-                    : ''
-                }`}
-              >
-                {withdrawMutation.isPending
-                  ? t('referral.withdrawal.requesting')
-                  : t('referral.withdrawal.submitRequest')}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

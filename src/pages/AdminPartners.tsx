@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   partnerApi,
@@ -13,18 +13,9 @@ import { useCurrency } from '../hooks/useCurrency';
 export default function AdminPartners() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { formatWithCurrency } = useCurrency();
 
   const [activeTab, setActiveTab] = useState<'partners' | 'applications'>('partners');
-
-  // Approve dialog state
-  const [approveDialog, setApproveDialog] = useState<AdminPartnerApplicationItem | null>(null);
-  const [approveCommission, setApproveCommission] = useState('10');
-
-  // Reject dialog state
-  const [rejectDialog, setRejectDialog] = useState<AdminPartnerApplicationItem | null>(null);
-  const [rejectComment, setRejectComment] = useState('');
 
   // Queries
   const { data: stats } = useQuery({
@@ -40,30 +31,6 @@ export default function AdminPartners() {
   const { data: applicationsData, isLoading: applicationsLoading } = useQuery({
     queryKey: ['admin-partner-applications'],
     queryFn: () => partnerApi.getApplications({ status: 'pending' }),
-  });
-
-  // Mutations
-  const approveMutation = useMutation({
-    mutationFn: ({ id, commission }: { id: number; commission: number }) =>
-      partnerApi.approveApplication(id, { commission_percent: commission }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partners'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-stats'] });
-      setApproveDialog(null);
-      setApproveCommission('10');
-    },
-  });
-
-  const rejectMutation = useMutation({
-    mutationFn: ({ id, comment }: { id: number; comment?: string }) =>
-      partnerApi.rejectApplication(id, { comment }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-partner-stats'] });
-      setRejectDialog(null);
-      setRejectComment('');
-    },
   });
 
   const partners = partnersData?.items || [];
@@ -256,16 +223,14 @@ export default function AdminPartners() {
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setApproveDialog(app)}
-                      className="flex-1 rounded-lg bg-success-500/20 px-4 py-2 text-sm font-medium text-success-400 transition-colors hover:bg-success-500/30"
+                      onClick={() =>
+                        navigate(`/admin/partners/applications/${app.id}/review`, {
+                          state: { application: app },
+                        })
+                      }
+                      className="flex-1 rounded-lg bg-accent-500/20 px-4 py-2 text-sm font-medium text-accent-400 transition-colors hover:bg-accent-500/30"
                     >
-                      {t('admin.partners.actions.approve')}
-                    </button>
-                    <button
-                      onClick={() => setRejectDialog(app)}
-                      className="flex-1 rounded-lg bg-error-500/20 px-4 py-2 text-sm font-medium text-error-400 transition-colors hover:bg-error-500/30"
-                    >
-                      {t('admin.partners.actions.reject')}
+                      {t('admin.partners.actions.review')}
                     </button>
                   </div>
                 </div>
@@ -273,112 +238,6 @@ export default function AdminPartners() {
             </div>
           )}
         </>
-      )}
-
-      {/* Approve Dialog */}
-      {approveDialog !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setApproveDialog(null)} />
-          <div className="relative w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.partners.approveDialog.title')}
-            </h3>
-            <p className="mb-4 text-sm text-dark-400">
-              {t('admin.partners.approveDialog.description', {
-                name:
-                  approveDialog.first_name || approveDialog.username || `#${approveDialog.user_id}`,
-              })}
-            </p>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
-              {t('admin.partners.approveDialog.commissionLabel')}
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="100"
-              value={approveCommission}
-              onChange={(e) => setApproveCommission(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
-              placeholder="10"
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setApproveDialog(null);
-                  setApproveCommission('10');
-                }}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() =>
-                  approveMutation.mutate({
-                    id: approveDialog.id,
-                    commission: Number(approveCommission),
-                  })
-                }
-                disabled={approveMutation.isPending || !approveCommission}
-                className="rounded-lg bg-success-500 px-4 py-2 text-white transition-colors hover:bg-success-600 disabled:opacity-50"
-              >
-                {approveMutation.isPending
-                  ? t('common.saving')
-                  : t('admin.partners.actions.approve')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Reject Dialog */}
-      {rejectDialog !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setRejectDialog(null)} />
-          <div className="relative w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.partners.rejectDialog.title')}
-            </h3>
-            <p className="mb-4 text-sm text-dark-400">
-              {t('admin.partners.rejectDialog.description', {
-                name:
-                  rejectDialog.first_name || rejectDialog.username || `#${rejectDialog.user_id}`,
-              })}
-            </p>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
-              {t('admin.partners.rejectDialog.commentLabel')}
-            </label>
-            <textarea
-              value={rejectComment}
-              onChange={(e) => setRejectComment(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
-              rows={3}
-              placeholder={t('admin.partners.rejectDialog.commentPlaceholder')}
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setRejectDialog(null);
-                  setRejectComment('');
-                }}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() =>
-                  rejectMutation.mutate({
-                    id: rejectDialog.id,
-                    comment: rejectComment || undefined,
-                  })
-                }
-                disabled={rejectMutation.isPending}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
-              >
-                {rejectMutation.isPending ? t('common.saving') : t('admin.partners.actions.reject')}
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );

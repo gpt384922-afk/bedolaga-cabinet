@@ -1605,9 +1605,11 @@
       "referrals": "{{count}} معرفی",
       "actions": {
         "approve": "تأیید",
-        "reject": "رد"
+        "reject": "رد",
+        "review": "بررسی"
       },
       "applicationFields": {
+        "companyName": "شرکت",
         "website": "وب‌سایت",
         "channel": "کانال",
         "description": "توضیحات",
@@ -1655,7 +1657,16 @@
         "title": "کمپین‌های اختصاص‌یافته",
         "noCampaigns": "کمپینی اختصاص نیافته",
         "active": "فعال",
-        "inactive": "غیرفعال"
+        "inactive": "غیرفعال",
+        "assign": "اختصاص",
+        "unassign": "لغو اختصاص",
+        "createNew": "ایجاد",
+        "assignTitle": "اختصاص کمپین",
+        "noAvailable": "کمپینی برای اختصاص موجود نیست",
+        "createTitle": "ایجاد کمپین",
+        "createSubtitle": "کمپین به‌طور خودکار به شریک اختصاص می‌یابد",
+        "autoAssignNote": "کمپین به‌طور خودکار به شریک {{name}} اختصاص می‌یابد",
+        "createAndAssign": "ایجاد و اختصاص"
       },
       "dangerZone": {
         "title": "منطقه خطر",

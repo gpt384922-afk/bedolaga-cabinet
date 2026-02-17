@@ -1604,9 +1604,11 @@
       "referrals": "{{count}} 个推荐",
       "actions": {
         "approve": "批准",
-        "reject": "拒绝"
+        "reject": "拒绝",
+        "review": "审核"
       },
       "applicationFields": {
+        "companyName": "公司",
         "website": "网站",
         "channel": "频道",
         "description": "描述",
@@ -1654,7 +1656,16 @@
         "title": "分配的活动",
         "noCampaigns": "暂无分配的活动",
         "active": "活跃",
-        "inactive": "未激活"
+        "inactive": "未激活",
+        "assign": "分配",
+        "unassign": "取消分配",
+        "createNew": "创建",
+        "assignTitle": "分配活动",
+        "noAvailable": "没有可分配的活动",
+        "createTitle": "创建活动",
+        "createSubtitle": "活动将自动分配给合作伙伴",
+        "autoAssignNote": "活动将自动分配给合作伙伴 {{name}}",
+        "createAndAssign": "创建并分配"
       },
       "dangerZone": {
         "title": "危险操作",
