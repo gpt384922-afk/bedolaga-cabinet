@@ -917,6 +917,8 @@
       "total": "کل",
       "sent": "ارسال شده",
       "failed": "ناموفق",
+      "blocked": "مسدود شده",
+      "blockedShort": "مسدود",
       "filter": "فیلتر",
       "message": "پیام",
       "unknownAdmin": "نامعلوم",

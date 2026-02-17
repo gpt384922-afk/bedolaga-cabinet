@@ -1196,6 +1196,8 @@
       "total": "Total",
       "sent": "Sent",
       "failed": "Failed",
+      "blocked": "Blocked",
+      "blockedShort": "blocked",
       "filter": "Filter",
       "message": "Message",
       "unknownAdmin": "Unknown",

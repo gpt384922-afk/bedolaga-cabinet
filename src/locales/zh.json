@@ -969,6 +969,8 @@
       "total": "总计",
       "sent": "已发送",
       "failed": "失败",
+      "blocked": "已屏蔽",
+      "blockedShort": "屏蔽",
       "filter": "筛选",
       "message": "消息",
       "unknownAdmin": "未知",
