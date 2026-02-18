@@ -239,6 +239,8 @@
     "baseTariff": "تعرفه",
     "serversLabel": "سرورها",
     "servers_other": "{{count}} سرور",
+    "locationsLabel": "مکان‌ها",
+    "locations_other": "{{count}} مکان",
     "traffic": "ترافیک",
     "unlimited": "نامحدود",
     "used": "استفاده شده",

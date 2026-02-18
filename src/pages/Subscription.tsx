@@ -2396,7 +2396,7 @@ export default function Subscription() {
                               />
                             </svg>
                             <span className="text-dark-300">
-                              {t('subscription.servers', { count: tariff.servers_count })}
+                              {t('subscription.locations', { count: tariff.servers_count })}
                             </span>
                           </div>
                         </div>
@@ -2596,7 +2596,7 @@ export default function Subscription() {
                       </span>
                     </div>
                     <div>
-                      <span className="text-dark-500">{t('subscription.serversLabel')}:</span>
+                      <span className="text-dark-500">{t('subscription.locationsLabel')}:</span>
                       <span className="ml-2 text-dark-200">{selectedTariff.servers_count}</span>
                     </div>
                   </div>

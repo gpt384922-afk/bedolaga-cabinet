@@ -239,6 +239,8 @@
     "baseTariff": "套餐",
     "serversLabel": "服务器",
     "servers_other": "{{count}} 个服务器",
+    "locationsLabel": "位置",
+    "locations_other": "{{count}} 个位置",
     "traffic": "流量",
     "unlimited": "无限",
     "used": "已使用",
