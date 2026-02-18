@@ -83,7 +83,7 @@ export default function AdminPartnerCampaignAssign() {
                     <span className="font-medium text-dark-100">{campaign.name}</span>
                     {!campaign.is_active && (
                       <span className="rounded bg-dark-600 px-1.5 py-0.5 text-xs text-dark-400">
-                        {t('admin.campaigns.status.inactive')}
+                        {t('admin.campaigns.table.inactive')}
                       </span>
                     )}
                   </div>
