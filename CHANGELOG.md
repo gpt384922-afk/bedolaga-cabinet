@@ -1,5 +1,71 @@
 # Changelog
 
+## [1.19.1](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.19.0...v1.19.1) (2026-02-23)
+
+
+### Bug Fixes
+
+* add max attribute to expected referrals input ([d1043e8](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/d1043e83eaa163079a0272860b2d6a8f68332cf6))
+* add resend email cooldown and allow email change for all auth types ([91d567f](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/91d567f9cc48dea7d605b55c6014174806b8d9ab))
+* correct memory display to use actual usage instead of cache-inclusive ([67bacd3](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/67bacd3e7a36fa70c4ee97008849f0251600a7b8))
+* detect Telegram account switch across tab closes ([ee6ec59](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/ee6ec5959c2e25deecfdbf93b79c04cb150dc7f2))
+* parse raw query string for deep link params to avoid double-decode ([ed65c29](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/ed65c29bacbfc50cdfa11e58f0cb638c6c8c1841))
+* plug memory leaks in blob URLs and traffic cache ([7cf7273](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/7cf72735ece0510acc7a4e6af8997e8e7acdc9d8))
+* preserve + chars in deep link URL params for crypto links ([65add9a](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/65add9a111086f970c77d686447016551ca9ab0f))
+* remove double URL-decode in extractTelegramUserId ([e8acfee](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/e8acfee3e462ad127d42b382d7a9c56f7742bba9))
+* render newlines in tariff description ([0b4e825](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/0b4e8253aa7a55b2cac7f6632912816b3234adc3))
+* stack promo offer discounts with promo group discounts ([321bedc](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/321bedcb61a231d3dd8ecba8623d1ee9d632b9b7))
+
+
+### Performance Improvements
+
+* add Zustand selectors to prevent cascading re-renders ([03ad255](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/03ad255bf1cf8d3d80552351e26c4b1dc11fb9b9))
+* extract Twemoji options to module-level const ([17b2f2e](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/17b2f2e90328b9388175d1047fa01bf6257d584c))
+* fix critical WebGL GPU resource leaks in Aurora ([9a84e13](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/9a84e13e6cd4dcc3a6d5e7f95fddb4c9c1ec076e))
+* fix GPU-heavy CSS patterns ([8604930](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/860493058a7d583edaea0e5261db1e485a016fc8))
+* fix render cycle in useBranding and conditional polling ([30ece69](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/30ece694d43bd74fd2c26126926ec6452077681f))
+
+## [1.19.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.18.0...v1.19.0) (2026-02-18)
+
+
+### Features
+
+* add referral code persistence across all auth methods ([2b2ead8](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/2b2ead837c457a02c8a153d6b25cae492aa5e617))
+
+## [1.18.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.17.0...v1.18.0) (2026-02-18)
+
+
+### Features
+
+* add partner management and withdrawal admin pages ([779fbf0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/779fbf0dc61b5963e2ac48162b02a292155457a5))
+* admin partner settings page, partner section visibility toggle, custom requisites text ([76d20fd](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/76d20fdb1aa374b2de3f075bda4672484b8b8de6))
+* partner-campaign integration in admin UI ([959f892](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/959f89266bd7fe6e8a38d218c7d34e14c509a21b))
+* show blocked_count in broadcast admin UI ([9cf8e09](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/9cf8e095b8ce45ea92f6289bf275cd82e264dcde))
+* show partner campaign links with bonuses on referral page ([8b33d82](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8b33d8224d63509408f96919d702d1eb21bc050a))
+* show traffic reset info in subscription card ([271a005](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/271a005e87d21f6a82aad7272c92775a6e1aec6c))
+* show traffic reset period on tariff cards ([cfe9f64](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/cfe9f642d842fc0696e379ef59934b300c363a24))
+
+
+### Bug Fixes
+
+* add missing cancelled filter key to withdrawal i18n in all locales ([9b2742f](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/9b2742ff3afc627bfe382859e9239b5ba9104ea4))
+* hide empty blocks in connection installation guide ([96f9a71](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/96f9a719fd02d5f21c2bd3753c4eb8afd36887c6))
+* reduce campaigns fetch limit to 100 (backend max) ([be168a7](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/be168a75df500757e0e2f5fbad19c178e3e817db))
+* remove duplicate min withdrawal amount on referral page ([98ab109](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/98ab1099b9f9b639221b431205bd7eb9e8432d34))
+* remove server/location count from tariff cards and confirmation ([0fac368](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/0fac3689e57eee63489a379a966e89825f1a5854))
+* rename Серверы to Локации in subscription card ([19e62fc](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/19e62fccf1efbb0c17a160348c75f9e695691bf1))
+* show all campaigns in assign list, add dual links and bonus details ([a72042d](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a72042d8075000db204b0f57c893928cadc68cef))
+* show locations count instead of servers on tariff cards ([ecc089d](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/ecc089da641c3b40739fbc4e77a997c27529b582))
+* stop WS reconnect loop on auth rejection (code 1008) ([2efce0e](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/2efce0eb03c9511e7cd0aa814c364f6216e89e28))
+* use correct translation key for inactive campaign badge ([8207368](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8207368ef77a772fdcf70d7ec798ddbbbfd9e63c))
+
+## [1.17.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.16.1...v1.17.0) (2026-02-17)
+
+
+### Features
+
+* add web campaign links — capture, auth integration, bonus UI ([e0dd21f](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/e0dd21fd0bde52c4b10175635e605151eb8faf9d))
+
 ## [1.16.1](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.16.0...v1.16.1) (2026-02-16)
 
 
