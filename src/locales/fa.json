@@ -741,7 +741,8 @@
       "updates": "به‌روزرسانی‌ها",
       "pinnedMessages": "پیام‌های سنجاق‌شده",
       "partners": "شرکا",
-      "withdrawals": "برداشت‌ها"
+      "withdrawals": "برداشت‌ها",
+      "channelSubscriptions": "کانال‌های اجباری"
     },
     "panel": {
       "title": "پنل مدیریت",
@@ -768,7 +769,8 @@
       "updatesDesc": "نسخه‌های ربات و کابینت",
       "pinnedMessagesDesc": "مدیریت پیام‌های سنجاق‌شده",
       "partnersDesc": "مدیریت درخواست‌های شراکت و کمیسیون‌ها",
-      "withdrawalsDesc": "بررسی و پردازش درخواست‌های برداشت"
+      "withdrawalsDesc": "بررسی و پردازش درخواست‌های برداشت",
+      "channelSubscriptionsDesc": "مدیریت اشتراک‌های اجباری کانال"
     },
     "trafficUsage": {
       "title": "مصرف ترافیک",
@@ -999,6 +1001,31 @@
       "unpinnedCount": "Unpinned",
       "editMessage": "Edit",
       "cantDeleteActive": "Cannot delete active message"
+    },
+    "channelSubscriptions": {
+      "title": "کانال‌های اجباری",
+      "subtitle": "کاربران باید در این کانال‌ها عضو شوند",
+      "addChannel": "افزودن کانال",
+      "empty": "کانالی تنظیم نشده",
+      "enabled": "فعال",
+      "disabled": "غیرفعال",
+      "enable": "فعال‌سازی",
+      "disable": "غیرفعال‌سازی",
+      "edit": "ویرایش",
+      "editing": "ویرایش",
+      "delete": "حذف",
+      "deleteConfirm": "این کانال حذف شود؟",
+      "sortOrder": "ترتیب",
+      "form": {
+        "title": "نام نمایشی",
+        "channelId": "شناسه کانال",
+        "channelIdHint": "-100XXXXXXXXXX",
+        "channelLink": "لینک کانال",
+        "channelLinkHint": "https://t.me/channel",
+        "submit": "افزودن",
+        "save": "ذخیره",
+        "cancel": "لغو"
+      }
     },
     "payments": {
       "title": "تأیید پرداخت",
@@ -2759,7 +2786,9 @@
       "waitSeconds": "{{seconds}} ثانیه صبر کنید",
       "hint": "پس از عضویت دکمه بررسی را بزنید",
       "notSubscribed": "شما هنوز در کانال عضو نشده‌اید",
-      "checkError": "بررسی ناموفق بود. لطفاً بعداً دوباره امتحان کنید."
+      "checkError": "بررسی ناموفق بود. لطفاً بعداً دوباره امتحان کنید.",
+      "subscribed": "عضو شده",
+      "channelsRequired": "برای ادامه در همه کانال‌های زیر عضو شوید"
     },
     "blacklisted": {
       "title": "دسترسی ممنوع",
