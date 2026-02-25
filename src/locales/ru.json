@@ -3396,6 +3396,7 @@
         "timestamp": "Время",
         "before": "До",
         "after": "После",
+        "requestBody": "Данные запроса",
         "fullDetails": "Полные данные"
       },
       "time": {

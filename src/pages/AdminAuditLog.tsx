@@ -83,15 +83,30 @@ const SearchIcon = () => (
 const RESOURCE_TYPES = [
   'users',
   'tickets',
-  'roles',
-  'policies',
-  'settings',
+  'stats',
   'broadcasts',
   'tariffs',
-  'servers',
-  'payments',
-  'campaigns',
   'promocodes',
+  'promo_groups',
+  'promo_offers',
+  'campaigns',
+  'partners',
+  'withdrawals',
+  'payments',
+  'payment_methods',
+  'servers',
+  'remnawave',
+  'traffic',
+  'settings',
+  'roles',
+  'audit_log',
+  'channels',
+  'ban_system',
+  'wheel',
+  'apps',
+  'email_templates',
+  'pinned_messages',
+  'updates',
 ] as const;
 
 const STATUS_OPTIONS = ['success', 'denied', 'error'] as const;
@@ -117,6 +132,24 @@ const INITIAL_FILTERS: FiltersState = {
 };
 
 // === Utility functions ===
+
+function translateAction(
+  action: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any,
+): string {
+  return action
+    .split(',')
+    .map((perm: string) => {
+      const trimmed = perm.trim();
+      const [section, act] = trimmed.split(':', 2);
+      if (!section || !act) return trimmed;
+      const sectionLabel = t(`admin.roles.form.permissionSections.${section}`, section) as string;
+      const actionLabel = t(`admin.roles.form.permissionActions.${act}`, act) as string;
+      return `${sectionLabel}: ${actionLabel}`;
+    })
+    .join(', ');
+}
 
 function formatRelativeTime(
   dateString: string,
@@ -228,12 +261,18 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
             status={status}
             label={t(`admin.auditLog.status.${status}`, { defaultValue: status })}
           />
-          <span className="truncate text-sm font-medium text-dark-100">{entry.action}</span>
+          <span className="truncate text-sm font-medium text-dark-100">
+            {translateAction(entry.action, t)}
+          </span>
         </div>
 
         {/* Resource */}
         <div className="flex shrink-0 items-center gap-2 text-sm text-dark-400">
-          <span>{entry.resource_type}</span>
+          <span>
+            {entry.resource_type
+              ? t(`admin.roles.form.permissionSections.${entry.resource_type}`, entry.resource_type)
+              : null}
+          </span>
           {entry.resource_id && (
             <span className="rounded bg-dark-700 px-1.5 py-0.5 font-mono text-xs text-dark-300">
               #{entry.resource_id}
@@ -323,6 +362,20 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
                 </pre>
               </div>
             )}
+
+            {/* Request body */}
+            {entry.details &&
+              'request_body' in entry.details &&
+              entry.details.request_body != null && (
+                <div className="sm:col-span-2">
+                  <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                    {t('admin.auditLog.details.requestBody')}
+                  </p>
+                  <pre className="max-h-60 overflow-auto rounded-lg bg-dark-900 p-2 text-xs text-dark-300">
+                    {JSON.stringify(entry.details.request_body, null, 2)}
+                  </pre>
+                </div>
+              )}
           </div>
 
           {/* Full details JSON */}
@@ -622,7 +675,7 @@ export default function AdminAuditLog() {
                   <option value="">{t('admin.auditLog.filters.allResources')}</option>
                   {RESOURCE_TYPES.map((type) => (
                     <option key={type} value={type}>
-                      {t(`admin.auditLog.resourceTypes.${type}`, { defaultValue: type })}
+                      {t(`admin.roles.form.permissionSections.${type}`, type)}
                     </option>
                   ))}
                 </select>
