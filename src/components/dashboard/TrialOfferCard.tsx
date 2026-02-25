@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { UseMutationResult } from '@tanstack/react-query';
 import type { TrialInfo } from '../../types';
 import { useCurrency } from '../../hooks/useCurrency';
+import { useTheme } from '../../hooks/useTheme';
+import { getGlassColors } from '../../utils/glassTheme';
 
 interface TrialOfferCardProps {
   trialInfo: TrialInfo;
@@ -21,6 +23,8 @@ export default function TrialOfferCard({
 }: TrialOfferCardProps) {
   const { t } = useTranslation();
   const { formatAmount, currencySymbol } = useCurrency();
+  const { isDark } = useTheme();
+  const g = getGlassColors(isDark);
   const isFree = !trialInfo.requires_payment;
   const canAfford = balanceKopeks >= trialInfo.price_kopeks;
 
@@ -28,9 +32,9 @@ export default function TrialOfferCard({
     <div
       className="relative overflow-hidden rounded-3xl text-center"
       style={{
-        background:
-          'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: g.cardBg,
+        border: `1px solid ${g.cardBorder}`,
+        boxShadow: g.shadow,
         padding: '32px 28px 28px',
       }}
     >
@@ -115,10 +119,10 @@ export default function TrialOfferCard({
       </div>
 
       {/* Title */}
-      <h2 className="mb-1.5 text-[22px] font-bold tracking-tight text-white">
+      <h2 className="mb-1.5 text-[22px] font-bold tracking-tight text-dark-50">
         {isFree ? t('dashboard.trialOffer.freeTitle') : t('dashboard.trialOffer.paidTitle')}
       </h2>
-      <p className="mb-5 text-sm text-white/40">
+      <p className="mb-5 text-sm text-dark-50/40">
         {isFree ? t('dashboard.trialOffer.freeDesc') : t('dashboard.trialOffer.paidDesc')}
       </p>
 
@@ -154,10 +158,10 @@ export default function TrialOfferCard({
           { value: String(trialInfo.device_limit), label: t('subscription.trial.devices') },
         ].map((stat, i) => (
           <div key={i} className="text-center">
-            <div className="text-4xl font-extrabold leading-none tracking-tight text-white">
+            <div className="text-4xl font-extrabold leading-none tracking-tight text-dark-50">
               {stat.value}
             </div>
-            <div className="mt-1 text-xs font-medium text-white/30">{stat.label}</div>
+            <div className="mt-1 text-xs font-medium text-dark-50/30">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -165,11 +169,11 @@ export default function TrialOfferCard({
       {/* Balance info for paid trial */}
       {!isFree && trialInfo.price_rubles > 0 && (
         <div
-          className="mb-4 space-y-2 rounded-xl bg-white/[0.03] p-4 text-left"
-          style={{ border: '1px solid rgba(255,255,255,0.04)' }}
+          className="mb-4 space-y-2 rounded-xl p-4 text-left"
+          style={{ background: g.innerBg, border: `1px solid ${g.innerBorder}` }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm text-white/40">{t('balance.currentBalance')}</span>
+            <span className="text-sm text-dark-50/40">{t('balance.currentBalance')}</span>
             <span
               className={`font-display text-sm font-semibold ${canAfford ? 'text-success-400' : 'text-warning-400'}`}
             >

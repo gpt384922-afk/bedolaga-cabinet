@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Subscription } from '../../types';
+import { useTheme } from '../../hooks/useTheme';
+import { getGlassColors } from '../../utils/glassTheme';
 
 interface SubscriptionCardExpiredProps {
   subscription: Subscription;
@@ -8,6 +10,8 @@ interface SubscriptionCardExpiredProps {
 
 export default function SubscriptionCardExpired({ subscription }: SubscriptionCardExpiredProps) {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const g = getGlassColors(isDark);
 
   const formattedDate = new Date(subscription.end_date).toLocaleDateString();
 
@@ -15,9 +19,9 @@ export default function SubscriptionCardExpired({ subscription }: SubscriptionCa
     <div
       className="relative overflow-hidden rounded-3xl"
       style={{
-        background:
-          'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+        background: g.cardBg,
         border: '1px solid rgba(255,70,70,0.12)',
+        boxShadow: g.shadow,
         padding: '28px 28px 24px',
       }}
     >
@@ -72,10 +76,10 @@ export default function SubscriptionCardExpired({ subscription }: SubscriptionCa
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-bold tracking-tight text-white">
+            <h2 className="text-lg font-bold tracking-tight text-dark-50">
               {t('dashboard.expired.title')}
             </h2>
-            <span className="text-xs text-white/35">
+            <span className="text-xs text-dark-50/35">
               {subscription.is_trial
                 ? t('dashboard.expired.trialSubtitle')
                 : t('dashboard.expired.paidSubtitle')}
@@ -128,10 +132,10 @@ export default function SubscriptionCardExpired({ subscription }: SubscriptionCa
           { label: t('dashboard.expired.expiredDate'), value: formattedDate },
         ].map((item, i) => (
           <div key={i}>
-            <div className="mb-1 font-mono text-[10px] font-medium uppercase tracking-wider text-white/30">
+            <div className="mb-1 font-mono text-[10px] font-medium uppercase tracking-wider text-dark-50/30">
               {item.label}
             </div>
-            <div className="text-base font-bold tracking-tight text-white/50">{item.value}</div>
+            <div className="text-base font-bold tracking-tight text-dark-50/50">{item.value}</div>
           </div>
         ))}
       </div>
@@ -151,7 +155,11 @@ export default function SubscriptionCardExpired({ subscription }: SubscriptionCa
         </Link>
         <Link
           to="/subscription"
-          className="flex items-center justify-center rounded-[14px] border border-white/[0.08] bg-white/[0.03] px-5 py-3.5 text-[15px] font-semibold tracking-tight text-white/50 transition-colors duration-200 hover:bg-white/[0.05]"
+          className="flex items-center justify-center rounded-[14px] px-5 py-3.5 text-[15px] font-semibold tracking-tight text-dark-50/50 transition-colors duration-200"
+          style={{
+            background: g.innerBg,
+            border: `1px solid ${g.innerBorder}`,
+          }}
         >
           {t('dashboard.expired.tariffs')}
         </Link>

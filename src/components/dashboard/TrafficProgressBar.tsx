@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getTrafficZone } from '../../utils/trafficZone';
 import { formatTraffic } from '../../utils/formatTraffic';
+import { useTheme } from '../../hooks/useTheme';
+import { getGlassColors } from '../../utils/glassTheme';
 
 interface TrafficProgressBarProps {
   usedGb: number;
@@ -21,6 +23,8 @@ export default function TrafficProgressBar({
   compact = false,
 }: TrafficProgressBarProps) {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const g = getGlassColors(isDark);
   const zone = useMemo(() => getTrafficZone(percent), [percent]);
   const clampedPercent = Math.min(percent, 100);
   const barHeight = compact ? 8 : 14;
@@ -42,7 +46,7 @@ export default function TrafficProgressBar({
           style={{
             height: barHeight,
             borderRadius: 10,
-            background: 'rgba(255,255,255,0.06)',
+            background: g.trackBg,
             border: `1px solid ${zone.mainHex}20`,
           }}
         >
@@ -90,7 +94,7 @@ export default function TrafficProgressBar({
               />
               {t('dashboard.unlimitedTraffic')}
             </span>
-            <span className="font-mono text-[11px] text-white/30">
+            <span className="font-mono text-[11px] text-dark-50/30">
               {t('dashboard.usedTraffic', { amount: formatTraffic(usedGb) })}
             </span>
           </div>
@@ -113,8 +117,8 @@ export default function TrafficProgressBar({
         style={{
           height: barHeight,
           borderRadius: 10,
-          background: 'rgba(255,255,255,0.06)',
-          border: '1px solid rgba(255,255,255,0.04)',
+          background: g.trackBg,
+          border: `1px solid ${g.trackBorder}`,
         }}
       >
         {/* Warning zone tint backgrounds */}
@@ -171,7 +175,7 @@ export default function TrafficProgressBar({
             style={{
               left: `${threshold}%`,
               width: 1,
-              background: 'rgba(255,255,255,0.08)',
+              background: g.textGhost,
             }}
             aria-hidden="true"
           />
@@ -199,7 +203,7 @@ export default function TrafficProgressBar({
       {/* Scale labels */}
       {!compact && limitGb > 0 && (
         <div
-          className="mt-1.5 flex justify-between px-0.5 font-mono text-[9px] font-medium text-white/20"
+          className="mt-1.5 flex justify-between px-0.5 font-mono text-[9px] font-medium text-dark-50/20"
           aria-hidden="true"
         >
           {[0, 25, 50, 75, 100].map((v) => (

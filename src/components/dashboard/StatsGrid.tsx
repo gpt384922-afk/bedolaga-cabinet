@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Subscription } from '../../types';
 import { useCurrency } from '../../hooks/useCurrency';
+import { useTheme } from '../../hooks/useTheme';
 import { getTrafficZone } from '../../utils/trafficZone';
+import { getGlassColors } from '../../utils/glassTheme';
 
 interface StatsGridProps {
   balanceRubles: number;
@@ -14,18 +16,18 @@ interface StatsGridProps {
   refLoading: boolean;
 }
 
-const ChevronIcon = () => (
+const ChevronIcon = ({ color }: { color: string }) => (
   <svg
     width="16"
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    style={{ opacity: 0.25, flexShrink: 0 }}
+    style={{ flexShrink: 0 }}
     aria-hidden="true"
   >
     <path
       d="M6 4l4 4-4 4"
-      stroke="#fff"
+      stroke={color}
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -43,6 +45,8 @@ export default function StatsGrid({
 }: StatsGridProps) {
   const { t } = useTranslation();
   const { formatAmount, currencySymbol, formatPositive } = useCurrency();
+  const { isDark } = useTheme();
+  const g = getGlassColors(isDark);
 
   const zone = useMemo(
     () => getTrafficZone(subscription?.traffic_used_percent ?? 0),
@@ -81,7 +85,7 @@ export default function StatsGrid({
       label: t('dashboard.stats.subscription'),
       value: subscription ? `${subscription.days_left}` : '—',
       valueSuffix: subscription ? ` ${t('subscription.daysShort')}` : '',
-      valueColor: '#fff',
+      valueColor: g.text,
       to: '/subscription',
       icon: (color: string) => (
         <svg
@@ -99,15 +103,15 @@ export default function StatsGrid({
           <circle cx="7" cy="7" r="1" />
         </svg>
       ),
-      iconBg: 'rgba(255,255,255,0.06)',
-      iconColor: 'rgba(255,255,255,0.45)',
+      iconBg: g.trackBg,
+      iconColor: g.textSecondary,
       loading: subLoading,
       onboarding: 'subscription-status',
     },
     {
       label: t('dashboard.stats.referrals'),
       value: `${referralCount}`,
-      valueColor: '#fff',
+      valueColor: g.text,
       to: '/referral',
       icon: (color: string) => (
         <svg
@@ -126,8 +130,8 @@ export default function StatsGrid({
           <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
         </svg>
       ),
-      iconBg: 'rgba(255,255,255,0.06)',
-      iconColor: 'rgba(255,255,255,0.45)',
+      iconBg: g.trackBg,
+      iconColor: g.textSecondary,
       loading: refLoading,
     },
     {
@@ -165,9 +169,9 @@ export default function StatsGrid({
           to={card.to}
           className="group relative overflow-hidden rounded-[18px] transition-all duration-200"
           style={{
-            background:
-              'linear-gradient(145deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.02) 100%)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: g.cardBg,
+            border: `1px solid ${g.cardBorder}`,
+            boxShadow: g.shadow,
             padding: '18px 20px 20px',
           }}
           data-onboarding={card.onboarding}
@@ -181,9 +185,9 @@ export default function StatsGrid({
               >
                 {card.icon(card.iconColor)}
               </div>
-              <span className="text-[13px] font-medium text-white/45">{card.label}</span>
+              <span className="text-[13px] font-medium text-dark-50/45">{card.label}</span>
             </div>
-            <ChevronIcon />
+            <ChevronIcon color={g.textFaint} />
           </div>
 
           {/* Value */}
@@ -196,7 +200,7 @@ export default function StatsGrid({
             >
               {card.value}
               {card.valueSuffix && (
-                <span className="ml-0.5 text-base font-medium text-white/35">
+                <span className="ml-0.5 text-base font-medium text-dark-50/35">
                   {card.valueSuffix}
                 </span>
               )}
