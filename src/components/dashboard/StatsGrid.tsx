@@ -10,7 +10,6 @@ import { getGlassColors } from '../../utils/glassTheme';
 interface StatsGridProps {
   balanceRubles: number;
   subscription: Subscription | null;
-  subLoading: boolean;
   referralCount: number;
   earningsRubles: number;
   refLoading: boolean;
@@ -38,7 +37,6 @@ const ChevronIcon = ({ color }: { color: string }) => (
 export default function StatsGrid({
   balanceRubles,
   subscription,
-  subLoading,
   referralCount,
   earningsRubles,
   refLoading,
@@ -82,36 +80,11 @@ export default function StatsGrid({
       onboarding: 'balance',
     },
     {
-      label: t('dashboard.stats.subscription'),
-      value: subscription ? `${subscription.days_left}` : '—',
-      valueSuffix: subscription ? ` ${t('subscription.daysShort')}` : '',
-      valueColor: g.text,
-      to: '/subscription',
-      icon: (color: string) => (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-          <circle cx="7" cy="7" r="1" />
-        </svg>
-      ),
-      iconBg: g.trackBg,
-      iconColor: g.textSecondary,
-      loading: subLoading,
-      onboarding: 'subscription-status',
-    },
-    {
       label: t('dashboard.stats.referrals'),
       value: `${referralCount}`,
       valueColor: g.text,
+      subtitle: `${formatPositive(earningsRubles)} ${currencySymbol}`,
+      subtitleColor: zone.mainHex,
       to: '/referral',
       icon: (color: string) => (
         <svg
@@ -132,31 +105,6 @@ export default function StatsGrid({
       ),
       iconBg: g.trackBg,
       iconColor: g.textSecondary,
-      loading: refLoading,
-    },
-    {
-      label: t('dashboard.stats.earnings'),
-      value: formatPositive(earningsRubles),
-      valueColor: zone.mainHex,
-      to: '/referral',
-      icon: (color: string) => (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v12M8.5 9.5c0-1.38 1.57-2.5 3.5-2.5s3.5 1.12 3.5 2.5-1.57 2.5-3.5 2.5-3.5 1.12-3.5 2.5 1.57 2.5 3.5 2.5 3.5-1.12 3.5-2.5" />
-        </svg>
-      ),
-      iconBg: `${zone.mainHex}12`,
-      iconColor: zone.mainHex,
       loading: refLoading,
     },
   ];
@@ -194,17 +142,22 @@ export default function StatsGrid({
           {card.loading ? (
             <div className="skeleton h-8 w-20" />
           ) : (
-            <div
-              className="text-[28px] font-bold leading-tight tracking-tight transition-colors duration-500"
-              style={{ color: card.valueColor }}
-            >
-              {card.value}
-              {card.valueSuffix && (
-                <span className="ml-0.5 text-base font-medium text-dark-50/35">
-                  {card.valueSuffix}
-                </span>
+            <>
+              <div
+                className="text-[28px] font-bold leading-tight tracking-tight transition-colors duration-500"
+                style={{ color: card.valueColor }}
+              >
+                {card.value}
+              </div>
+              {card.subtitle && (
+                <div
+                  className="mt-0.5 text-[13px] font-semibold"
+                  style={{ color: card.subtitleColor }}
+                >
+                  {card.subtitle}
+                </div>
               )}
-            </div>
+            </>
           )}
         </Link>
       ))}

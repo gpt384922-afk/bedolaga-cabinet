@@ -191,12 +191,6 @@ export default function Dashboard() {
         description: t('onboarding.steps.balance.description'),
         placement: 'bottom',
       },
-      {
-        target: 'subscription-status',
-        title: t('onboarding.steps.subscription.title'),
-        description: t('onboarding.steps.subscription.description'),
-        placement: 'bottom',
-      },
     ];
 
     if (subscription?.subscription_url) {
@@ -270,7 +264,6 @@ export default function Dashboard() {
       <StatsGrid
         balanceRubles={balanceData?.balance_rubles || 0}
         subscription={subscription}
-        subLoading={subLoading}
         referralCount={referralInfo?.total_referrals || 0}
         earningsRubles={referralInfo?.total_earnings_rubles || 0}
         refLoading={refLoading}
