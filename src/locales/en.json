@@ -2990,7 +2990,8 @@
         "loadFailed": "Failed to load roles",
         "createFailed": "Failed to create role",
         "updateFailed": "Failed to update role",
-        "nameRequired": "Role name is required"
+        "nameRequired": "Role name is required",
+        "deleteFailed": "Failed to delete role"
       }
     },
     "roleAssign": {
@@ -3041,7 +3042,8 @@
       "errors": {
         "userRequired": "Please select a user",
         "roleRequired": "Please select a role",
-        "assignFailed": "Failed to assign role"
+        "assignFailed": "Failed to assign role",
+        "revokeFailed": "Failed to revoke role"
       }
     },
     "policies": {
@@ -3117,7 +3119,8 @@
         "updateFailed": "Failed to update policy",
         "nameRequired": "Policy name is required",
         "resourceRequired": "Please select a resource",
-        "actionsRequired": "Please select at least one action"
+        "actionsRequired": "Please select at least one action",
+        "deleteFailed": "Failed to delete policy"
       }
     },
     "auditLog": {
@@ -3125,6 +3128,7 @@
       "subtitle": "Review system activity and access history",
       "back": "Back",
       "exportCsv": "Export CSV",
+      "exportError": "Failed to export",
       "exporting": "Exporting...",
       "refresh": "Refresh",
       "unknownUser": "Unknown user",

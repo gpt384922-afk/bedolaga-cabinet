@@ -2850,7 +2850,8 @@
         "loadFailed": "بارگذاری نقش‌ها ناموفق بود",
         "createFailed": "ایجاد نقش ناموفق بود",
         "updateFailed": "به‌روزرسانی نقش ناموفق بود",
-        "nameRequired": "نام نقش الزامی است"
+        "nameRequired": "نام نقش الزامی است",
+        "deleteFailed": "حذف نقش ناموفق بود"
       }
     },
     "roleAssign": {
@@ -2900,7 +2901,8 @@
       "errors": {
         "userRequired": "لطفاً یک کاربر انتخاب کنید",
         "roleRequired": "لطفاً یک نقش انتخاب کنید",
-        "assignFailed": "تخصیص نقش ناموفق بود"
+        "assignFailed": "تخصیص نقش ناموفق بود",
+        "revokeFailed": "لغو نقش ناموفق بود"
       }
     },
     "policies": {
@@ -2975,7 +2977,8 @@
         "updateFailed": "به‌روزرسانی سیاست ناموفق بود",
         "nameRequired": "نام سیاست الزامی است",
         "resourceRequired": "لطفاً یک منبع انتخاب کنید",
-        "actionsRequired": "لطفاً حداقل یک عملیات انتخاب کنید"
+        "actionsRequired": "لطفاً حداقل یک عملیات انتخاب کنید",
+        "deleteFailed": "حذف سیاست ناموفق بود"
       }
     },
     "auditLog": {
@@ -2983,6 +2986,7 @@
       "subtitle": "بررسی فعالیت سیستم و تاریخچه دسترسی",
       "back": "بازگشت",
       "exportCsv": "خروجی CSV",
+      "exportError": "خطا در خروجی",
       "exporting": "در حال خروجی...",
       "refresh": "بازخوانی",
       "unknownUser": "کاربر ناشناخته",

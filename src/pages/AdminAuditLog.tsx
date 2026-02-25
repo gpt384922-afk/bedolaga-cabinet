@@ -381,6 +381,7 @@ export default function AdminAuditLog() {
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // Auto-refresh interval ref
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -479,10 +480,12 @@ export default function AdminAuditLog() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    } catch {
+      setExportError(t('admin.auditLog.exportError'));
     } finally {
       setExporting(false);
     }
-  }, [appliedFilters]);
+  }, [appliedFilters, t]);
 
   const handlePageSizeChange = useCallback((newSize: number) => {
     setPageSize(newSize);
@@ -552,16 +555,22 @@ export default function AdminAuditLog() {
 
           {/* Export */}
           <PermissionGate permission="audit_log:export">
-            <button
-              onClick={handleExport}
-              disabled={exporting}
-              className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-            >
-              <DownloadIcon />
-              <span className="hidden sm:inline">
-                {exporting ? t('admin.auditLog.exporting') : t('admin.auditLog.exportCsv')}
-              </span>
-            </button>
+            <div className="flex items-center gap-2">
+              {exportError && <p className="text-sm text-error-400">{exportError}</p>}
+              <button
+                onClick={() => {
+                  setExportError(null);
+                  handleExport();
+                }}
+                disabled={exporting}
+                className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+              >
+                <DownloadIcon />
+                <span className="hidden sm:inline">
+                  {exporting ? t('admin.auditLog.exporting') : t('admin.auditLog.exportCsv')}
+                </span>
+              </button>
+            </div>
           </PermissionGate>
         </div>
       </div>

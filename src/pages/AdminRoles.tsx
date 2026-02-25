@@ -350,6 +350,10 @@ export default function AdminRoles() {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setDeleteConfirm(null);
     },
+    onError: () => {
+      setDeleteConfirm(null);
+      setFormError(t('admin.roles.errors.deleteFailed'));
+    },
   });
 
   // Handlers

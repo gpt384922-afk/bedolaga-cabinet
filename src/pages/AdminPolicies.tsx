@@ -379,6 +379,10 @@ export default function AdminPolicies() {
       queryClient.invalidateQueries({ queryKey: ['admin-policies'] });
       setDeleteConfirm(null);
     },
+    onError: () => {
+      setDeleteConfirm(null);
+      setFormError(t('admin.policies.errors.deleteFailed'));
+    },
   });
 
   // Derived data

@@ -330,6 +330,10 @@ export default function AdminRoleAssign() {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setRevokeConfirm(null);
     },
+    onError: () => {
+      setRevokeConfirm(null);
+      setFormError(t('admin.roleAssign.errors.revokeFailed'));
+    },
   });
 
   // Handlers

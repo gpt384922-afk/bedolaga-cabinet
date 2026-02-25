@@ -2876,7 +2876,8 @@
         "loadFailed": "加载角色失败",
         "createFailed": "创建角色失败",
         "updateFailed": "更新角色失败",
-        "nameRequired": "请输入角色名称"
+        "nameRequired": "请输入角色名称",
+        "deleteFailed": "删除角色失败"
       }
     },
     "roleAssign": {
@@ -2926,7 +2927,8 @@
       "errors": {
         "userRequired": "请选择用户",
         "roleRequired": "请选择角色",
-        "assignFailed": "角色分配失败"
+        "assignFailed": "角色分配失败",
+        "revokeFailed": "角色撤销失败"
       }
     },
     "policies": {
@@ -3001,7 +3003,8 @@
         "updateFailed": "更新策略失败",
         "nameRequired": "请输入策略名称",
         "resourceRequired": "请选择资源",
-        "actionsRequired": "请至少选择一个操作"
+        "actionsRequired": "请至少选择一个操作",
+        "deleteFailed": "删除策略失败"
       }
     },
     "auditLog": {
@@ -3009,6 +3012,7 @@
       "subtitle": "查看系统活动和访问历史",
       "back": "返回",
       "exportCsv": "导出CSV",
+      "exportError": "导出失败",
       "exporting": "导出中...",
       "refresh": "刷新",
       "unknownUser": "未知用户",
