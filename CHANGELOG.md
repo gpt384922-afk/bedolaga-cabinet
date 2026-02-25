@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.21.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.20.0...v1.21.0) (2026-02-25)
+
+
+### Features
+
+* add granular user permissions (balance, subscription, promo_group, referral, send_offer) ([3d6987f](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/3d6987f761b168113c009845d8ff028f9ca86688))
+* add per-channel disable settings and global settings to channel admin ([48be067](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/48be067d1b41f57b02d97405b8a92538c306dabd))
+* add RBAC permission system to admin cabinet frontend ([874ee26](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/874ee2682e50d9deca42b794a4be0ae0dd95ab5c))
+* add translations for permission sections and actions ([80bfaca](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/80bfaca457192d25af182365da8c18a8f97c7830))
+* add weekdays condition to ABAC policies ([a1a8dc2](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a1a8dc22034def5802791e1ceda4da6a3558db6b))
+* allow editing system roles ([a050125](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/a050125ea8d4265f096bafe0317e811289f38738))
+* improve audit log - translate actions, fix resource filter, show request body ([5d0e353](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/5d0e3539e22576e1824292da09c396123349b371))
+* show query params in audit log details ([66f7fcb](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/66f7fcb3dca32748503f1ab92155818369f94da6))
+
+
+### Bug Fixes
+
+* add missing onError handlers on RBAC mutations ([c4e3211](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/c4e3211baa3bfec81cc0efec4467660180e42ba7))
+* guard user detail API calls with RBAC permission checks ([bc5d832](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/bc5d832e0d3faf5dc6f64a6359e32d75e68c4282))
+* RBAC frontend type mismatches and translations ([4c9c399](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/4c9c3992abe5ffbf98ad1e44e8e9d4b899af6594))
+* RBAC policies page role handling and permission gates ([56188b1](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/56188b1f8aa8526419d7a8e30389ef41787e7640))
+* redesign role revoke confirmation dialog ([f829076](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/f829076bc2ec1f3229aa59d209ffbe5d1b00319f))
+* replace broken modal with inline confirmation for role revoke ([78e7099](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/78e70992f169861fa51150ad06f91f047f3d0708))
+
 ## [1.20.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.19.1...v1.20.0) (2026-02-24)
 
 
