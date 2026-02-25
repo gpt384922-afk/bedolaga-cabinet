@@ -10,6 +10,7 @@ import { getTrafficZone } from '../utils/trafficZone';
 import { formatTraffic } from '../utils/formatTraffic';
 import { getGlassColors } from '../utils/glassTheme';
 import { useTheme } from '../hooks/useTheme';
+import { HoverBorderGradient } from '../components/ui/hover-border-gradient';
 import type {
   PurchaseSelection,
   PeriodOption,
@@ -909,14 +910,12 @@ export default function Subscription() {
 
               {/* ─── Connect Device Button ─── */}
               {subscription.subscription_url && (
-                <button
+                <HoverBorderGradient
+                  as="button"
+                  accentColor={zone.mainHex}
                   onClick={() => navigate('/connection')}
-                  className="mb-5 flex w-full items-center gap-3.5 rounded-[14px] p-3.5 text-left transition-all duration-300"
-                  style={{
-                    background: g.innerBg,
-                    border: `1px solid ${g.innerBorder}`,
-                    fontFamily: 'inherit',
-                  }}
+                  className="mb-5 flex w-full items-center gap-3.5 rounded-[14px] p-3.5 text-left transition-shadow duration-300"
+                  style={{ fontFamily: 'inherit' }}
                 >
                   <div
                     className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] transition-colors duration-500"
@@ -961,7 +960,7 @@ export default function Subscription() {
                       />
                     ))}
                   </div>
-                </button>
+                </HoverBorderGradient>
               )}
 
               {/* ─── Subscription URL ─── */}

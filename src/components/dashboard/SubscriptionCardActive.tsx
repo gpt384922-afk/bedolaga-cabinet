@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { getTrafficZone } from '../../utils/trafficZone';
 import { formatTraffic } from '../../utils/formatTraffic';
 import { getGlassColors } from '../../utils/glassTheme';
+import { HoverBorderGradient } from '../ui/hover-border-gradient';
 import type { Subscription } from '../../types';
 
 interface SubscriptionCardActiveProps {
@@ -196,15 +197,13 @@ export default function SubscriptionCardActive({
 
       {/* ─── Connect Device Button ─── */}
       {subscription.subscription_url && (
-        <button
+        <HoverBorderGradient
+          as="button"
+          accentColor={zone.mainHex}
           onClick={() => navigate('/connection')}
-          className="mb-2.5 flex w-full items-center gap-3.5 rounded-[14px] p-3.5 text-left transition-all duration-300"
+          className="mb-2.5 flex w-full items-center gap-3.5 rounded-[14px] p-3.5 text-left transition-shadow duration-300"
           data-onboarding="connect-devices"
-          style={{
-            fontFamily: 'inherit',
-            background: g.innerBg,
-            border: `1px solid ${g.innerBorder}`,
-          }}
+          style={{ fontFamily: 'inherit' }}
         >
           {/* Monitor icon */}
           <div
@@ -254,7 +253,7 @@ export default function SubscriptionCardActive({
               />
             ))}
           </div>
-        </button>
+        </HoverBorderGradient>
       )}
 
       {/* ─── Stats row: Tariff + Days Left ─── */}

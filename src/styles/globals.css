@@ -10,10 +10,9 @@
 }
 
 .hover-border-gradient {
-  --_bg: rgb(var(--color-dark-900));
-  --_accent: rgb(var(--color-accent-400));
+  --_bg: var(--border-inner-bg, rgb(var(--color-dark-900)));
+  --_accent: var(--accent-color, rgb(var(--color-accent-400)));
   border: 1.5px solid transparent;
-  padding: 10px 16px;
   background:
     linear-gradient(var(--_bg), var(--_bg)) padding-box,
     conic-gradient(
@@ -24,12 +23,22 @@
         var(--_accent) 100%
       )
       border-box;
-  animation: border-rotate 3s linear infinite;
-  transition: box-shadow 0.3s ease;
+  animation: border-rotate var(--border-duration, 3s) linear infinite;
 }
 
-.hover-border-gradient:hover {
-  box-shadow: 0 0 16px rgba(var(--color-accent-400), 0.3);
+.hover-border-gradient:hover,
+.hover-border-gradient:active {
+  box-shadow: 0 0 20px var(--accent-glow, rgba(var(--color-accent-400), 0.25));
+}
+
+.light .hover-border-gradient {
+  --_bg: var(--border-inner-bg, rgb(var(--color-champagne-100)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-border-gradient {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes border-rotate {
