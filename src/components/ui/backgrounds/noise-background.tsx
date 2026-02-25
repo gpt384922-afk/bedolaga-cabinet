@@ -50,7 +50,7 @@ export default function NoiseBackground({ settings }: Props) {
     }
 
     return () => {
-      if (animated) cancelAnimationFrame(animationRef.current);
+      cancelAnimationFrame(animationRef.current);
     };
   }, [animated]);
 
@@ -62,7 +62,7 @@ export default function NoiseBackground({ settings }: Props) {
         style={{
           opacity: noiseOpacity,
           imageRendering: 'pixelated',
-          mixBlendMode: 'overlay',
+          mixBlendMode: 'screen',
         }}
       />
     </div>
