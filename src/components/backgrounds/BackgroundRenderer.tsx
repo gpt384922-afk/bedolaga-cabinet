@@ -54,8 +54,8 @@ export function BackgroundRenderer() {
       return result;
     },
     initialData: getCachedConfig() ?? undefined,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
+    initialDataUpdatedAt: 0,
+    staleTime: 30_000,
   });
 
   const effectiveConfig = config ?? DEFAULT_ANIMATION_CONFIG;
