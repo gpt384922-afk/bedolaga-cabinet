@@ -592,6 +592,13 @@ export default function AdminPanel() {
           permission: 'remnawave:read',
         },
         {
+          to: '/admin/personal-vpn',
+          icon: <ServerStackIcon />,
+          title: 'Личный VPN',
+          description: 'Выдача и продление личных VPN инстансов',
+          permission: 'remnawave:manage',
+        },
+        {
           to: '/admin/email-templates',
           icon: <EnvelopeIcon />,
           title: t('admin.nav.emailTemplates'),

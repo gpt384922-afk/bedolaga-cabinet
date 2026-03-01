@@ -6,6 +6,7 @@ export { referralApi } from './referral';
 export { ticketsApi } from './tickets';
 export { contestsApi } from './contests';
 export { pollsApi } from './polls';
+export { personalVpnApi } from './personalVpn';
 export { promoApi } from './promo';
 export { notificationsApi } from './notifications';
 export { infoApi } from './info';

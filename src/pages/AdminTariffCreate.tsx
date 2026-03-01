@@ -1022,7 +1022,7 @@ export default function AdminTariffCreate() {
           {/* Family access */}
           <div className="card space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-dark-200">Family access</h4>
+              <h4 className="text-sm font-medium text-dark-200">Семейный доступ</h4>
               <button
                 type="button"
                 onClick={() => setFamilyEnabled(!familyEnabled)}
@@ -1038,11 +1038,11 @@ export default function AdminTariffCreate() {
               </button>
             </div>
             <p className="text-xs text-dark-500">
-              Max members count includes the subscription owner.
+              Лимит участников включает владельца подписки.
             </p>
             {familyEnabled && (
               <div className="flex items-center gap-3">
-                <span className="w-48 text-sm text-dark-400">Max family members</span>
+                <span className="w-48 text-sm text-dark-400">Макс. участников семьи</span>
                 <input
                   type="number"
                   value={familyMaxMembers}

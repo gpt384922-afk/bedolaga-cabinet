@@ -263,17 +263,17 @@ export default function WebSocketNotifications() {
       // Family events
       if (type.startsWith('family.')) {
         const familyTitles: Record<string, string> = {
-          'family.invite_received': t('subscription.familyInviteReceived', 'Family invitation'),
-          'family.invite_accepted': t('subscription.familyInviteAccepted', 'Invitation accepted'),
-          'family.invite_declined': t('subscription.familyInviteDeclined', 'Invitation declined'),
-          'family.invite_revoked': t('subscription.familyInviteRevoked', 'Invitation revoked'),
-          'family.member_removed': t('subscription.familyMemberRemoved', 'Removed from family'),
-          'family.member_left': t('subscription.familyMemberLeft', 'Family member left'),
+          'family.invite_received': t('subscription.familyInviteReceived', 'Приглашение в семью'),
+          'family.invite_accepted': t('subscription.familyInviteAccepted', 'Приглашение принято'),
+          'family.invite_declined': t('subscription.familyInviteDeclined', 'Приглашение отклонено'),
+          'family.invite_revoked': t('subscription.familyInviteRevoked', 'Приглашение отменено'),
+          'family.member_removed': t('subscription.familyMemberRemoved', 'Вы удалены из семьи'),
+          'family.member_left': t('subscription.familyMemberLeft', 'Участник вышел из семьи'),
         };
 
         showToast({
           type: type === 'family.invite_declined' || type === 'family.member_removed' ? 'warning' : 'info',
-          title: message.title || familyTitles[type] || t('subscription.familyAccess', 'Family Access'),
+          title: message.title || familyTitles[type] || t('subscription.familyAccess', 'Семейный доступ'),
           message: message.message || t('common.success', 'Success'),
           icon: <span className="text-lg">👨‍👩‍👧‍👦</span>,
           onClick: () => navigate('/subscription'),

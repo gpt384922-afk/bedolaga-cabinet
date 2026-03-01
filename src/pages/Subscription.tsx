@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { subscriptionApi } from '../api/subscription';
 import { promoApi } from '../api/promo';
+import { useNotify } from '../platform/hooks/useNotify';
 import TrafficProgressBar from '../components/dashboard/TrafficProgressBar';
 import { getTrafficZone } from '../utils/trafficZone';
 import { formatTraffic } from '../utils/formatTraffic';
@@ -28,10 +29,44 @@ const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     const detail = error.response?.data?.detail;
     if (typeof detail === 'string') return detail;
-    if (typeof detail === 'object' && detail?.message) return detail.message;
+    if (typeof detail === 'object') {
+      if (detail?.message_ru) return detail.message_ru;
+      if (detail?.message) return detail.message;
+    }
   }
   if (error instanceof Error) return error.message;
   return i18n.t('common.error');
+};
+
+const getErrorCode = (error: unknown): string | null => {
+  if (error instanceof AxiosError) {
+    const detail = error.response?.data?.detail;
+    if (typeof detail === 'object' && typeof detail?.error_code === 'string') {
+      return detail.error_code;
+    }
+  }
+  return null;
+};
+
+const FAMILY_MEMBER_STATUS_LABELS: Record<string, string> = {
+  invited: 'Приглашён',
+  active: 'В семье',
+  declined: 'Отклонил',
+  left: 'Вышел',
+  removed: 'Удалён владельцем',
+};
+
+const FAMILY_INVITE_STATUS_LABELS: Record<string, string> = {
+  pending: 'Ожидает ответа',
+  accepted: 'Принято',
+  declined: 'Отклонено',
+  expired: 'Истекло',
+  revoked: 'Отменено',
+};
+
+const FAMILY_ROLE_LABELS: Record<string, string> = {
+  owner: 'Владелец',
+  member: 'Участник',
 };
 
 // Helper to extract insufficient balance error details
@@ -86,6 +121,7 @@ type PurchaseStep = 'period' | 'traffic' | 'servers' | 'devices' | 'confirm';
 
 export default function Subscription() {
   const { t } = useTranslation();
+  const notify = useNotify();
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
@@ -206,6 +242,19 @@ export default function Subscription() {
     queryKey: ['subscription-family'],
     queryFn: subscriptionApi.getFamilyOverview,
   });
+
+  const visibleFamilyMembers = useMemo(
+    () =>
+      (familyData?.members || []).filter(
+        (member) =>
+          member.role === 'owner' || member.status === 'active' || member.status === 'invited',
+      ),
+    [familyData?.members],
+  );
+  const visibleFamilyInvites = useMemo(
+    () => (familyData?.invites || []).filter((invite) => invite.status === 'pending'),
+    [familyData?.invites],
+  );
 
   // Check if in tariffs mode (moved up to be available for useEffect)
   const isTariffsMode = purchaseOptions?.sales_mode === 'tariffs';
@@ -334,10 +383,26 @@ export default function Subscription() {
     onSuccess: () => {
       setFamilyInviteUsername('');
       setFamilyInviteError(null);
+      notify.success('Приглашение отправлено');
       queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
     },
     onError: (error: unknown) => {
-      setFamilyInviteError(getErrorMessage(error));
+      const code = getErrorCode(error);
+      const rawMessage = getErrorMessage(error);
+      const inviteErrorMap: Record<string, string> = {
+        'User must start the bot first': 'Пользователь должен сначала запустить бота',
+        'User is already in another family': 'Пользователь уже состоит в другой семье',
+        'You cannot invite yourself': 'Нельзя пригласить самого себя',
+        'Family member limit reached': 'Достигнут лимит участников семьи',
+        'Invite already pending': 'Приглашение уже отправлено',
+        'Invalid Telegram username': 'Некорректный Telegram username',
+      };
+      const message =
+        code === 'INVITEE_HAS_ACTIVE_SUBSCRIPTION'
+          ? 'Нельзя пригласить пользователя с активной подпиской'
+          : inviteErrorMap[rawMessage] || rawMessage;
+      setFamilyInviteError(message);
+      notify.error(message);
     },
   });
 
@@ -2340,13 +2405,13 @@ export default function Subscription() {
         >
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold tracking-tight text-dark-50">
-              {t('subscription.familyAccess', 'Family Access')}
+              {t('subscription.familyAccess', 'Семейный доступ')}
             </h2>
             <button
               onClick={() => setShowFamilySection((prev) => !prev)}
               className="btn-secondary px-3 py-1.5 text-xs"
             >
-              {showFamilySection ? t('common.hide', 'Hide') : t('common.show', 'Show')}
+              {showFamilySection ? t('common.hide', 'Скрыть') : t('common.show', 'Показать')}
             </button>
           </div>
 
@@ -2361,7 +2426,7 @@ export default function Subscription() {
                   {familyData.pending_invites_for_you.length > 0 && (
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-dark-200">
-                        {t('subscription.familyPendingInvites', 'Pending invitations')}
+                        {t('subscription.familyPendingInvites', 'Входящие приглашения')}
                       </div>
                       {familyData.pending_invites_for_you.map((invite) => (
                         <div
@@ -2369,7 +2434,7 @@ export default function Subscription() {
                           className="rounded-xl border border-accent-500/20 bg-accent-500/10 p-3"
                         >
                           <div className="text-sm text-dark-100">
-                            {t('subscription.familyInvitedBy', 'Invited by')}{' '}
+                            {t('subscription.familyInvitedBy', 'Вас пригласил')}{' '}
                             <span className="font-medium text-accent-300">
                               {invite.inviter_display_name}
                             </span>
@@ -2380,14 +2445,14 @@ export default function Subscription() {
                               disabled={acceptFamilyInviteMutation.isPending}
                               className="btn-primary px-3 py-1.5 text-xs"
                             >
-                              {t('common.accept', 'Accept')}
+                              {t('common.accept', 'Принять')}
                             </button>
                             <button
                               onClick={() => declineFamilyInviteMutation.mutate(invite.invite_id)}
                               disabled={declineFamilyInviteMutation.isPending}
                               className="btn-secondary px-3 py-1.5 text-xs"
                             >
-                              {t('common.decline', 'Decline')}
+                              {t('common.decline', 'Отклонить')}
                             </button>
                           </div>
                         </div>
@@ -2398,20 +2463,20 @@ export default function Subscription() {
                   {(familyData.role === 'owner' || familyData.role === 'member') && (
                     <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-3">
                       <div className="text-sm text-dark-200">
-                        {t('subscription.familyMembersLimit', 'Max members')}:&nbsp;
+                        {t('subscription.familyMembersLimit', 'Макс. участников')}:&nbsp;
                         <span className="font-semibold text-dark-100">
                           {familyData.max_members_including_owner || 0}
                         </span>{' '}
-                        ({t('subscription.familyIncludingOwner', 'including you')})
+                        ({t('subscription.familyIncludingOwner', 'включая вас')})
                       </div>
                       <div className="mt-1 text-sm text-dark-400">
-                        {t('subscription.familyUsedSlots', 'Used slots')}: {familyData.used_slots}/
+                        {t('subscription.familyUsedSlots', 'Занято мест')}: {familyData.used_slots}/
                         {familyData.max_members_including_owner || 0}
                       </div>
                       <div className="mt-1 text-sm text-dark-400">
-                        {t('subscription.familyDeviceUsage', 'Devices in use')}:{' '}
+                        {t('subscription.familyDeviceUsage', 'Устройств занято')}:{' '}
                         {familyData.device_summary.total_used}/{familyData.device_summary.device_limit}{' '}
-                        ({t('subscription.familyRemaining', 'remaining')}:{' '}
+                        ({t('subscription.familyRemaining', 'свободно')}:{' '}
                         {familyData.device_summary.remaining})
                       </div>
                     </div>
@@ -2421,19 +2486,19 @@ export default function Subscription() {
                     <div className="rounded-lg border border-warning-500/30 bg-warning-500/10 p-3 text-sm text-warning-400">
                       {t(
                         'subscription.familyNotAllowedForTariff',
-                        'Family access is not available for your current tariff.',
+                        'Семейный доступ недоступен на вашем текущем тарифе.',
                       )}
                     </div>
                   )}
 
-                  {(familyData.members.length > 0 || familyData.invites.length > 0) && (
+                  {(visibleFamilyMembers.length > 0 || visibleFamilyInvites.length > 0) && (
                     <div className="space-y-3">
-                      {familyData.members.length > 0 && (
+                      {visibleFamilyMembers.length > 0 && (
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-dark-200">
-                            {t('subscription.familyMembers', 'Family members')}
+                            {t('subscription.familyMembers', 'Участники семьи')}
                           </div>
-                          {familyData.members.map((member) => (
+                          {visibleFamilyMembers.map((member) => (
                             <div
                               key={`${member.user_id}-${member.role}`}
                               className="flex items-center justify-between rounded-lg bg-dark-800/60 p-3"
@@ -2444,7 +2509,9 @@ export default function Subscription() {
                                   {member.username ? ` (@${member.username})` : ''}
                                 </div>
                                 <div className="text-xs text-dark-500">
-                                  {member.role} • {member.status} • {member.devices_count}{' '}
+                                  {FAMILY_ROLE_LABELS[member.role] || member.role} •{' '}
+                                  {FAMILY_MEMBER_STATUS_LABELS[member.status] || member.status} •{' '}
+                                  {member.devices_count}{' '}
                                   {t('subscription.devices', { count: member.devices_count })}
                                 </div>
                               </div>
@@ -2453,14 +2520,21 @@ export default function Subscription() {
                                 member.can_remove && (
                                   <button
                                     onClick={() => {
-                                      if (confirm(t('subscription.confirmRemoveFamilyMember', 'Remove member?'))) {
+                                      if (
+                                        confirm(
+                                          t(
+                                            'subscription.confirmRemoveFamilyMember',
+                                            'Вы действительно хотите удалить пользователя из семьи?',
+                                          ),
+                                        )
+                                      ) {
                                         removeFamilyMemberMutation.mutate(member.user_id);
                                       }
                                     }}
                                     disabled={removeFamilyMemberMutation.isPending}
                                     className="rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
                                   >
-                                    {t('common.remove', 'Remove')}
+                                    {t('common.remove', 'Удалить из семьи')}
                                   </button>
                                 )}
                             </div>
@@ -2468,12 +2542,12 @@ export default function Subscription() {
                         </div>
                       )}
 
-                      {familyData.invites.length > 0 && (
+                      {visibleFamilyInvites.length > 0 && (
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-dark-200">
-                            {t('subscription.familyInvites', 'Invites')}
+                            {t('subscription.familyInvites', 'Приглашения')}
                           </div>
-                          {familyData.invites.map((invite) => (
+                          {visibleFamilyInvites.map((invite) => (
                             <div
                               key={invite.invite_id}
                               className="flex items-center justify-between rounded-lg bg-dark-800/60 p-3"
@@ -2483,7 +2557,9 @@ export default function Subscription() {
                                   {invite.display_name}
                                   {invite.username ? ` (@${invite.username})` : ''}
                                 </div>
-                                <div className="text-xs text-dark-500">{invite.status}</div>
+                                <div className="text-xs text-dark-500">
+                                  {FAMILY_INVITE_STATUS_LABELS[invite.status] || invite.status}
+                                </div>
                               </div>
                               {familyData.role === 'owner' && invite.can_revoke && (
                                 <button
@@ -2491,7 +2567,7 @@ export default function Subscription() {
                                   disabled={revokeFamilyInviteMutation.isPending}
                                   className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600"
                                 >
-                                  {t('subscription.familyRevokeInvite', 'Revoke')}
+                                  {t('subscription.familyRevokeInvite', 'Отменить приглашение')}
                                 </button>
                               )}
                             </div>
@@ -2504,7 +2580,7 @@ export default function Subscription() {
                   {familyData.role === 'owner' && familyData.family_enabled && (
                     <div className="space-y-2 rounded-xl border border-dark-700/50 bg-dark-800/50 p-3">
                       <div className="text-sm font-medium text-dark-200">
-                        {t('subscription.familyInviteTitle', 'Invite by Telegram username')}
+                        {t('subscription.familyInviteTitle', 'Пригласить пользователя')}
                       </div>
                       <div className="flex gap-2">
                         <input
@@ -2521,7 +2597,7 @@ export default function Subscription() {
                             const username = familyInviteUsername.trim();
                             if (!username) {
                               setFamilyInviteError(
-                                t('subscription.familyUsernameRequired', 'Please enter @username'),
+                                t('subscription.familyUsernameRequired', 'Введите @username'),
                               );
                               return;
                             }
@@ -2534,7 +2610,7 @@ export default function Subscription() {
                           }
                           className="btn-primary px-4"
                         >
-                          {t('subscription.familyInviteButton', 'Invite')}
+                          {t('subscription.familyInviteButton', 'Пригласить')}
                         </button>
                       </div>
                       {familyInviteError && (
@@ -2542,7 +2618,10 @@ export default function Subscription() {
                       )}
                       {!familyData.can_invite && (
                         <div className="text-xs text-dark-500">
-                          {t('subscription.familyNoSlotsLeft', 'No free family slots left.')}
+                          {t(
+                            'subscription.familyNoSlotsLeft',
+                            `Свободных мест: ${familyData.remaining_slots}`,
+                          )}
                         </div>
                       )}
                     </div>
@@ -2553,22 +2632,37 @@ export default function Subscription() {
                       <div className="mb-2 text-sm text-dark-300">
                         {t(
                           'subscription.familyMemberInfo',
-                          'You are using shared family access. You can remove only your own devices.',
+                          'Вы используете семейный доступ. Вы можете удалять только свои устройства.',
                         )}
                       </div>
                       <button
                         onClick={() => {
-                          if (confirm(t('subscription.familyLeaveConfirm', 'Leave family?'))) {
+                          if (
+                            confirm(
+                              t(
+                                'subscription.familyLeaveConfirm',
+                                'Вы действительно хотите выйти из семьи? Доступ к подписке будет потерян.',
+                              ),
+                            )
+                          ) {
                             leaveFamilyMutation.mutate();
                           }
                         }}
                         disabled={leaveFamilyMutation.isPending}
                         className="rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
                       >
-                        {t('subscription.familyLeave', 'Leave family')}
+                        {t('subscription.familyLeave', 'Выйти из семьи')}
                       </button>
                     </div>
                   )}
+
+                  {familyData.role === null &&
+                    familyData.pending_invites_for_you.length === 0 &&
+                    visibleFamilyMembers.length === 0 && (
+                      <div className="rounded-lg border border-dark-700/50 bg-dark-800/50 p-3 text-sm text-dark-300">
+                        Вы не состоите в семье
+                      </div>
+                    )}
                 </>
               )}
             </div>
@@ -2622,9 +2716,10 @@ export default function Subscription() {
               </div>
               {devicesData.family_role && (
                 <div className="mb-2 text-[11px] text-dark-50/35">
-                  {t('subscription.familyRole', 'Family role')}: {devicesData.family_role}
+                  {t('subscription.familyRole', 'Роль в семье')}:{' '}
+                  {FAMILY_ROLE_LABELS[devicesData.family_role] || devicesData.family_role}
                   {typeof devicesData.remaining === 'number'
-                    ? ` • ${t('subscription.familyRemaining', 'remaining')}: ${devicesData.remaining}`
+                    ? ` • ${t('subscription.familyRemaining', 'свободно')}: ${devicesData.remaining}`
                     : ''}
                 </div>
               )}
@@ -2663,7 +2758,7 @@ export default function Subscription() {
                       <div className="text-[11px] text-dark-50/30">{device.platform}</div>
                       {device.can_delete === false && (
                         <div className="text-[11px] text-dark-50/30">
-                          {t('subscription.familyOwnerDevice', 'Owner device')}
+                          {t('subscription.familyOwnerDevice', 'Устройство владельца')}
                         </div>
                       )}
                     </div>
@@ -2682,7 +2777,7 @@ export default function Subscription() {
                       device.can_delete === false
                         ? t(
                             'subscription.familyCannotDeleteOwnerDevice',
-                            'Family member cannot delete owner devices',
+                            'Участник семьи не может удалять устройства владельца',
                           )
                         : t('subscription.deleteDevice')
                     }

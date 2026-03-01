@@ -253,6 +253,7 @@ export function AppShell({ children }: AppShellProps) {
   const desktopNavItems = [
     { path: '/', label: t('nav.dashboard'), icon: HomeIcon },
     { path: '/balance', label: t('nav.balance'), icon: CreditCardIcon },
+    { path: '/personal-vpn', label: 'Личный VPN', icon: ShieldIcon },
     { path: '/support', label: t('nav.support'), icon: ChatIcon },
     { path: '/info', label: t('nav.info'), icon: InfoIcon },
     { path: '/profile', label: t('nav.profile'), icon: UserIcon },

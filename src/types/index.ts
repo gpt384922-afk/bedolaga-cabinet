@@ -138,7 +138,7 @@ export interface FamilyMemberInfo {
   username: string | null;
   display_name: string;
   role: 'owner' | 'member';
-  status: 'active' | 'invited' | 'declined' | 'removed';
+  status: 'active' | 'invited' | 'declined' | 'left' | 'removed';
   invited_at: string | null;
   accepted_at: string | null;
   can_remove: boolean;

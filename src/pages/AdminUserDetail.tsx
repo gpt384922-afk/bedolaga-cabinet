@@ -128,6 +128,14 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const FAMILY_STATUS_LABELS: Record<string, string> = {
+  invited: 'Приглашён',
+  active: 'В семье',
+  declined: 'Отклонил',
+  left: 'Вышел',
+  removed: 'Удалён владельцем',
+};
+
 // ============ Main Page ============
 
 export default function AdminUserDetail() {
@@ -1102,11 +1110,11 @@ export default function AdminUserDetail() {
 
             {(user.family_as_owner.length > 0 || user.family_as_member) && (
               <div className="space-y-3 rounded-xl bg-dark-800/50 p-3">
-                <div className="text-sm font-medium text-dark-200">Family</div>
+                <div className="text-sm font-medium text-dark-200">Семья</div>
 
                 {user.family_as_owner.length > 0 && (
                   <div className="space-y-2">
-                    <div className="text-xs text-dark-500">Invited users</div>
+                    <div className="text-xs text-dark-500">Приглашённые пользователи</div>
                     <div className="space-y-2">
                       {user.family_as_owner.map((member) => (
                         <button
@@ -1123,7 +1131,7 @@ export default function AdminUserDetail() {
                             </div>
                           </div>
                           <span className="rounded border border-dark-600 px-2 py-0.5 text-xs text-dark-300">
-                            {member.status}
+                            {FAMILY_STATUS_LABELS[member.status] || member.status}
                           </span>
                         </button>
                       ))}
@@ -1136,7 +1144,7 @@ export default function AdminUserDetail() {
                     const ownerInfo = user.family_as_member;
                     return (
                       <div className="rounded-lg border border-dark-700/60 bg-dark-700/30 p-3">
-                        <div className="mb-1 text-xs text-dark-500">Invited to family by</div>
+                        <div className="mb-1 text-xs text-dark-500">Приглашён в семью пользователем</div>
                         <button
                           onClick={() => navigate(`/admin/users/${ownerInfo.owner_user_id}`)}
                           className="text-sm font-medium text-accent-400 transition-colors hover:text-accent-300"

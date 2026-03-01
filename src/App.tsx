@@ -35,6 +35,7 @@ const Polls = lazy(() => import('./pages/Polls'));
 const Info = lazy(() => import('./pages/Info'));
 const Wheel = lazy(() => import('./pages/Wheel'));
 const Connection = lazy(() => import('./pages/Connection'));
+const PersonalVpn = lazy(() => import('./pages/PersonalVpn'));
 const TopUpMethodSelect = lazy(() => import('./pages/TopUpMethodSelect'));
 const TopUpAmount = lazy(() => import('./pages/TopUpAmount'));
 
@@ -98,6 +99,7 @@ const AdminRoleAssign = lazy(() => import('./pages/AdminRoleAssign'));
 const AdminPolicies = lazy(() => import('./pages/AdminPolicies'));
 const AdminPolicyEdit = lazy(() => import('./pages/AdminPolicyEdit'));
 const AdminAuditLog = lazy(() => import('./pages/AdminAuditLog'));
+const AdminPersonalVpn = lazy(() => import('./pages/AdminPersonalVpn'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -328,6 +330,16 @@ function App() {
             <ProtectedRoute>
               <LazyPage>
                 <Connection />
+              </LazyPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/personal-vpn"
+          element={
+            <ProtectedRoute>
+              <LazyPage>
+                <PersonalVpn />
               </LazyPage>
             </ProtectedRoute>
           }
@@ -780,6 +792,16 @@ function App() {
             <PermissionRoute permission="remnawave:read">
               <LazyPage>
                 <AdminRemnawave />
+              </LazyPage>
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/admin/personal-vpn"
+          element={
+            <PermissionRoute permission="remnawave:manage">
+              <LazyPage>
+                <AdminPersonalVpn />
               </LazyPage>
             </PermissionRoute>
           }
