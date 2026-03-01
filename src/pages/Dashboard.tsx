@@ -54,14 +54,18 @@ export default function Dashboard() {
   });
 
   const hasActiveSubscription =
+    subscriptionResponse?.effective_subscription_active ??
     subscriptionResponse?.has_active_subscription ??
     Boolean(
+      subscriptionResponse?.effective_subscription ??
       subscriptionResponse?.active_subscription ??
         subscriptionResponse?.subscription?.is_active,
     );
   const subscription =
     (hasActiveSubscription
-      ? subscriptionResponse?.active_subscription ?? subscriptionResponse?.subscription
+      ? subscriptionResponse?.effective_subscription ??
+        subscriptionResponse?.active_subscription ??
+        subscriptionResponse?.subscription
       : null) ?? null;
   const expiredSubscription =
     !hasActiveSubscription && subscriptionResponse?.has_subscription

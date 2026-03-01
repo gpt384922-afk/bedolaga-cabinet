@@ -1,7 +1,7 @@
 // User types
 export interface User {
   id: number;
-  telegram_id: number | null; // Nullable для email-only пользователей
+  telegram_id: number | null; // Nullable for email-only users
   username: string | null;
   first_name: string | null;
   last_name: string | null;
@@ -12,7 +12,12 @@ export interface User {
   referral_code: string | null;
   language: string;
   created_at: string;
-  auth_type: 'telegram' | 'email' | 'google' | 'yandex' | 'discord' | 'vk'; // Тип аутентификации
+  auth_type: 'telegram' | 'email' | 'google' | 'yandex' | 'discord' | 'vk';
+  effective_subscription_active?: boolean;
+  effective_subscription_expires_at?: string | null;
+  effective_subscription_source?: 'personal' | 'family_owner' | null;
+  effective_subscription_tariff_id?: number | null;
+  effective_subscription_tariff_name?: string | null;
 }
 
 // OAuth types
@@ -110,6 +115,10 @@ export interface SubscriptionStatusResponse {
   can_invite_family?: boolean;
   subscription: Subscription | null;
   active_subscription?: Subscription | null;
+  effective_subscription_active?: boolean;
+  effective_subscription_expires_at?: string | null;
+  effective_subscription_source?: 'personal' | 'family_owner' | null;
+  effective_subscription?: Subscription | null;
 }
 
 // Device types
@@ -705,3 +714,4 @@ export interface PromoGroupSimple {
   id: number;
   name: string;
 }
+

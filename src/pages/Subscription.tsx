@@ -22,6 +22,7 @@ import type {
 import InsufficientBalancePrompt from '../components/InsufficientBalancePrompt';
 import { useCurrency } from '../hooks/useCurrency';
 import { useCloseOnSuccessNotification } from '../store/successNotification';
+import { useAuthStore } from '../store/auth';
 import i18n from '../i18n';
 
 // Helper to extract error message from axios/api errors
@@ -126,6 +127,7 @@ export default function Subscription() {
   const location = useLocation();
   const navigate = useNavigate();
   const { formatAmount, currencySymbol } = useCurrency();
+  const refreshUser = useAuthStore((state) => state.refreshUser);
   const { isDark } = useTheme();
   const g = getGlassColors(isDark);
   const [copied, setCopied] = useState(false);
@@ -224,14 +226,20 @@ export default function Subscription() {
   });
 
   const hasActiveSubscription =
+    subscriptionResponse?.effective_subscription_active ??
     subscriptionResponse?.has_active_subscription ??
     Boolean(
+      subscriptionResponse?.effective_subscription ??
       subscriptionResponse?.active_subscription ??
         subscriptionResponse?.subscription?.is_active,
     );
+  const effectiveSubscriptionSource = subscriptionResponse?.effective_subscription_source ?? null;
+  const isFamilyEntitlement = effectiveSubscriptionSource === 'family_owner';
   const subscription =
     (hasActiveSubscription
-      ? subscriptionResponse?.active_subscription ?? subscriptionResponse?.subscription
+      ? subscriptionResponse?.effective_subscription ??
+        subscriptionResponse?.active_subscription ??
+        subscriptionResponse?.subscription
       : null) ?? null;
   const hasExpiredSubscription =
     !hasActiveSubscription && Boolean(subscriptionResponse?.has_subscription);
@@ -239,6 +247,7 @@ export default function Subscription() {
   const { data: purchaseOptions, isLoading: optionsLoading } = useQuery({
     queryKey: ['purchase-options'],
     queryFn: subscriptionApi.getPurchaseOptions,
+    enabled: !isFamilyEntitlement,
   });
 
   // Fetch active promo discount
@@ -358,6 +367,14 @@ export default function Subscription() {
     },
   });
 
+  const refreshEffectiveAccess = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['subscription'] });
+    queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+    queryClient.invalidateQueries({ queryKey: ['devices'] });
+    queryClient.invalidateQueries({ queryKey: ['purchase-options'] });
+    void refreshUser();
+  }, [queryClient, refreshUser]);
+
   const autopayMutation = useMutation({
     mutationFn: (enabled: boolean) => subscriptionApi.updateAutopay(enabled),
     onSuccess: () => {
@@ -394,7 +411,7 @@ export default function Subscription() {
       setFamilyInviteUsername('');
       setFamilyInviteError(null);
       notify.success('Приглашение отправлено');
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      refreshEffectiveAccess();
     },
     onError: (error: unknown) => {
       const code = getErrorCode(error);
@@ -421,40 +438,35 @@ export default function Subscription() {
   const revokeFamilyInviteMutation = useMutation({
     mutationFn: (inviteId: number) => subscriptionApi.revokeFamilyInvite(inviteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      refreshEffectiveAccess();
     },
   });
 
   const removeFamilyMemberMutation = useMutation({
     mutationFn: (memberUserId: number) => subscriptionApi.removeFamilyMember(memberUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      refreshEffectiveAccess();
     },
   });
 
   const leaveFamilyMutation = useMutation({
     mutationFn: () => subscriptionApi.leaveFamily(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
-      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      refreshEffectiveAccess();
     },
   });
 
   const acceptFamilyInviteMutation = useMutation({
     mutationFn: (inviteId: number) => subscriptionApi.acceptFamilyInvite(inviteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
-      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      refreshEffectiveAccess();
     },
   });
 
   const declineFamilyInviteMutation = useMutation({
     mutationFn: (inviteId: number) => subscriptionApi.declineFamilyInvite(inviteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      refreshEffectiveAccess();
     },
   });
 
@@ -812,6 +824,29 @@ export default function Subscription() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('subscription.title')}</h1>
+
+      {isFamilyEntitlement && hasActiveSubscription && (
+        <div
+          className="rounded-2xl border px-4 py-3"
+          style={{
+            background: 'rgba(0, 229, 160, 0.08)',
+            borderColor: 'rgba(0, 229, 160, 0.24)',
+          }}
+        >
+          <div className="text-sm font-semibold text-accent-300">
+            {t(
+              'subscription.familyEntitlement.title',
+              'Семейная подписка от владельца',
+            )}
+          </div>
+          <div className="mt-1 text-xs text-dark-300">
+            {t(
+              'subscription.familyEntitlement.description',
+              'Оплата и продление доступны только владельцу семьи.',
+            )}
+          </div>
+        </div>
+      )}
 
       {hasExpiredSubscription && (
         <div
@@ -1395,7 +1430,7 @@ export default function Subscription() {
               )}
 
               {/* ─── Autopay Toggle ─── */}
-              {!subscription.is_trial && !subscription.is_daily && (
+              {!isFamilyEntitlement && !subscription.is_trial && !subscription.is_daily && (
                 <div
                   className="flex items-center justify-between rounded-[14px] p-3.5"
                   style={{
@@ -1468,7 +1503,7 @@ export default function Subscription() {
       )}
 
       {/* Daily Subscription Pause */}
-      {subscription && subscription.is_daily && !subscription.is_trial && (
+      {subscription && !isFamilyEntitlement && subscription.is_daily && !subscription.is_trial && (
         <div
           className="relative overflow-hidden rounded-3xl"
           style={{
@@ -1624,7 +1659,7 @@ export default function Subscription() {
       )}
 
       {/* Additional Options (Buy Devices) */}
-      {subscription && subscription.is_active && !subscription.is_trial && (
+      {subscription && !isFamilyEntitlement && subscription.is_active && !subscription.is_trial && (
         <div
           className="relative overflow-hidden rounded-3xl"
           style={{
@@ -2848,7 +2883,7 @@ export default function Subscription() {
       )}
 
       {/* Tariffs Section - Combined Purchase/Extend/Switch like MiniApp */}
-      {isTariffsMode && tariffs.length > 0 && (
+      {!isFamilyEntitlement && isTariffsMode && tariffs.length > 0 && (
         <div
           ref={tariffsCardRef}
           className="relative overflow-hidden rounded-3xl"
@@ -3981,7 +4016,7 @@ export default function Subscription() {
       )}
 
       {/* Purchase/Extend Section - Classic Mode */}
-      {classicOptions && classicOptions.periods.length > 0 && (
+      {!isFamilyEntitlement && classicOptions && classicOptions.periods.length > 0 && (
         <div
           ref={tariffsCardRef}
           className="relative overflow-hidden rounded-3xl"
