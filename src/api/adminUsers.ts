@@ -120,10 +120,13 @@ export interface UserDetailResponse {
   last_activity: string | null;
   cabinet_last_login: string | null;
   subscription: UserSubscriptionInfo | null;
+  subscriptions: UserSubscriptionInfo[];
   promo_group: UserPromoGroupInfo | null;
   referral: UserReferralInfo;
   family_as_owner: UserFamilyMemberInfo[];
   family_as_member: UserFamilyOwnerInfo | null;
+  family_members: UserFamilyMemberInfo[];
+  family_invites: unknown[];
   total_spent_kopeks: number;
   purchase_count: number;
   used_promocodes: number;
@@ -138,6 +141,14 @@ export interface UserDetailResponse {
   promo_offer_discount_source: string | null;
   promo_offer_discount_expires_at: string | null;
   recent_transactions: UserTransactionItem[];
+  transactions: UserTransactionItem[];
+  payments: UserTransactionItem[];
+  purchases: UserTransactionItem[];
+  devices: unknown[];
+  sessions: unknown[];
+  audit_logs: unknown[];
+  roles: string[];
+  permissions: string[];
   remnawave_uuid: string | null;
 }
 
@@ -367,6 +378,74 @@ export interface SyncToPanelRequest {
   update_squads?: boolean;
 }
 
+const ensureArray = <T>(value: unknown, fieldName: string): T[] => {
+  if (Array.isArray(value)) {
+    return value as T[];
+  }
+  if (import.meta.env.DEV && value !== undefined && value !== null) {
+    console.warn(`[adminUsersApi] "${fieldName}" is not an array, coercing to []`, value);
+  }
+  return [];
+};
+
+const normalizeSubscription = (value: unknown): UserSubscriptionInfo | null => {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const raw = value as Record<string, unknown>;
+  return {
+    ...(raw as unknown as UserSubscriptionInfo),
+    traffic_purchases: ensureArray<TrafficPurchaseInfo>(
+      raw.traffic_purchases,
+      'subscription.traffic_purchases',
+    ),
+  };
+};
+
+const normalizeUserDetail = (value: unknown): UserDetailResponse => {
+  const raw = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>;
+
+  const subscription = normalizeSubscription(raw.subscription);
+  const subscriptionsRaw = ensureArray<UserSubscriptionInfo>(raw.subscriptions, 'subscriptions');
+  const subscriptions =
+    subscriptionsRaw.length > 0
+      ? subscriptionsRaw
+          .map((item) => normalizeSubscription(item))
+          .filter((item): item is UserSubscriptionInfo => item !== null)
+      : subscription
+        ? [subscription]
+        : [];
+
+  const familyAsOwner = ensureArray<UserFamilyMemberInfo>(raw.family_as_owner, 'family_as_owner');
+  const familyMembersRaw = ensureArray<UserFamilyMemberInfo>(raw.family_members, 'family_members');
+  const recentTransactions = ensureArray<UserTransactionItem>(
+    raw.recent_transactions,
+    'recent_transactions',
+  );
+
+  const transactions = ensureArray<UserTransactionItem>(raw.transactions, 'transactions');
+  const payments = ensureArray<UserTransactionItem>(raw.payments, 'payments');
+  const purchases = ensureArray<UserTransactionItem>(raw.purchases, 'purchases');
+
+  return {
+    ...(raw as unknown as UserDetailResponse),
+    subscription,
+    subscriptions,
+    family_as_owner: familyAsOwner,
+    family_members: familyMembersRaw.length > 0 ? familyMembersRaw : familyAsOwner,
+    family_invites: ensureArray<unknown>(raw.family_invites, 'family_invites'),
+    recent_transactions: recentTransactions,
+    transactions: transactions.length > 0 ? transactions : recentTransactions,
+    payments: payments.length > 0 ? payments : recentTransactions,
+    purchases: purchases.length > 0 ? purchases : recentTransactions,
+    devices: ensureArray<unknown>(raw.devices, 'devices'),
+    sessions: ensureArray<unknown>(raw.sessions, 'sessions'),
+    audit_logs: ensureArray<unknown>(raw.audit_logs, 'audit_logs'),
+    roles: ensureArray<string>(raw.roles, 'roles'),
+    permissions: ensureArray<string>(raw.permissions, 'permissions'),
+  };
+};
+
 // ============ API ============
 
 export const adminUsersApi = {
@@ -400,13 +479,13 @@ export const adminUsersApi = {
   // Get user detail
   getUser: async (userId: number): Promise<UserDetailResponse> => {
     const response = await apiClient.get(`/cabinet/admin/users/${userId}`);
-    return response.data;
+    return normalizeUserDetail(response.data);
   },
 
   // Get user by telegram ID
   getUserByTelegram: async (telegramId: number): Promise<UserDetailResponse> => {
     const response = await apiClient.get(`/cabinet/admin/users/by-telegram/${telegramId}`);
-    return response.data;
+    return normalizeUserDetail(response.data);
   },
 
   // Get available tariffs for user

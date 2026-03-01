@@ -814,6 +814,12 @@ export default function AdminUserDetail() {
     );
   }
 
+  const familyAsOwner = Array.isArray(user.family_as_owner) ? user.family_as_owner : [];
+  const recentTransactions = Array.isArray(user.recent_transactions) ? user.recent_transactions : [];
+  const trafficPurchases = Array.isArray(user.subscription?.traffic_purchases)
+    ? user.subscription.traffic_purchases
+    : [];
+
   return (
     <div className="animate-fade-in">
       {/* Header */}
@@ -1108,15 +1114,15 @@ export default function AdminUserDetail() {
               </div>
             )}
 
-            {(user.family_as_owner.length > 0 || user.family_as_member) && (
+            {(familyAsOwner.length > 0 || user.family_as_member) && (
               <div className="space-y-3 rounded-xl bg-dark-800/50 p-3">
                 <div className="text-sm font-medium text-dark-200">Семья</div>
 
-                {user.family_as_owner.length > 0 && (
+                {familyAsOwner.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-xs text-dark-500">Приглашённые пользователи</div>
                     <div className="space-y-2">
-                      {user.family_as_owner.map((member) => (
+                      {familyAsOwner.map((member) => (
                         <button
                           key={member.user_id}
                           onClick={() => navigate(`/admin/users/${member.user_id}`)}
@@ -1315,8 +1321,7 @@ export default function AdminUserDetail() {
                 </div>
 
                 {/* Traffic Packages */}
-                {user.subscription.traffic_purchases &&
-                  user.subscription.traffic_purchases.length > 0 && (
+                {trafficPurchases.length > 0 && (
                     <div className="rounded-xl bg-dark-800/50 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <span className="text-sm font-medium text-dark-200">
@@ -1329,7 +1334,7 @@ export default function AdminUserDetail() {
                         </span>
                       </div>
                       <div className="space-y-2">
-                        {user.subscription.traffic_purchases.map((tp) => (
+                        {trafficPurchases.map((tp) => (
                           <div
                             key={tp.id}
                             className={`flex items-center justify-between rounded-lg px-3 py-2 ${
@@ -1379,7 +1384,7 @@ export default function AdminUserDetail() {
                 {/* Add Traffic */}
                 {currentTariff &&
                   currentTariff.traffic_topup_enabled &&
-                  Object.keys(currentTariff.traffic_topup_packages).length > 0 && (
+                  Object.keys(currentTariff.traffic_topup_packages || {}).length > 0 && (
                     <div className="rounded-xl bg-dark-800/50 p-4">
                       <div className="mb-3 text-sm font-medium text-dark-200">
                         {t('admin.users.detail.subscription.addTraffic')}
@@ -1393,7 +1398,7 @@ export default function AdminUserDetail() {
                           <option value="">
                             {t('admin.users.detail.subscription.selectPackage')}
                           </option>
-                          {Object.entries(currentTariff.traffic_topup_packages)
+                          {Object.entries(currentTariff.traffic_topup_packages || {})
                             .sort(([a], [b]) => Number(a) - Number(b))
                             .map(([gb]) => (
                               <option key={gb} value={gb}>
@@ -1979,13 +1984,13 @@ export default function AdminUserDetail() {
             )}
 
             {/* Recent transactions */}
-            {user.recent_transactions.length > 0 && (
+            {recentTransactions.length > 0 && (
               <div className="rounded-xl bg-dark-800/50 p-4">
                 <div className="mb-3 font-medium text-dark-200">
                   {t('admin.users.detail.balance.recentTransactions')}
                 </div>
                 <div className="max-h-48 space-y-2 overflow-y-auto">
-                  {user.recent_transactions.map((tx) => (
+                  {recentTransactions.map((tx) => (
                     <div
                       key={tx.id}
                       className="flex items-center justify-between border-b border-dark-700 py-2 last:border-0"
