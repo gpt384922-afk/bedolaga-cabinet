@@ -167,6 +167,9 @@ export default function Subscription() {
   const [selectedTrafficPackage, setSelectedTrafficPackage] = useState<number | null>(null);
   const [showServerManagement, setShowServerManagement] = useState(false);
   const [selectedServersToUpdate, setSelectedServersToUpdate] = useState<string[]>([]);
+  const [showFamilySection, setShowFamilySection] = useState(false);
+  const [familyInviteUsername, setFamilyInviteUsername] = useState('');
+  const [familyInviteError, setFamilyInviteError] = useState<string | null>(null);
 
   // Traffic refresh state
   const [trafficRefreshCooldown, setTrafficRefreshCooldown] = useState(0);
@@ -197,6 +200,11 @@ export default function Subscription() {
     queryKey: ['active-discount'],
     queryFn: promoApi.getActiveDiscount,
     staleTime: 30000,
+  });
+
+  const { data: familyData, isLoading: familyLoading } = useQuery({
+    queryKey: ['subscription-family'],
+    queryFn: subscriptionApi.getFamilyOverview,
   });
 
   // Check if in tariffs mode (moved up to be available for useEffect)
@@ -302,7 +310,7 @@ export default function Subscription() {
   const { data: devicesData, isLoading: devicesLoading } = useQuery({
     queryKey: ['devices'],
     queryFn: subscriptionApi.getDevices,
-    enabled: !!subscription,
+    enabled: !!subscription || familyData?.role === 'member',
   });
 
   // Delete device mutation
@@ -318,6 +326,58 @@ export default function Subscription() {
     mutationFn: () => subscriptionApi.deleteAllDevices(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
+    },
+  });
+
+  const inviteFamilyMutation = useMutation({
+    mutationFn: (username: string) => subscriptionApi.inviteFamilyMember(username),
+    onSuccess: () => {
+      setFamilyInviteUsername('');
+      setFamilyInviteError(null);
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+    },
+    onError: (error: unknown) => {
+      setFamilyInviteError(getErrorMessage(error));
+    },
+  });
+
+  const revokeFamilyInviteMutation = useMutation({
+    mutationFn: (inviteId: number) => subscriptionApi.revokeFamilyInvite(inviteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+    },
+  });
+
+  const removeFamilyMemberMutation = useMutation({
+    mutationFn: (memberUserId: number) => subscriptionApi.removeFamilyMember(memberUserId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+    },
+  });
+
+  const leaveFamilyMutation = useMutation({
+    mutationFn: () => subscriptionApi.leaveFamily(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+    },
+  });
+
+  const acceptFamilyInviteMutation = useMutation({
+    mutationFn: (inviteId: number) => subscriptionApi.acceptFamilyInvite(inviteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+    },
+  });
+
+  const declineFamilyInviteMutation = useMutation({
+    mutationFn: (inviteId: number) => subscriptionApi.declineFamilyInvite(inviteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
     },
   });
 
@@ -2267,8 +2327,257 @@ export default function Subscription() {
         </div>
       )}
 
+      {/* Family Access Section */}
+      {familyData && (
+        <div
+          className="relative overflow-hidden rounded-3xl"
+          style={{
+            background: g.cardBg,
+            border: `1px solid ${g.cardBorder}`,
+            boxShadow: g.shadow,
+            padding: '24px 28px',
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold tracking-tight text-dark-50">
+              {t('subscription.familyAccess', 'Family Access')}
+            </h2>
+            <button
+              onClick={() => setShowFamilySection((prev) => !prev)}
+              className="btn-secondary px-3 py-1.5 text-xs"
+            >
+              {showFamilySection ? t('common.hide', 'Hide') : t('common.show', 'Show')}
+            </button>
+          </div>
+
+          {showFamilySection && (
+            <div className="mt-4 space-y-4">
+              {familyLoading ? (
+                <div className="flex items-center justify-center py-6">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                </div>
+              ) : (
+                <>
+                  {familyData.pending_invites_for_you.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-dark-200">
+                        {t('subscription.familyPendingInvites', 'Pending invitations')}
+                      </div>
+                      {familyData.pending_invites_for_you.map((invite) => (
+                        <div
+                          key={invite.invite_id}
+                          className="rounded-xl border border-accent-500/20 bg-accent-500/10 p-3"
+                        >
+                          <div className="text-sm text-dark-100">
+                            {t('subscription.familyInvitedBy', 'Invited by')}{' '}
+                            <span className="font-medium text-accent-300">
+                              {invite.inviter_display_name}
+                            </span>
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <button
+                              onClick={() => acceptFamilyInviteMutation.mutate(invite.invite_id)}
+                              disabled={acceptFamilyInviteMutation.isPending}
+                              className="btn-primary px-3 py-1.5 text-xs"
+                            >
+                              {t('common.accept', 'Accept')}
+                            </button>
+                            <button
+                              onClick={() => declineFamilyInviteMutation.mutate(invite.invite_id)}
+                              disabled={declineFamilyInviteMutation.isPending}
+                              className="btn-secondary px-3 py-1.5 text-xs"
+                            >
+                              {t('common.decline', 'Decline')}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {(familyData.role === 'owner' || familyData.role === 'member') && (
+                    <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-3">
+                      <div className="text-sm text-dark-200">
+                        {t('subscription.familyMembersLimit', 'Max members')}:&nbsp;
+                        <span className="font-semibold text-dark-100">
+                          {familyData.max_members_including_owner || 0}
+                        </span>{' '}
+                        ({t('subscription.familyIncludingOwner', 'including you')})
+                      </div>
+                      <div className="mt-1 text-sm text-dark-400">
+                        {t('subscription.familyUsedSlots', 'Used slots')}: {familyData.used_slots}/
+                        {familyData.max_members_including_owner || 0}
+                      </div>
+                      <div className="mt-1 text-sm text-dark-400">
+                        {t('subscription.familyDeviceUsage', 'Devices in use')}:{' '}
+                        {familyData.device_summary.total_used}/{familyData.device_summary.device_limit}{' '}
+                        ({t('subscription.familyRemaining', 'remaining')}:{' '}
+                        {familyData.device_summary.remaining})
+                      </div>
+                    </div>
+                  )}
+
+                  {familyData.role === 'owner' && !familyData.family_enabled && (
+                    <div className="rounded-lg border border-warning-500/30 bg-warning-500/10 p-3 text-sm text-warning-400">
+                      {t(
+                        'subscription.familyNotAllowedForTariff',
+                        'Family access is not available for your current tariff.',
+                      )}
+                    </div>
+                  )}
+
+                  {(familyData.members.length > 0 || familyData.invites.length > 0) && (
+                    <div className="space-y-3">
+                      {familyData.members.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-dark-200">
+                            {t('subscription.familyMembers', 'Family members')}
+                          </div>
+                          {familyData.members.map((member) => (
+                            <div
+                              key={`${member.user_id}-${member.role}`}
+                              className="flex items-center justify-between rounded-lg bg-dark-800/60 p-3"
+                            >
+                              <div>
+                                <div className="text-sm text-dark-100">
+                                  {member.display_name}
+                                  {member.username ? ` (@${member.username})` : ''}
+                                </div>
+                                <div className="text-xs text-dark-500">
+                                  {member.role} • {member.status} • {member.devices_count}{' '}
+                                  {t('subscription.devices', { count: member.devices_count })}
+                                </div>
+                              </div>
+                              {familyData.role === 'owner' &&
+                                member.role !== 'owner' &&
+                                member.can_remove && (
+                                  <button
+                                    onClick={() => {
+                                      if (confirm(t('subscription.confirmRemoveFamilyMember', 'Remove member?'))) {
+                                        removeFamilyMemberMutation.mutate(member.user_id);
+                                      }
+                                    }}
+                                    disabled={removeFamilyMemberMutation.isPending}
+                                    className="rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+                                  >
+                                    {t('common.remove', 'Remove')}
+                                  </button>
+                                )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {familyData.invites.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-dark-200">
+                            {t('subscription.familyInvites', 'Invites')}
+                          </div>
+                          {familyData.invites.map((invite) => (
+                            <div
+                              key={invite.invite_id}
+                              className="flex items-center justify-between rounded-lg bg-dark-800/60 p-3"
+                            >
+                              <div>
+                                <div className="text-sm text-dark-100">
+                                  {invite.display_name}
+                                  {invite.username ? ` (@${invite.username})` : ''}
+                                </div>
+                                <div className="text-xs text-dark-500">{invite.status}</div>
+                              </div>
+                              {familyData.role === 'owner' && invite.can_revoke && (
+                                <button
+                                  onClick={() => revokeFamilyInviteMutation.mutate(invite.invite_id)}
+                                  disabled={revokeFamilyInviteMutation.isPending}
+                                  className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600"
+                                >
+                                  {t('subscription.familyRevokeInvite', 'Revoke')}
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {familyData.role === 'owner' && familyData.family_enabled && (
+                    <div className="space-y-2 rounded-xl border border-dark-700/50 bg-dark-800/50 p-3">
+                      <div className="text-sm font-medium text-dark-200">
+                        {t('subscription.familyInviteTitle', 'Invite by Telegram username')}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          value={familyInviteUsername}
+                          onChange={(e) => {
+                            setFamilyInviteUsername(e.target.value);
+                            if (familyInviteError) setFamilyInviteError(null);
+                          }}
+                          placeholder="@username"
+                          className="input flex-1"
+                        />
+                        <button
+                          onClick={() => {
+                            const username = familyInviteUsername.trim();
+                            if (!username) {
+                              setFamilyInviteError(
+                                t('subscription.familyUsernameRequired', 'Please enter @username'),
+                              );
+                              return;
+                            }
+                            inviteFamilyMutation.mutate(username);
+                          }}
+                          disabled={
+                            inviteFamilyMutation.isPending ||
+                            !familyData.can_invite ||
+                            familyInviteUsername.trim().length < 2
+                          }
+                          className="btn-primary px-4"
+                        >
+                          {t('subscription.familyInviteButton', 'Invite')}
+                        </button>
+                      </div>
+                      {familyInviteError && (
+                        <div className="text-xs text-error-400">{familyInviteError}</div>
+                      )}
+                      {!familyData.can_invite && (
+                        <div className="text-xs text-dark-500">
+                          {t('subscription.familyNoSlotsLeft', 'No free family slots left.')}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {familyData.role === 'member' && (
+                    <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-3">
+                      <div className="mb-2 text-sm text-dark-300">
+                        {t(
+                          'subscription.familyMemberInfo',
+                          'You are using shared family access. You can remove only your own devices.',
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (confirm(t('subscription.familyLeaveConfirm', 'Leave family?'))) {
+                            leaveFamilyMutation.mutate();
+                          }
+                        }}
+                        disabled={leaveFamilyMutation.isPending}
+                        className="rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+                      >
+                        {t('subscription.familyLeave', 'Leave family')}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* My Devices Section */}
-      {subscription && (
+      {(subscription || familyData?.role === 'member') && (
         <div
           className="relative overflow-hidden rounded-3xl"
           style={{
@@ -2311,6 +2620,14 @@ export default function Subscription() {
                 {devicesData.total} /{' '}
                 {t('subscription.devices', { count: devicesData.device_limit })}
               </div>
+              {devicesData.family_role && (
+                <div className="mb-2 text-[11px] text-dark-50/35">
+                  {t('subscription.familyRole', 'Family role')}: {devicesData.family_role}
+                  {typeof devicesData.remaining === 'number'
+                    ? ` • ${t('subscription.familyRemaining', 'remaining')}: ${devicesData.remaining}`
+                    : ''}
+                </div>
+              )}
               {devicesData.devices.map((device) => (
                 <div
                   key={device.hwid}
@@ -2344,18 +2661,31 @@ export default function Subscription() {
                         {device.device_model || device.platform}
                       </div>
                       <div className="text-[11px] text-dark-50/30">{device.platform}</div>
+                      {device.can_delete === false && (
+                        <div className="text-[11px] text-dark-50/30">
+                          {t('subscription.familyOwnerDevice', 'Owner device')}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <button
                     onClick={() => {
+                      if (device.can_delete === false) return;
                       if (confirm(t('subscription.confirmDeleteDevice'))) {
                         deleteDeviceMutation.mutate(device.hwid);
                       }
                     }}
-                    disabled={deleteDeviceMutation.isPending}
+                    disabled={deleteDeviceMutation.isPending || device.can_delete === false}
                     className="p-2 transition-colors"
-                    style={{ color: g.textFaint }}
-                    title={t('subscription.deleteDevice')}
+                    style={{ color: device.can_delete === false ? '#6B7280' : g.textFaint }}
+                    title={
+                      device.can_delete === false
+                        ? t(
+                            'subscription.familyCannotDeleteOwnerDevice',
+                            'Family member cannot delete owner devices',
+                          )
+                        : t('subscription.deleteDevice')
+                    }
                   >
                     <svg
                       width="16"

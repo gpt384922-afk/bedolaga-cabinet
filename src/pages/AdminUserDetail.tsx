@@ -1100,6 +1100,56 @@ export default function AdminUserDetail() {
               </div>
             )}
 
+            {(user.family_as_owner.length > 0 || user.family_as_member) && (
+              <div className="space-y-3 rounded-xl bg-dark-800/50 p-3">
+                <div className="text-sm font-medium text-dark-200">Family</div>
+
+                {user.family_as_owner.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-xs text-dark-500">Invited users</div>
+                    <div className="space-y-2">
+                      {user.family_as_owner.map((member) => (
+                        <button
+                          key={member.user_id}
+                          onClick={() => navigate(`/admin/users/${member.user_id}`)}
+                          className="flex w-full items-center justify-between rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        >
+                          <div className="min-w-0">
+                            <div className="truncate text-sm text-dark-100">
+                              {member.display_name}
+                            </div>
+                            <div className="text-xs text-dark-500">
+                              {member.username ? `@${member.username}` : `ID ${member.user_id}`}
+                            </div>
+                          </div>
+                          <span className="rounded border border-dark-600 px-2 py-0.5 text-xs text-dark-300">
+                            {member.status}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {user.family_as_member &&
+                  (() => {
+                    const ownerInfo = user.family_as_member;
+                    return (
+                      <div className="rounded-lg border border-dark-700/60 bg-dark-700/30 p-3">
+                        <div className="mb-1 text-xs text-dark-500">Invited to family by</div>
+                        <button
+                          onClick={() => navigate(`/admin/users/${ownerInfo.owner_user_id}`)}
+                          className="text-sm font-medium text-accent-400 transition-colors hover:text-accent-300"
+                        >
+                          {ownerInfo.owner_display_name}
+                          {ownerInfo.owner_username ? ` (@${ownerInfo.owner_username})` : ''}
+                        </button>
+                      </div>
+                    );
+                  })()}
+              </div>
+            )}
+
             {/* Restrictions */}
             {(user.restriction_topup || user.restriction_subscription) && (
               <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-3">

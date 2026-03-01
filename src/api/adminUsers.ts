@@ -87,6 +87,21 @@ export interface UserReferralInfo {
   referred_by_username: string | null;
 }
 
+export interface UserFamilyMemberInfo {
+  user_id: number;
+  username: string | null;
+  display_name: string;
+  status: string;
+  invited_at: string | null;
+  accepted_at: string | null;
+}
+
+export interface UserFamilyOwnerInfo {
+  owner_user_id: number;
+  owner_username: string | null;
+  owner_display_name: string;
+}
+
 export interface UserDetailResponse {
   id: number;
   telegram_id: number;
@@ -107,6 +122,8 @@ export interface UserDetailResponse {
   subscription: UserSubscriptionInfo | null;
   promo_group: UserPromoGroupInfo | null;
   referral: UserReferralInfo;
+  family_as_owner: UserFamilyMemberInfo[];
+  family_as_member: UserFamilyOwnerInfo | null;
   total_spent_kopeks: number;
   purchase_count: number;
   used_promocodes: number;

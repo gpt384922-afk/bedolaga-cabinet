@@ -9,6 +9,8 @@ import type {
   PurchaseSelection,
   PurchasePreview,
   AppConfig,
+  DevicesResponse,
+  FamilyOverview,
 } from '../types';
 
 export const subscriptionApi = {
@@ -302,16 +304,7 @@ export const subscriptionApi = {
   // ============ Device Management ============
 
   // Get connected devices
-  getDevices: async (): Promise<{
-    devices: Array<{
-      hwid: string;
-      platform: string;
-      device_model: string;
-      created_at: string | null;
-    }>;
-    total: number;
-    device_limit: number;
-  }> => {
+  getDevices: async (): Promise<DevicesResponse> => {
     const response = await apiClient.get('/cabinet/subscription/devices');
     return response.data;
   },
@@ -442,6 +435,52 @@ export const subscriptionApi = {
     lifetime_used_gb?: number;
   }> => {
     const response = await apiClient.post('/cabinet/subscription/refresh-traffic');
+    return response.data;
+  },
+
+  // ============ Family Access ============
+  getFamilyOverview: async (): Promise<FamilyOverview> => {
+    const response = await apiClient.get('/cabinet/subscription/family');
+    return response.data;
+  },
+
+  inviteFamilyMember: async (
+    tgUsername: string,
+  ): Promise<{ success: boolean; invite_id: number; status: string }> => {
+    const response = await apiClient.post('/cabinet/subscription/family/invite', {
+      tg_username: tgUsername,
+    });
+    return response.data;
+  },
+
+  revokeFamilyInvite: async (
+    inviteId: number,
+  ): Promise<{ success: boolean; invite_id: number; status: string }> => {
+    const response = await apiClient.post(`/cabinet/subscription/family/invite/${inviteId}/revoke`);
+    return response.data;
+  },
+
+  removeFamilyMember: async (userId: number): Promise<{ success: boolean }> => {
+    const response = await apiClient.post(`/cabinet/subscription/family/members/${userId}/remove`);
+    return response.data;
+  },
+
+  leaveFamily: async (): Promise<{ success: boolean }> => {
+    const response = await apiClient.post('/cabinet/subscription/family/leave');
+    return response.data;
+  },
+
+  acceptFamilyInvite: async (
+    inviteId: number,
+  ): Promise<{ success: boolean; invite_id: number; status: string }> => {
+    const response = await apiClient.post(`/cabinet/subscription/family/invites/${inviteId}/accept`);
+    return response.data;
+  },
+
+  declineFamilyInvite: async (
+    inviteId: number,
+  ): Promise<{ success: boolean; invite_id: number; status: string }> => {
+    const response = await apiClient.post(`/cabinet/subscription/family/invites/${inviteId}/decline`);
     return response.data;
   },
 };

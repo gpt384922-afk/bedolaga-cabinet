@@ -115,12 +115,81 @@ export interface Device {
   platform: string;
   device_model: string;
   created_at: string | null;
+  owner_user_id?: number | null;
+  can_delete?: boolean;
 }
 
 export interface DevicesResponse {
   devices: Device[];
   total: number;
   device_limit: number;
+  family_role?: 'owner' | 'member' | null;
+  remaining?: number;
+}
+
+export interface FamilyOwnerInfo {
+  user_id: number;
+  username: string | null;
+  display_name: string;
+}
+
+export interface FamilyMemberInfo {
+  user_id: number;
+  username: string | null;
+  display_name: string;
+  role: 'owner' | 'member';
+  status: 'active' | 'invited' | 'declined' | 'removed';
+  invited_at: string | null;
+  accepted_at: string | null;
+  can_remove: boolean;
+  devices_count: number;
+}
+
+export interface FamilyInviteInfo {
+  invite_id: number;
+  invitee_user_id?: number;
+  username: string | null;
+  display_name: string;
+  status: 'pending' | 'accepted' | 'declined' | 'expired' | 'revoked';
+  created_at: string;
+  expires_at: string | null;
+  can_revoke: boolean;
+}
+
+export interface FamilyPendingInviteInfo {
+  invite_id: number;
+  family_group_id: number;
+  status: 'pending';
+  created_at: string;
+  expires_at: string | null;
+  inviter_user_id: number;
+  inviter_username: string | null;
+  inviter_display_name: string;
+}
+
+export interface FamilyDeviceSummary {
+  device_limit: number;
+  total_used: number;
+  remaining: number;
+  by_user: Array<{
+    user_id: number;
+    count: number;
+  }>;
+}
+
+export interface FamilyOverview {
+  family_enabled: boolean;
+  role: 'owner' | 'member' | null;
+  owner: FamilyOwnerInfo | null;
+  family_group_id?: number;
+  members: FamilyMemberInfo[];
+  invites: FamilyInviteInfo[];
+  pending_invites_for_you: FamilyPendingInviteInfo[];
+  max_members_including_owner: number;
+  used_slots: number;
+  remaining_slots: number;
+  can_invite: boolean;
+  device_summary: FamilyDeviceSummary;
 }
 
 // Tariff switch preview

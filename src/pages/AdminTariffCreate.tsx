@@ -112,6 +112,8 @@ export default function AdminTariffCreate() {
   const [trafficTopupEnabled, setTrafficTopupEnabled] = useState(false);
   const [maxTopupTrafficGb, setMaxTopupTrafficGb] = useState<number | ''>(0);
   const [trafficTopupPackages, setTrafficTopupPackages] = useState<Record<string, number>>({});
+  const [familyEnabled, setFamilyEnabled] = useState(false);
+  const [familyMaxMembers, setFamilyMaxMembers] = useState<number | ''>(2);
 
   // New traffic package for adding
   const [newPackageGb, setNewPackageGb] = useState<number | ''>(10);
@@ -172,6 +174,8 @@ export default function AdminTariffCreate() {
       setTrafficTopupEnabled(data.traffic_topup_enabled || false);
       setMaxTopupTrafficGb(data.max_topup_traffic_gb || 0);
       setTrafficTopupPackages(data.traffic_topup_packages || {});
+      setFamilyEnabled(data.family_enabled || false);
+      setFamilyMaxMembers(data.family_max_members || 2);
       setTrafficResetMode(data.traffic_reset_mode || null);
       return data;
     }, []),
@@ -203,6 +207,8 @@ export default function AdminTariffCreate() {
       name,
       description: description || undefined,
       is_active: isActive,
+      family_enabled: familyEnabled,
+      family_max_members: familyEnabled ? Math.max(2, toNumber(familyMaxMembers, 2)) : 0,
       traffic_limit_gb: toNumber(trafficLimitGb, 100),
       device_limit: toNumber(deviceLimit, 1),
       device_price_kopeks:
@@ -272,18 +278,21 @@ export default function AdminTariffCreate() {
   const isTierLevelValid =
     tierLevel !== '' && toNumber(tierLevel) >= 1 && toNumber(tierLevel) <= 10;
   const hasTrafficPackages = !trafficTopupEnabled || Object.keys(trafficTopupPackages).length > 0;
+  const isFamilyValid = !familyEnabled || (familyMaxMembers !== '' && toNumber(familyMaxMembers) >= 2);
   const isValidPeriod =
     isNameValid &&
     isDeviceLimitValid &&
     isTierLevelValid &&
     periodPrices.length > 0 &&
-    hasTrafficPackages;
+    hasTrafficPackages &&
+    isFamilyValid;
   const isValidDaily =
     isNameValid &&
     isDeviceLimitValid &&
     isTierLevelValid &&
     toNumber(dailyPriceKopeks) > 0 &&
-    hasTrafficPackages;
+    hasTrafficPackages &&
+    isFamilyValid;
   const isValid =
     tariffType === 'period' ? isValidPeriod : tariffType === 'daily' ? isValidDaily : false;
 
@@ -306,6 +315,9 @@ export default function AdminTariffCreate() {
   }
   if (trafficTopupEnabled && Object.keys(trafficTopupPackages).length === 0) {
     validationErrors.push('trafficPackagesRequired');
+  }
+  if (!isFamilyValid) {
+    validationErrors.push('familyMaxMembersRequired');
   }
 
   // Loading state
@@ -1003,6 +1015,42 @@ export default function AdminTariffCreate() {
                     </button>
                   );
                 })}
+              </div>
+            )}
+          </div>
+
+          {/* Family access */}
+          <div className="card space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-dark-200">Family access</h4>
+              <button
+                type="button"
+                onClick={() => setFamilyEnabled(!familyEnabled)}
+                className={`relative h-6 w-11 rounded-full transition-colors ${
+                  familyEnabled ? 'bg-accent-500' : 'bg-dark-600'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${
+                    familyEnabled ? 'left-6' : 'left-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-xs text-dark-500">
+              Max members count includes the subscription owner.
+            </p>
+            {familyEnabled && (
+              <div className="flex items-center gap-3">
+                <span className="w-48 text-sm text-dark-400">Max family members</span>
+                <input
+                  type="number"
+                  value={familyMaxMembers}
+                  onChange={createNumberInputHandler(setFamilyMaxMembers, 2)}
+                  className="input w-24"
+                  min={2}
+                  placeholder="2"
+                />
               </div>
             )}
           </div>

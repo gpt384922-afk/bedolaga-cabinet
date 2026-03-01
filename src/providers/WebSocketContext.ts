@@ -39,6 +39,10 @@ export interface WSMessage {
   referral_name?: string;
   // Payment events
   payment_method?: string;
+  // Family events
+  invite_id?: number;
+  owner_user_id?: number;
+  member_user_id?: number;
 }
 
 export type MessageHandler = (message: WSMessage) => void;

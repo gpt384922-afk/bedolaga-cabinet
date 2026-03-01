@@ -260,6 +260,32 @@ export default function WebSocketNotifications() {
         return;
       }
 
+      // Family events
+      if (type.startsWith('family.')) {
+        const familyTitles: Record<string, string> = {
+          'family.invite_received': t('subscription.familyInviteReceived', 'Family invitation'),
+          'family.invite_accepted': t('subscription.familyInviteAccepted', 'Invitation accepted'),
+          'family.invite_declined': t('subscription.familyInviteDeclined', 'Invitation declined'),
+          'family.invite_revoked': t('subscription.familyInviteRevoked', 'Invitation revoked'),
+          'family.member_removed': t('subscription.familyMemberRemoved', 'Removed from family'),
+          'family.member_left': t('subscription.familyMemberLeft', 'Family member left'),
+        };
+
+        showToast({
+          type: type === 'family.invite_declined' || type === 'family.member_removed' ? 'warning' : 'info',
+          title: message.title || familyTitles[type] || t('subscription.familyAccess', 'Family Access'),
+          message: message.message || t('common.success', 'Success'),
+          icon: <span className="text-lg">👨‍👩‍👧‍👦</span>,
+          onClick: () => navigate('/subscription'),
+          duration: 7000,
+        });
+
+        queryClient.invalidateQueries({ queryKey: ['subscription-family'] });
+        queryClient.invalidateQueries({ queryKey: ['devices'] });
+        queryClient.invalidateQueries({ queryKey: ['notifications-history'] });
+        return;
+      }
+
       // Account events
       if (type === 'account.banned') {
         showToast({
