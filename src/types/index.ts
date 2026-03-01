@@ -106,7 +106,10 @@ export interface Subscription {
 // Response wrapper for subscription status endpoint
 export interface SubscriptionStatusResponse {
   has_subscription: boolean;
+  has_active_subscription?: boolean;
+  can_invite_family?: boolean;
   subscription: Subscription | null;
+  active_subscription?: Subscription | null;
 }
 
 // Device types

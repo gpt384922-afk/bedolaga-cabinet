@@ -223,8 +223,18 @@ export default function Subscription() {
     refetchOnMount: 'always',
   });
 
-  // Extract subscription from response (null if no subscription)
-  const subscription = subscriptionResponse?.subscription ?? null;
+  const hasActiveSubscription =
+    subscriptionResponse?.has_active_subscription ??
+    Boolean(
+      subscriptionResponse?.active_subscription ??
+        subscriptionResponse?.subscription?.is_active,
+    );
+  const subscription =
+    (hasActiveSubscription
+      ? subscriptionResponse?.active_subscription ?? subscriptionResponse?.subscription
+      : null) ?? null;
+  const hasExpiredSubscription =
+    !hasActiveSubscription && Boolean(subscriptionResponse?.has_subscription);
 
   const { data: purchaseOptions, isLoading: optionsLoading } = useQuery({
     queryKey: ['purchase-options'],
@@ -400,6 +410,8 @@ export default function Subscription() {
       const message =
         code === 'INVITEE_HAS_ACTIVE_SUBSCRIPTION'
           ? 'Нельзя пригласить пользователя с активной подпиской'
+          : code === 'SUBSCRIPTION_EXPIRED'
+            ? 'Подписка истекла. Продлите подписку, чтобы приглашать участников в семью'
           : inviteErrorMap[rawMessage] || rawMessage;
       setFamilyInviteError(message);
       notify.error(message);
@@ -766,6 +778,14 @@ export default function Subscription() {
     setCurrentStep('period');
   };
 
+  const handleRenewExpiredSubscription = () => {
+    if (isTariffsMode) {
+      tariffsCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    setShowPurchaseForm(true);
+  };
+
   const getStepLabel = (step: PurchaseStep) => {
     switch (step) {
       case 'period':
@@ -792,6 +812,26 @@ export default function Subscription() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('subscription.title')}</h1>
+
+      {hasExpiredSubscription && (
+        <div
+          className="relative overflow-hidden rounded-3xl"
+          style={{
+            background: g.cardBg,
+            border: '1px solid rgba(255,70,70,0.12)',
+            boxShadow: g.shadow,
+            padding: '24px 28px',
+          }}
+        >
+          <div className="mb-2 text-lg font-semibold text-dark-100">Подписка истекла</div>
+          <div className="mb-4 text-sm text-dark-400">
+            Продлите, чтобы снова подключать устройства и приглашать в семью
+          </div>
+          <button onClick={handleRenewExpiredSubscription} className="btn-primary px-4 py-2">
+            Продлить
+          </button>
+        </div>
+      )}
 
       {/* Current Subscription */}
       {subscription ? (

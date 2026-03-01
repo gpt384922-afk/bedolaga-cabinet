@@ -53,18 +53,31 @@ export default function Dashboard() {
     refetchOnMount: 'always',
   });
 
-  const subscription = subscriptionResponse?.subscription ?? null;
+  const hasActiveSubscription =
+    subscriptionResponse?.has_active_subscription ??
+    Boolean(
+      subscriptionResponse?.active_subscription ??
+        subscriptionResponse?.subscription?.is_active,
+    );
+  const subscription =
+    (hasActiveSubscription
+      ? subscriptionResponse?.active_subscription ?? subscriptionResponse?.subscription
+      : null) ?? null;
+  const expiredSubscription =
+    !hasActiveSubscription && subscriptionResponse?.has_subscription
+      ? subscriptionResponse?.subscription
+      : null;
 
   const { data: trialInfo, isLoading: trialLoading } = useQuery({
     queryKey: ['trial-info'],
     queryFn: subscriptionApi.getTrialInfo,
-    enabled: !subscription && !subLoading,
+    enabled: !subscriptionResponse?.has_subscription && !subLoading,
   });
 
   const { data: devicesData } = useQuery({
     queryKey: ['devices'],
     queryFn: subscriptionApi.getDevices,
-    enabled: !!subscription,
+    enabled: hasActiveSubscription,
     staleTime: API.BALANCE_STALE_TIME_MS,
   });
 
@@ -234,8 +247,8 @@ export default function Dashboard() {
             <div className="skeleton h-12 w-full rounded-xl" />
           </div>
         </div>
-      ) : subscription?.is_expired ? (
-        <SubscriptionCardExpired subscription={subscription} />
+      ) : expiredSubscription ? (
+        <SubscriptionCardExpired subscription={expiredSubscription} />
       ) : subscription ? (
         <SubscriptionCardActive
           subscription={subscription}
