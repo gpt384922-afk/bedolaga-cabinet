@@ -98,6 +98,7 @@ export default function AdminTariffCreate() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(true);
+  const [allowTrafficTopup, setAllowTrafficTopup] = useState(true);
   const [trafficLimitGb, setTrafficLimitGb] = useState<number | ''>(100);
   const [deviceLimit, setDeviceLimit] = useState<number | ''>(1);
   const [devicePriceKopeks, setDevicePriceKopeks] = useState<number | ''>(0);
@@ -105,6 +106,7 @@ export default function AdminTariffCreate() {
   const [tierLevel, setTierLevel] = useState<number | ''>(1);
   const [periodPrices, setPeriodPrices] = useState<PeriodPrice[]>([]);
   const [selectedSquads, setSelectedSquads] = useState<string[]>([]);
+  const [bypassWhitelists, setBypassWhitelists] = useState<string[]>([]);
   const [selectedPromoGroups, setSelectedPromoGroups] = useState<number[]>([]);
   const [dailyPriceKopeks, setDailyPriceKopeks] = useState<number | ''>(0);
 
@@ -160,6 +162,7 @@ export default function AdminTariffCreate() {
       setName(data.name);
       setDescription(data.description || '');
       setIsActive(data.is_active ?? true);
+      setAllowTrafficTopup(data.allow_traffic_topup ?? true);
       setTrafficLimitGb(data.traffic_limit_gb ?? 100);
       setDeviceLimit(data.device_limit || 1);
       setDevicePriceKopeks(data.device_price_kopeks || 0);
@@ -167,6 +170,7 @@ export default function AdminTariffCreate() {
       setTierLevel(data.tier_level || 1);
       setPeriodPrices(data.period_prices?.length ? data.period_prices : []);
       setSelectedSquads(data.allowed_squads || []);
+      setBypassWhitelists(data.bypass_whitelists || []);
       setSelectedPromoGroups(
         data.promo_groups?.filter((pg) => pg.is_selected).map((pg) => pg.id) || [],
       );
@@ -207,6 +211,7 @@ export default function AdminTariffCreate() {
       name,
       description: description || undefined,
       is_active: isActive,
+      allow_traffic_topup: allowTrafficTopup,
       family_enabled: familyEnabled,
       family_max_members: familyEnabled ? Math.max(2, toNumber(familyMaxMembers, 2)) : 0,
       traffic_limit_gb: toNumber(trafficLimitGb, 100),
@@ -217,6 +222,7 @@ export default function AdminTariffCreate() {
       tier_level: toNumber(tierLevel, 1),
       period_prices: isDaily ? [] : periodPrices.filter((p) => p.price_kopeks >= 0),
       allowed_squads: selectedSquads,
+      bypass_whitelists: bypassWhitelists,
       promo_group_ids: selectedPromoGroups.length > 0 ? selectedPromoGroups : undefined,
       traffic_topup_enabled: trafficTopupEnabled,
       traffic_topup_packages: trafficTopupPackages,

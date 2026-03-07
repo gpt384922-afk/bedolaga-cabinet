@@ -32,6 +32,7 @@ export interface TariffListItem {
   description: string | null;
   is_active: boolean;
   is_trial_available: boolean;
+  allow_traffic_topup: boolean;
   family_enabled: boolean;
   family_max_members: number;
   is_daily: boolean;
@@ -66,6 +67,7 @@ export interface TariffDetail {
   display_order: number;
   period_prices: PeriodPrice[];
   allowed_squads: string[];
+  bypass_whitelists: string[];
   server_traffic_limits: Record<string, ServerTrafficLimit>;
   servers: ServerInfo[];
   promo_groups: PromoGroupInfo[];
@@ -97,6 +99,7 @@ export interface TariffCreateRequest {
   name: string;
   description?: string;
   is_active?: boolean;
+  allow_traffic_topup?: boolean;
   family_enabled?: boolean;
   family_max_members?: number;
   traffic_limit_gb?: number;
@@ -106,6 +109,7 @@ export interface TariffCreateRequest {
   tier_level?: number;
   period_prices?: PeriodPrice[];
   allowed_squads?: string[];
+  bypass_whitelists?: string[];
   server_traffic_limits?: Record<string, ServerTrafficLimit>;
   promo_group_ids?: number[];
   // Произвольное количество дней
@@ -133,6 +137,7 @@ export interface TariffUpdateRequest {
   name?: string;
   description?: string;
   is_active?: boolean;
+  allow_traffic_topup?: boolean;
   family_enabled?: boolean;
   family_max_members?: number;
   traffic_limit_gb?: number;
@@ -143,6 +148,7 @@ export interface TariffUpdateRequest {
   display_order?: number;
   period_prices?: PeriodPrice[];
   allowed_squads?: string[];
+  bypass_whitelists?: string[];
   server_traffic_limits?: Record<string, ServerTrafficLimit>;
   promo_group_ids?: number[];
   // Произвольное количество дней
