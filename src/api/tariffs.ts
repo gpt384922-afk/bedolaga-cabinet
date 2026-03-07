@@ -43,6 +43,7 @@ export interface TariffListItem {
   display_order: number;
   servers_count: number;
   subscriptions_count: number;
+  external_squad_uuid: string | null;
   created_at: string;
 }
 
@@ -57,8 +58,10 @@ export interface TariffDetail {
   description: string | null;
   is_active: boolean;
   is_trial_available: boolean;
+  allow_traffic_topup: boolean;
   family_enabled: boolean;
   family_max_members: number;
+  max_shared_members: number;
   traffic_limit_gb: number;
   device_limit: number;
   device_price_kopeks: number | null;
@@ -91,6 +94,7 @@ export interface TariffDetail {
   daily_price_kopeks: number;
   // Режим сброса трафика
   traffic_reset_mode: string | null; // 'DAY', 'WEEK', 'MONTH', 'NO_RESET', null = глобальная настройка
+  external_squad_uuid: string | null;
   created_at: string;
   updated_at: string | null;
 }
@@ -102,6 +106,7 @@ export interface TariffCreateRequest {
   allow_traffic_topup?: boolean;
   family_enabled?: boolean;
   family_max_members?: number;
+  max_shared_members?: number;
   traffic_limit_gb?: number;
   device_limit?: number;
   device_price_kopeks?: number;
@@ -131,6 +136,7 @@ export interface TariffCreateRequest {
   daily_price_kopeks?: number;
   // Режим сброса трафика
   traffic_reset_mode?: string | null;
+  external_squad_uuid?: string | null;
 }
 
 export interface TariffUpdateRequest {
@@ -140,6 +146,7 @@ export interface TariffUpdateRequest {
   allow_traffic_topup?: boolean;
   family_enabled?: boolean;
   family_max_members?: number;
+  max_shared_members?: number;
   traffic_limit_gb?: number;
   device_limit?: number;
   device_price_kopeks?: number;
@@ -170,6 +177,7 @@ export interface TariffUpdateRequest {
   daily_price_kopeks?: number;
   // Режим сброса трафика
   traffic_reset_mode?: string | null;
+  external_squad_uuid?: string | null;
 }
 
 export interface TariffToggleResponse {

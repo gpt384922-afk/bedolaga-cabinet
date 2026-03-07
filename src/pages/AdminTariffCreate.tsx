@@ -99,6 +99,7 @@ export default function AdminTariffCreate() {
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [allowTrafficTopup, setAllowTrafficTopup] = useState(true);
+  const [externalSquadUuid, setExternalSquadUuid] = useState<string | null>(null);
   const [trafficLimitGb, setTrafficLimitGb] = useState<number | ''>(100);
   const [deviceLimit, setDeviceLimit] = useState<number | ''>(1);
   const [devicePriceKopeks, setDevicePriceKopeks] = useState<number | ''>(0);
@@ -116,6 +117,7 @@ export default function AdminTariffCreate() {
   const [trafficTopupPackages, setTrafficTopupPackages] = useState<Record<string, number>>({});
   const [familyEnabled, setFamilyEnabled] = useState(false);
   const [familyMaxMembers, setFamilyMaxMembers] = useState<number | ''>(2);
+  const [maxSharedMembers, setMaxSharedMembers] = useState<number | ''>(0);
 
   // New traffic package for adding
   const [newPackageGb, setNewPackageGb] = useState<number | ''>(10);
@@ -163,6 +165,7 @@ export default function AdminTariffCreate() {
       setDescription(data.description || '');
       setIsActive(data.is_active ?? true);
       setAllowTrafficTopup(data.allow_traffic_topup ?? true);
+      setExternalSquadUuid(data.external_squad_uuid ?? null);
       setTrafficLimitGb(data.traffic_limit_gb ?? 100);
       setDeviceLimit(data.device_limit || 1);
       setDevicePriceKopeks(data.device_price_kopeks || 0);
@@ -180,6 +183,7 @@ export default function AdminTariffCreate() {
       setTrafficTopupPackages(data.traffic_topup_packages || {});
       setFamilyEnabled(data.family_enabled || false);
       setFamilyMaxMembers(data.family_max_members || 2);
+      setMaxSharedMembers(data.max_shared_members ?? 0);
       setTrafficResetMode(data.traffic_reset_mode || null);
       return data;
     }, []),
@@ -212,8 +216,10 @@ export default function AdminTariffCreate() {
       description: description || undefined,
       is_active: isActive,
       allow_traffic_topup: allowTrafficTopup,
+      external_squad_uuid: externalSquadUuid,
       family_enabled: familyEnabled,
       family_max_members: familyEnabled ? Math.max(2, toNumber(familyMaxMembers, 2)) : 0,
+      max_shared_members: toNumber(maxSharedMembers),
       traffic_limit_gb: toNumber(trafficLimitGb, 100),
       device_limit: toNumber(deviceLimit, 1),
       device_price_kopeks:
