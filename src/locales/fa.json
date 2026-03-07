@@ -351,6 +351,10 @@
       "manageServers": "مدیریت سرورها",
       "manageServersTitle": "مدیریت سرورها"
     },
+    "deviceManager": {
+      "title": "تغییر تعداد دستگاه‌ها",
+      "devicesLabel": "دستگاه‌ها"
+    },
     "serverManagement": {
       "statusLegend": "✅ — متصل • ➕ — اضافه خواهد شد (پولی) • ➖ — قطع خواهد شد",
       "discountBanner": "تخفیف سرور شما: -{{percent}}%",

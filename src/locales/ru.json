@@ -557,6 +557,10 @@
       "manageServers": "Управление серверами",
       "manageServersTitle": "Управление серверами"
     },
+    "deviceManager": {
+      "title": "Изменить кол-во устройств",
+      "devicesLabel": "Устройства"
+    },
     "serverManagement": {
       "statusLegend": "✅ — подключено • ➕ — будет добавлено (платно) • ➖ — будет отключено",
       "discountBanner": "Ваша скидка на серверы: -{{percent}}%",

@@ -529,6 +529,10 @@
       "manageServers": "Server management",
       "manageServersTitle": "Server management"
     },
+    "deviceManager": {
+      "title": "Change device count",
+      "devicesLabel": "Devices"
+    },
     "serverManagement": {
       "statusLegend": "✅ — connected • ➕ — will be added (paid) • ➖ — will be disconnected",
       "discountBanner": "Your server discount: -{{percent}}%",

@@ -351,6 +351,10 @@
       "manageServers": "服务器管理",
       "manageServersTitle": "服务器管理"
     },
+    "deviceManager": {
+      "title": "更改设备数量",
+      "devicesLabel": "设备"
+    },
     "serverManagement": {
       "statusLegend": "✅ — 已连接 • ➕ — 将添加（付费）• ➖ — 将断开",
       "discountBanner": "您的服务器折扣：-{{percent}}%",
