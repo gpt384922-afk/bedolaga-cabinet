@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { AnimatedCheckmark } from '@/components/ui/AnimatedCheckmark';
 import { AnimatedCrossmark } from '@/components/ui/AnimatedCrossmark';
 import { loadTopUpPendingInfo, clearTopUpPendingInfo } from '../utils/topUpStorage';
+import { isPaidStatus, isFailedStatus } from '../utils/paymentStatus';
 
 // ── Constants ────────────────────────────────────────────────
 const MAX_POLL_MS = 10 * 60 * 1000; // 10 minutes
@@ -175,39 +176,6 @@ function TimeoutState({ onRetry, onGoBack }: { onRetry: () => void; onGoBack: ()
       </div>
     </motion.div>
   );
-}
-
-// ── Determine paid status from provider-specific status strings ──
-const PAID_STATUSES = new Set([
-  'succeeded',
-  'success',
-  'paid',
-  'paid_over',
-  'overpaid',
-  'completed',
-  'confirmed',
-  'closed',
-]);
-
-const FAILED_STATUSES = new Set([
-  'fail',
-  'failed',
-  'error',
-  'canceled',
-  'cancelled',
-  'declined',
-  'expired',
-  'cancel',
-  'system_fail',
-  'refund_paid',
-]);
-
-function isPaidStatus(status: string): boolean {
-  return PAID_STATUSES.has(status.toLowerCase());
-}
-
-function isFailedStatus(status: string): boolean {
-  return FAILED_STATUSES.has(status.toLowerCase());
 }
 
 // ── Main Component ───────────────────────────────────────────
