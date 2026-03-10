@@ -332,7 +332,7 @@ export function AppShell({ children }: AppShellProps) {
                 )}
               >
                 <item.icon className="h-3.5 w-3.5 shrink-0" />
-                <span className="hidden xl:inline">{item.label}</span>
+                <span className="hidden 2xl:inline">{item.label}</span>
               </Link>
             ))}
             {referralEnabled && (
@@ -348,7 +348,7 @@ export function AppShell({ children }: AppShellProps) {
                 )}
               >
                 <UsersIcon className="h-3.5 w-3.5 shrink-0" />
-                <span className="hidden xl:inline">{t('nav.referral')}</span>
+                <span className="hidden 2xl:inline">{t('nav.referral')}</span>
               </Link>
             )}
             {giftEnabled && (
@@ -364,7 +364,7 @@ export function AppShell({ children }: AppShellProps) {
                 )}
               >
                 <GiftIcon className="h-3.5 w-3.5 shrink-0" />
-                <span className="hidden xl:inline">{t('nav.gift')}</span>
+                <span className="hidden 2xl:inline">{t('nav.gift')}</span>
               </Link>
             )}
             {isAdmin && (
@@ -382,7 +382,7 @@ export function AppShell({ children }: AppShellProps) {
                   )}
                 >
                   <ShieldIcon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="hidden xl:inline">{t('admin.nav.title')}</span>
+                  <span className="hidden 2xl:inline">{t('admin.nav.title')}</span>
                 </Link>
               </>
             )}
