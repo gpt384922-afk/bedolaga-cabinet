@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.29.1](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.29.0...v1.29.1) (2026-03-10)
+
+
+### Bug Fixes
+
+* daily tariff renewal uses purchaseTariff instead of renewSubscription ([8629cfe](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/8629cfea18aab9daf818f1f6c8e250ede29054d4))
+* show fallback when tariff has no available periods for renewal ([ea06ad1](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/ea06ad1d8f7894f5460d150fa72d094617b9fbbe))
+
 ## [1.29.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.28.0...v1.29.0) (2026-03-09)
 
 
