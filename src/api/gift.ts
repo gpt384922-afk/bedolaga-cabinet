@@ -40,6 +40,9 @@ export interface GiftConfig {
   payment_methods: GiftPaymentMethod[];
   balance_kopeks: number;
   currency_symbol: string;
+  promo_group_name: string | null;
+  active_discount_percent: number | null;
+  active_discount_expires_at: string | null;
 }
 
 export interface GiftPurchaseRequest {
