@@ -147,14 +147,18 @@ function UserRow({ user, onClick, formatAmount }: UserRowProps) {
                   ? 'border-success-500/30 bg-success-500/20 text-success-400'
                   : user.subscription_status === 'trial'
                     ? 'border-accent-500/30 bg-accent-500/20 text-accent-400'
-                    : 'border-warning-500/30 bg-warning-500/20 text-warning-400'
+                    : user.subscription_status === 'limited'
+                      ? 'border-yellow-500/30 bg-yellow-500/20 text-yellow-400'
+                      : 'border-warning-500/30 bg-warning-500/20 text-warning-400'
               }`}
             >
               {user.subscription_status === 'active'
                 ? t('admin.users.status.subscription')
                 : user.subscription_status === 'trial'
                   ? t('admin.users.status.trial')
-                  : t('admin.users.status.expired')}
+                  : user.subscription_status === 'limited'
+                    ? t('subscription.trafficLimited')
+                    : t('admin.users.status.expired')}
             </span>
           )}
         </div>

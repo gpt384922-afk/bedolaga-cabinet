@@ -119,6 +119,7 @@ function StatusBadge({ status }: { status: string }) {
     deleted: 'bg-dark-600 text-dark-400 border-dark-500',
     trial: 'bg-accent-500/20 text-accent-400 border-accent-500/30',
     expired: 'bg-warning-500/20 text-warning-400 border-warning-500/30',
+    limited: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     disabled: 'bg-dark-600 text-dark-400 border-dark-500',
   };
 
