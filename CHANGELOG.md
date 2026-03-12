@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.32.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.31.0...v1.32.0) (2026-03-12)
+
+
+### Features
+
+* add show_in_gift toggle UI for tariffs in admin panel ([5a5a987](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/5a5a9878931234103761d40fb24893afdb16a817))
+
+
+### Bug Fixes
+
+* handle Telegram Stars payment for gift subscriptions via openInvoice ([01e811b](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/commit/01e811bdfc5db4e0680c1b7d4bed5e91a66e503c))
+
 ## [1.31.0](https://github.com/BEDOLAGA-DEV/bedolaga-cabinet/compare/v1.30.0...v1.31.0) (2026-03-11)
 
 
