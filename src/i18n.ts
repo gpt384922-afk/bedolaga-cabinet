@@ -1,8 +1,8 @@
-import i18n from 'i18next';
+import i18n, { type ResourceLanguage } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-const localeLoaders: Record<string, () => Promise<{ default: Record<string, string> }>> = {
+const localeLoaders: Record<string, () => Promise<{ default: ResourceLanguage }>> = {
   ru: () => import('./locales/ru.json'),
   en: () => import('./locales/en.json'),
   zh: () => import('./locales/zh.json'),
