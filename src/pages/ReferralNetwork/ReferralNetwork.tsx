@@ -29,24 +29,24 @@ export function ReferralNetwork() {
   const isPanelOpen = selectedNode !== null;
 
   return (
-    <div id="referral-network-container" className="fixed inset-0 z-40 flex flex-col bg-[#0a0a0f]">
+    <div
+      id="referral-network-container"
+      className="fixed inset-x-0 bottom-0 top-16 z-40 flex flex-col bg-[#0a0a0f] sm:top-14"
+    >
       {/* Top bar */}
       <div className="relative z-20 shrink-0 border-b border-dark-700/50 bg-dark-900/90 backdrop-blur-md">
-        {/* Row 1: Back + Title + Search + Filter */}
         <div className="flex items-center gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
           <AdminBackButton />
           <h1 className="shrink-0 text-sm font-bold text-dark-100 sm:text-base">
             {t('admin.referralNetwork.title')}
           </h1>
-          {/* Search — always visible */}
           <NetworkSearch className="min-w-0 flex-1 sm:max-w-md" />
-          {/* Filter button */}
           {networkData && <NetworkFilters data={networkData} />}
         </div>
       </div>
 
       {/* Main content area */}
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+      <div className="relative min-h-0 flex-1">
         {/* Loading state */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">

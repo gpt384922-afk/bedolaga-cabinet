@@ -129,11 +129,16 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
     if (!containerRef.current || !data) return;
 
     const container = containerRef.current;
+    let rafId: number;
+    let cancelled = false;
 
-    // Defer initialization to next frame so the browser computes layout first.
-    // Without this, container.offsetHeight is 0 and Sigma throws.
-    const rafId = requestAnimationFrame(() => {
-      if (!container.isConnected) return;
+    // Poll until container has real dimensions (browser needs a frame to compute layout)
+    function tryInit() {
+      if (cancelled || !container.isConnected) return;
+      if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+        rafId = requestAnimationFrame(tryInit);
+        return;
+      }
 
       // Cleanup previous instance
       killFA2();
@@ -150,7 +155,6 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
       hiddenNodesRef.current = computeHiddenNodes(graph, initialFilters);
 
       const sigma = new Sigma(graph, container, {
-        allowInvalidContainer: true,
         renderEdgeLabels: false,
         labelDensity: 0.5,
         labelRenderedSizeThreshold: 6,
@@ -297,9 +301,12 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
           containerRef.current.style.cursor = 'default';
         }
       });
-    }); // end requestAnimationFrame
+    }
+
+    rafId = requestAnimationFrame(tryInit);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafId);
       killFA2();
       if (sigmaRef.current) {
