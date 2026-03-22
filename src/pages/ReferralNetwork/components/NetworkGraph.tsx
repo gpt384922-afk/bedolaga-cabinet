@@ -5,7 +5,8 @@ import FA2LayoutSupervisor from 'graphology-layout-forceatlas2/worker';
 import { inferSettings } from 'graphology-layout-forceatlas2';
 import { useReferralNetworkStore } from '@/store/referralNetwork';
 import type { NetworkGraphData, NetworkFilters } from '@/types/referralNetwork';
-import { getUserNodeColor, getUserNodeSize, getCampaignColor } from '../utils';
+import { createNodeBorderProgram } from '@sigma/node-border';
+import { getNodeFillColor, getNodeBorderColor, getUserNodeSize, getCampaignColor } from '../utils';
 import { setSigmaInstance } from '../sigmaGlobals';
 
 interface NetworkGraphProps {
@@ -13,44 +14,169 @@ interface NetworkGraphProps {
   className?: string;
 }
 
+/**
+ * Compute initial positions using radial layout based on referral depth.
+ * Campaign nodes at center, direct users in first ring, their referrals further out.
+ */
+function computeRadialPositions(
+  graphData: NetworkGraphData,
+): Map<string, { x: number; y: number }> {
+  const positions = new Map<string, { x: number; y: number }>();
+
+  // Build adjacency: referrer_id -> [user_ids]
+  const childrenOf = new Map<number, number[]>();
+  const userMap = new Map<number, (typeof graphData.users)[0]>();
+  for (const user of graphData.users) {
+    userMap.set(user.id, user);
+    if (user.referrer_id !== null) {
+      const children = childrenOf.get(user.referrer_id) ?? [];
+      children.push(user.id);
+      childrenOf.set(user.referrer_id, children);
+    }
+  }
+
+  // Place campaign nodes at center
+  const campaignCount = graphData.campaigns.length;
+  graphData.campaigns.forEach((campaign, i) => {
+    const angle = (2 * Math.PI * i) / Math.max(campaignCount, 1);
+    positions.set(`campaign_${campaign.id}`, {
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
+    });
+  });
+
+  // BFS from campaign users outward
+  const placed = new Set<number>();
+  const queue: Array<{ userId: number; depth: number; parentAngle: number }> = [];
+
+  // Seed: campaign users at depth 1
+  const campaignUserIds = new Set(
+    graphData.users.filter((u) => u.campaign_id !== null).map((u) => u.id),
+  );
+  const campaignUsers = [...campaignUserIds];
+  campaignUsers.forEach((userId, i) => {
+    const angle = (2 * Math.PI * i) / Math.max(campaignUsers.length, 1);
+    const radius = 30 + Math.random() * 10;
+    positions.set(`user_${userId}`, {
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    });
+    placed.add(userId);
+    queue.push({ userId, depth: 1, parentAngle: angle });
+  });
+
+  // Also seed root referrers (users who refer others but have no referrer and no campaign)
+  for (const user of graphData.users) {
+    if (
+      !placed.has(user.id) &&
+      user.referrer_id === null &&
+      (childrenOf.get(user.id)?.length ?? 0) > 0
+    ) {
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = 20 + Math.random() * 10;
+      positions.set(`user_${user.id}`, {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+      });
+      placed.add(user.id);
+      queue.push({ userId: user.id, depth: 1, parentAngle: angle });
+    }
+  }
+
+  // BFS: place children at increasing radius
+  while (queue.length > 0) {
+    const { userId, depth, parentAngle } = queue.shift()!;
+    const children = childrenOf.get(userId) ?? [];
+    const childCount = children.length;
+    if (childCount === 0) continue;
+
+    const spreadAngle = Math.min(Math.PI / 2, (Math.PI / 3) * (1 / Math.max(depth, 1)));
+
+    children.forEach((childId, i) => {
+      if (placed.has(childId)) return;
+      const offset = childCount === 1 ? 0 : (i / (childCount - 1) - 0.5) * spreadAngle;
+      const angle = parentAngle + offset + (Math.random() - 0.5) * 0.1;
+      const radius = 30 + depth * 25 + Math.random() * 10;
+      positions.set(`user_${childId}`, {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+      });
+      placed.add(childId);
+      queue.push({ userId: childId, depth: depth + 1, parentAngle: angle });
+    });
+  }
+
+  // Place remaining unplaced users at the outer edge
+  for (const user of graphData.users) {
+    if (!placed.has(user.id)) {
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = 60 + Math.random() * 40;
+      positions.set(`user_${user.id}`, {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+      });
+    }
+  }
+
+  return positions;
+}
+
+const BorderedNodeProgram = createNodeBorderProgram({
+  borders: [
+    {
+      size: { attribute: 'borderSize', defaultValue: 0 },
+      color: { attribute: 'borderColor' },
+    },
+  ],
+});
+
 function buildFullGraph(graphData: NetworkGraphData): Graph {
   const graph = new Graph();
+  const positions = computeRadialPositions(graphData);
 
   graphData.campaigns.forEach((campaign, index) => {
-    graph.addNode(`campaign_${campaign.id}`, {
-      label: campaign.name,
+    const pos = positions.get(`campaign_${campaign.id}`) ?? {
       x: Math.random() * 100,
       y: Math.random() * 100,
+    };
+    graph.addNode(`campaign_${campaign.id}`, {
+      label: campaign.name,
+      x: pos.x,
+      y: pos.y,
       size: 16,
       color: getCampaignColor(index),
-      type: 'circle',
+      type: 'bordered',
       nodeType: 'campaign',
       nodeId: campaign.id,
+      borderSize: 0,
+      borderColor: getCampaignColor(index),
     });
   });
 
   graphData.users.forEach((user) => {
-    const color = getUserNodeColor(
-      user.direct_referrals,
-      user.is_partner,
-      user.campaign_id,
-      user.subscription_status,
-    );
+    const fillColor = getNodeFillColor(user.subscription_status, user.campaign_id);
+    const borderColor = getNodeBorderColor(user.direct_referrals, user.is_partner);
     const size = getUserNodeSize(user.direct_referrals);
+    const pos = positions.get(`user_${user.id}`) ?? {
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+    };
 
     graph.addNode(`user_${user.id}`, {
       label: user.display_name,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
+      x: pos.x,
+      y: pos.y,
       size,
-      color,
-      type: 'circle',
+      color: fillColor,
+      type: 'bordered',
       nodeType: 'user',
       nodeId: user.id,
       isPartner: user.is_partner,
       directReferrals: user.direct_referrals,
       campaignId: user.campaign_id,
       subscriptionStatus: user.subscription_status,
+      borderColor: borderColor ?? fillColor,
+      borderSize: borderColor ? 0.25 : 0,
     });
   });
 
@@ -200,7 +326,9 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
         zIndex: true,
         defaultEdgeColor: '#ffffff06',
         defaultNodeColor: '#6b7280',
-        labelColor: { color: '#e8e6f0' },
+        nodeProgramClasses: { bordered: BorderedNodeProgram },
+        defaultNodeType: 'bordered',
+        labelColor: { color: '#111827' },
         labelFont: 'Inter, system-ui, sans-serif',
         labelSize: 11,
         stagePadding: 40,
@@ -284,8 +412,10 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
             linLogMode: true,
             adjustSizes: true,
             barnesHutOptimize: graph.order > 100,
-            gravity: 1,
-            slowDown: 2,
+            gravity: 0.05,
+            scalingRatio: 10,
+            slowDown: 5,
+            strongGravityMode: false,
           },
         });
         fa2Ref.current = supervisor;

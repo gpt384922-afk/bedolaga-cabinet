@@ -37,6 +37,28 @@ export function getSubscriptionStatusColor(status: SubscriptionStatus): string {
 }
 
 /**
+ * Fill color = subscription status (primary concern for campaign evaluation).
+ */
+export function getNodeFillColor(
+  subscriptionStatus: SubscriptionStatus | null,
+  campaignId: number | null,
+): string {
+  if (subscriptionStatus) return SUBSCRIPTION_STATUS_COLOR[subscriptionStatus];
+  if (campaignId !== null) return NODE_COLORS.campaignUser;
+  return NODE_COLORS.regular;
+}
+
+/**
+ * Border color = referral role. Returns null if no special role.
+ */
+export function getNodeBorderColor(directReferrals: number, isPartner: boolean): string | null {
+  if (isPartner) return NODE_COLORS.partner;
+  if (directReferrals >= 10) return NODE_COLORS.topReferrer;
+  if (directReferrals >= 1) return NODE_COLORS.activeReferrer;
+  return null;
+}
+
+/**
  * Campaign node color palette. Each campaign gets a distinct color
  * based on its index position.
  */
@@ -55,24 +77,6 @@ const CAMPAIGN_COLORS = [
 
 export function getCampaignColor(index: number): string {
   return CAMPAIGN_COLORS[index % CAMPAIGN_COLORS.length];
-}
-
-/**
- * Determine the visual color for a user node.
- * Priority: partner > top referrer > active referrer > subscription status > campaign > regular.
- */
-export function getUserNodeColor(
-  directReferrals: number,
-  isPartner: boolean,
-  campaignId: number | null,
-  subscriptionStatus: SubscriptionStatus | null,
-): string {
-  if (isPartner) return NODE_COLORS.partner;
-  if (directReferrals >= 10) return NODE_COLORS.topReferrer;
-  if (directReferrals >= 1) return NODE_COLORS.activeReferrer;
-  if (subscriptionStatus) return SUBSCRIPTION_STATUS_COLOR[subscriptionStatus];
-  if (campaignId !== null) return NODE_COLORS.campaignUser;
-  return NODE_COLORS.regular;
 }
 
 /**

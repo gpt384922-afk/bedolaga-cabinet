@@ -1251,6 +1251,8 @@
       },
       "legend": {
         "title": "Legend",
+        "fillTitle": "Subscription",
+        "borderTitle": "Referral role",
         "regularUser": "Regular user",
         "activeReferrer": "Active referrer",
         "partner": "Partner",

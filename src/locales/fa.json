@@ -1085,6 +1085,8 @@
       },
       "legend": {
         "title": "راهنما",
+        "fillTitle": "اشتراک",
+        "borderTitle": "نقش ارجاع‌دهنده",
         "regularUser": "کاربر عادی",
         "activeReferrer": "ارجاع‌دهنده فعال",
         "partner": "شریک",

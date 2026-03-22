@@ -1272,6 +1272,8 @@
       },
       "legend": {
         "title": "Легенда",
+        "fillTitle": "Подписка",
+        "borderTitle": "Роль реферера",
         "regularUser": "Обычный",
         "activeReferrer": "Активный реферер",
         "partner": "Партнёр",
