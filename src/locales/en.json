@@ -4514,6 +4514,16 @@
       "uploadError": "Upload failed",
       "fileTooLarge": "File is too large",
       "uploadFeaturedImage": "Upload image",
+      "combobox": {
+        "selectCategory": "Select category",
+        "selectTag": "Select tag",
+        "create": "Create",
+        "createNew": "Create new",
+        "searchOrCreate": "Search or create...",
+        "noItems": "Nothing found",
+        "placeholder": "Select...",
+        "clear": "Clear"
+      },
       "toolbar": {
         "bold": "Bold",
         "italic": "Italic",

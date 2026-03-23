@@ -13,10 +13,11 @@ import HighlightExtension from '@tiptap/extension-highlight';
 import { VideoExtension } from '../lib/tiptap-video';
 import { newsApi } from '../api/news';
 import { AdminBackButton } from '../components/admin';
+import { ColoredItemCombobox } from '../components/admin/ColoredItemCombobox';
 import { Toggle } from '../components/admin/Toggle';
 import { useHapticFeedback } from '../platform/hooks/useHaptic';
 import { cn } from '../lib/utils';
-import type { NewsCreateRequest } from '../types/news';
+import type { NewsCategory, NewsTag, NewsCreateRequest } from '../types/news';
 
 // --- Icons ---
 const BoldIcon = () => (
@@ -174,18 +175,6 @@ function generateSlug(title: string): string {
     .substring(0, 100);
 }
 
-// --- Predefined category colors ---
-const CATEGORY_COLORS = [
-  '#00e5a0',
-  '#00b4d8',
-  '#f72585',
-  '#ffd60a',
-  '#7c3aed',
-  '#f97316',
-  '#06b6d4',
-  '#ec4899',
-];
-
 export default function AdminNewsCreate() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -199,9 +188,8 @@ export default function AdminNewsCreate() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-  const [category, setCategory] = useState('');
-  const [categoryColor, setCategoryColor] = useState('#00e5a0');
-  const [tag, setTag] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | null>(null);
+  const [selectedTag, setSelectedTag] = useState<NewsTag | null>(null);
   const [excerpt, setExcerpt] = useState('');
   const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [readTimeMinutes, setReadTimeMinutes] = useState(3);
@@ -427,13 +415,35 @@ export default function AdminNewsCreate() {
     [handleMediaUpload],
   );
 
-  // Fetch existing categories for suggestions
-  const { data: newsData } = useQuery({
+  // Fetch categories and tags for combobox selectors
+  const { data: categoriesData } = useQuery({
     queryKey: ['admin', 'news', 'categories'],
-    queryFn: () => newsApi.getAdminNews({ limit: 1 }),
+    queryFn: () => newsApi.getCategories(),
     staleTime: 60_000,
   });
-  const existingCategories = newsData?.categories ?? [];
+  const { data: tagsData } = useQuery({
+    queryKey: ['admin', 'news', 'tags'],
+    queryFn: () => newsApi.getTags(),
+    staleTime: 60_000,
+  });
+
+  const handleCreateCategory = useCallback(
+    async (name: string, color: string) => {
+      const cat = await newsApi.createCategory({ name, color });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'news', 'categories'] });
+      return cat;
+    },
+    [queryClient],
+  );
+
+  const handleCreateTag = useCallback(
+    async (name: string, color: string) => {
+      const tag = await newsApi.createTag({ name, color });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'news', 'tags'] });
+      return tag;
+    },
+    [queryClient],
+  );
 
   // Fetch article for editing
   const { data: articleData, isLoading: isLoadingArticle } = useQuery({
@@ -456,9 +466,21 @@ export default function AdminNewsCreate() {
     setTitle(articleData.title);
     setSlug(articleData.slug);
     setSlugManuallyEdited(true);
-    setCategory(articleData.category);
-    setCategoryColor(articleData.category_color);
-    setTag(articleData.tag ?? '');
+    // Reconstruct category/tag objects from article data
+    if (articleData.category) {
+      setSelectedCategory({
+        id: articleData.category_id ?? 0,
+        name: articleData.category,
+        color: articleData.category_color,
+      });
+    }
+    if (articleData.tag) {
+      setSelectedTag({
+        id: articleData.tag_id ?? 0,
+        name: articleData.tag,
+        color: articleData.category_color,
+      });
+    }
     setExcerpt(articleData.excerpt ?? '');
     setFeaturedImageUrl(articleData.featured_image_url ?? '');
     setReadTimeMinutes(articleData.read_time_minutes);
@@ -499,7 +521,7 @@ export default function AdminNewsCreate() {
 
   const handleSave = () => {
     setSaveError(null);
-    if (!title.trim() || !slug.trim() || !category.trim()) return;
+    if (!title.trim() || !slug.trim() || !selectedCategory) return;
 
     const content = editor?.getHTML() ?? '';
     const data: NewsCreateRequest = {
@@ -507,9 +529,11 @@ export default function AdminNewsCreate() {
       slug: slug.trim(),
       content,
       excerpt: excerpt.trim() || null,
-      category: category.trim(),
-      category_color: categoryColor,
-      tag: tag.trim() || null,
+      category: selectedCategory.name,
+      category_color: selectedCategory.color,
+      category_id: selectedCategory.id || null,
+      tag: selectedTag?.name || null,
+      tag_id: selectedTag?.id || null,
       featured_image_url: isSafeUrl(featuredImageUrl.trim()) ? featuredImageUrl.trim() : null,
       is_published: isPublished,
       is_featured: isFeatured,
@@ -556,7 +580,7 @@ export default function AdminNewsCreate() {
         </div>
         <button
           onClick={handleSave}
-          disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !category.trim()}
+          disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !selectedCategory}
           className="min-h-[44px] rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending ? t('news.admin.saving') : t('news.admin.save')}
@@ -592,78 +616,41 @@ export default function AdminNewsCreate() {
           />
         </div>
 
-        {/* Category + color row */}
+        {/* Category + Tag row */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label">{t('news.admin.categoryLabel')}</label>
-            <input
-              type="text"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="input"
-              list="category-suggestions"
-              required
+            <ColoredItemCombobox
+              items={categoriesData ?? []}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              onCreateNew={handleCreateCategory}
+              placeholder={t('news.admin.combobox.selectCategory')}
             />
-            <datalist id="category-suggestions">
-              {existingCategories.map((cat) => (
-                <option key={cat} value={cat} />
-              ))}
-            </datalist>
           </div>
           <div>
-            <label className="label">{t('news.admin.categoryColorLabel')}</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={categoryColor}
-                onChange={(e) => setCategoryColor(e.target.value)}
-                className="input flex-1 font-mono text-sm"
-              />
-              <div
-                className="h-10 w-10 shrink-0 rounded-lg border border-dark-700"
-                style={{ background: categoryColor }}
-              />
-            </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {CATEGORY_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setCategoryColor(color)}
-                  className={cn(
-                    'min-h-[44px] min-w-[44px] rounded-lg border-2 transition-all',
-                    categoryColor === color ? 'scale-110 border-white' : 'border-transparent',
-                  )}
-                  style={{ background: color }}
-                  aria-label={t('news.admin.selectColor', { color })}
-                />
-              ))}
-            </div>
+            <label className="label">{t('news.admin.tagLabel')}</label>
+            <ColoredItemCombobox
+              items={tagsData ?? []}
+              value={selectedTag}
+              onChange={setSelectedTag}
+              onCreateNew={handleCreateTag}
+              placeholder={t('news.admin.combobox.selectTag')}
+            />
           </div>
         </div>
 
-        {/* Tag + Read time row */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('news.admin.tagLabel')}</label>
-            <input
-              type="text"
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              className="input font-mono text-sm uppercase"
-            />
-          </div>
-          <div>
-            <label className="label">{t('news.admin.readTimeLabel')}</label>
-            <input
-              type="number"
-              value={readTimeMinutes}
-              onChange={(e) => setReadTimeMinutes(Number(e.target.value) || 1)}
-              min={1}
-              max={60}
-              className="input"
-            />
-          </div>
+        {/* Read time */}
+        <div>
+          <label className="label">{t('news.admin.readTimeLabel')}</label>
+          <input
+            type="number"
+            value={readTimeMinutes}
+            onChange={(e) => setReadTimeMinutes(Number(e.target.value) || 1)}
+            min={1}
+            max={60}
+            className="input max-w-xs"
+          />
         </div>
 
         {/* Excerpt */}
@@ -928,7 +915,7 @@ export default function AdminNewsCreate() {
         {/* Bottom save button for long forms */}
         <button
           onClick={handleSave}
-          disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !category.trim()}
+          disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !selectedCategory}
           className="min-h-[44px] w-full rounded-lg bg-accent-500 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending ? t('news.admin.saving') : t('news.admin.save')}

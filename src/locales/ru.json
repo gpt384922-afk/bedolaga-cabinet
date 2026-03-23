@@ -5081,6 +5081,16 @@
       "uploadError": "Ошибка загрузки",
       "fileTooLarge": "Файл слишком большой",
       "uploadFeaturedImage": "Загрузить изображение",
+      "combobox": {
+        "selectCategory": "Выберите категорию",
+        "selectTag": "Выберите тег",
+        "create": "Создать",
+        "createNew": "Создать новый",
+        "searchOrCreate": "Поиск или создание...",
+        "noItems": "Ничего не найдено",
+        "placeholder": "Выберите...",
+        "clear": "Очистить"
+      },
       "toolbar": {
         "bold": "Жирный",
         "italic": "Курсив",

@@ -1,3 +1,15 @@
+export interface NewsCategory {
+  id: number;
+  name: string;
+  color: string;
+}
+
+export interface NewsTag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export interface NewsArticle {
   id: number;
   title: string;
@@ -6,7 +18,9 @@ export interface NewsArticle {
   excerpt: string | null;
   category: string;
   category_color: string;
+  category_id: number | null;
   tag: string | null;
+  tag_id: number | null;
   featured_image_url: string | null;
   is_published: boolean;
   is_featured: boolean;
@@ -25,7 +39,9 @@ export interface NewsListItem {
   excerpt: string | null;
   category: string;
   category_color: string;
+  category_id: number | null;
   tag: string | null;
+  tag_id: number | null;
   featured_image_url: string | null;
   is_published: boolean;
   is_featured: boolean;
@@ -47,7 +63,9 @@ export interface NewsCreateRequest {
   excerpt: string | null;
   category: string;
   category_color: string;
+  category_id: number | null;
   tag: string | null;
+  tag_id: number | null;
   featured_image_url: string | null;
   is_published: boolean;
   is_featured: boolean;

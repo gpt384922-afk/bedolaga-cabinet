@@ -1,6 +1,8 @@
 import apiClient from './client';
 import type {
   NewsArticle,
+  NewsCategory,
+  NewsTag,
   NewsListResponse,
   NewsCreateRequest,
   NewsUpdateRequest,
@@ -71,5 +73,51 @@ export const newsApi = {
 
   deleteMedia: async (filename: string): Promise<void> => {
     await apiClient.delete(`/cabinet/admin/news/media/${encodeURIComponent(filename)}`);
+  },
+
+  // Categories
+  getCategories: async (): Promise<NewsCategory[]> => {
+    const response = await apiClient.get<NewsCategory[]>('/cabinet/admin/news/categories');
+    return response.data;
+  },
+
+  createCategory: async (data: { name: string; color: string }): Promise<NewsCategory> => {
+    const response = await apiClient.post<NewsCategory>('/cabinet/admin/news/categories', data);
+    return response.data;
+  },
+
+  updateCategory: async (
+    id: number,
+    data: { name?: string; color?: string },
+  ): Promise<NewsCategory> => {
+    const response = await apiClient.put<NewsCategory>(
+      `/cabinet/admin/news/categories/${id}`,
+      data,
+    );
+    return response.data;
+  },
+
+  deleteCategory: async (id: number): Promise<void> => {
+    await apiClient.delete(`/cabinet/admin/news/categories/${id}`);
+  },
+
+  // Tags
+  getTags: async (): Promise<NewsTag[]> => {
+    const response = await apiClient.get<NewsTag[]>('/cabinet/admin/news/tags');
+    return response.data;
+  },
+
+  createTag: async (data: { name: string; color: string }): Promise<NewsTag> => {
+    const response = await apiClient.post<NewsTag>('/cabinet/admin/news/tags', data);
+    return response.data;
+  },
+
+  updateTag: async (id: number, data: { name?: string; color?: string }): Promise<NewsTag> => {
+    const response = await apiClient.put<NewsTag>(`/cabinet/admin/news/tags/${id}`, data);
+    return response.data;
+  },
+
+  deleteTag: async (id: number): Promise<void> => {
+    await apiClient.delete(`/cabinet/admin/news/tags/${id}`);
   },
 };
