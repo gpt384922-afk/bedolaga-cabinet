@@ -320,6 +320,20 @@ export default function Dashboard() {
         refLoading={refLoading}
       />
 
+      {/* Personal VPN Banner */}
+      <Link to="/personal-vpn" className="bento-card-hover group flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span className="text-3xl">🔒</span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-semibold text-dark-100">{t('personalVpn.title')}</h3>
+            <p className="text-sm text-dark-400">{t('personalVpn.description')}</p>
+          </div>
+        </div>
+        <div className="flex-shrink-0 text-dark-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent-400">
+          <ChevronRightIcon />
+        </div>
+      </Link>
+
       {/* Fortune Wheel Banner */}
       {wheelConfig?.is_enabled && (
         <Link to="/wheel" className="bento-card-hover group flex items-center justify-between">

@@ -41,6 +41,7 @@ import {
   SunIcon,
   MoonIcon,
   SearchIcon,
+  LockIcon,
 } from './icons';
 
 const FALLBACK_NAME = import.meta.env.VITE_APP_NAME || 'Cabinet';
@@ -163,6 +164,7 @@ export function AppHeader({
     { path: '/subscription', label: t('nav.subscription'), icon: SubscriptionIcon },
     { path: '/balance', label: t('nav.balance'), icon: WalletIcon },
     ...(referralEnabled ? [{ path: '/referral', label: t('nav.referral'), icon: UsersIcon }] : []),
+    { path: '/personal-vpn', label: t('nav.personalVpn'), icon: LockIcon },
     { path: '/support', label: t('nav.support'), icon: ChatIcon },
     ...(hasContests ? [{ path: '/contests', label: t('nav.contests'), icon: GamepadIcon }] : []),
     ...(hasPolls ? [{ path: '/polls', label: t('nav.polls'), icon: ClipboardIcon }] : []),

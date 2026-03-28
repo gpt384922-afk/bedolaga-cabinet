@@ -45,7 +45,8 @@
     "info": "اطلاعات",
     "wheel": "چرخ شانس",
     "menu": "منو",
-    "gift": "هدیه"
+    "gift": "هدیه",
+    "personalVpn": "VPN شخصی"
   },
   "notifications": {
     "ticketNotifications": "اعلان‌های تیکت",
@@ -769,6 +770,10 @@
     "openSupport": "باز کردن پشتیبانی",
     "ticketsDisabled": "تیکت‌ها غیرفعال است",
     "useExternalLink": "لطفاً از لینک خارجی برای دریافت پشتیبانی استفاده کنید"
+  },
+  "personalVpn": {
+    "title": "VPN شخصی",
+    "description": "VPN آماده برای محیط عملیاتی"
   },
   "wheel": {
     "title": "چرخ شانس",

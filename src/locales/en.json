@@ -45,7 +45,8 @@
     "info": "Info",
     "wheel": "Fortune Wheel",
     "menu": "Menu",
-    "gift": "Gift"
+    "gift": "Gift",
+    "personalVpn": "Personal VPN"
   },
   "notifications": {
     "ticketNotifications": "Ticket Notifications",
@@ -926,6 +927,10 @@
     "openSupport": "Open Support",
     "contactSupport": "Please contact {{username}} for support",
     "contactUs": "Contact Support"
+  },
+  "personalVpn": {
+    "title": "Personal VPN",
+    "description": "Turnkey VPN for production"
   },
   "wheel": {
     "title": "Fortune Wheel",

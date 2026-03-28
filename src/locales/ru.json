@@ -45,7 +45,8 @@
     "info": "Информация",
     "wheel": "Колесо удачи",
     "menu": "Меню",
-    "gift": "Подарить"
+    "gift": "Подарить",
+    "personalVpn": "Личный VPN"
   },
   "notifications": {
     "ticketNotifications": "Уведомления о тикетах",
@@ -954,6 +955,10 @@
     "openSupport": "Открыть поддержку",
     "contactSupport": "Для получения поддержки обратитесь к {{username}}",
     "contactUs": "Связаться с поддержкой"
+  },
+  "personalVpn": {
+    "title": "Личный VPN",
+    "description": "VPN под ключ (для продакшена)"
   },
   "wheel": {
     "title": "Колесо удачи",

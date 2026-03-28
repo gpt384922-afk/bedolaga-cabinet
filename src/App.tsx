@@ -44,6 +44,7 @@ const ConnectionQR = lazy(() => import('./pages/ConnectionQR'));
 const QuickPurchase = lazy(() => import('./pages/QuickPurchase'));
 const PurchaseSuccess = lazy(() => import('./pages/PurchaseSuccess'));
 const AutoLogin = lazy(() => import('./pages/AutoLogin'));
+const PersonalVpn = lazy(() => import('./pages/PersonalVpn'));
 const TopUpMethodSelect = lazy(() => import('./pages/TopUpMethodSelect'));
 const TopUpAmount = lazy(() => import('./pages/TopUpAmount'));
 const TopUpResult = lazy(() => import('./pages/TopUpResult'));
@@ -469,6 +470,16 @@ function App() {
             <ProtectedRoute>
               <LazyPage>
                 <ConnectionQR />
+              </LazyPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/personal-vpn"
+          element={
+            <ProtectedRoute>
+              <LazyPage>
+                <PersonalVpn />
               </LazyPage>
             </ProtectedRoute>
           }
